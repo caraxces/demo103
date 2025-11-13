@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## STILE Frontend Prototype
+
+This Next.js application renders the STILE control center homepage inspired by the provided Figma exploration.  
+It uses the App Router, Tailwind CSS v4, and glassmorphism-driven UI primitives to mirror the Apple-like spatial canvas requested for Phase 1.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies and start the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app/layout.tsx` – Global metadata and font wiring using `next/font`.
+- `src/app/globals.css` – Tailwind base plus custom radial/utility declarations for glass layers.
+- `src/app/page.tsx` – Sectioned homepage (`Hero`, `FeatureShowcase`, `CaseStudies`, `Insights`, `Cta`) with responsive layout tokens.
+- `public/grid.svg` – Subtle grid background overlay referenced by the spatial canvas.
 
-## Learn More
+## Design Notes
 
-To learn more about Next.js, take a look at the following resources:
+- Layout follows the Figma reference: glass cards, dynamic island-inspired hub, and hero metrics.
+- Tailwind utility scale is extended inline to support large corner radii and gradient overlays.
+- Content is stored in local arrays (`features`, `caseStudies`, `metrics`) so copy and visuals can be swapped quickly once final assets are exported from Figma.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Next Steps
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Replace placeholder copy/metrics with final messaging from the design team.
+2. Export high-fidelity imagery, iconography, and any motion textures from Figma and drop them in `public/`.
+3. Wire interactions (scroll-based camera moves, section reveals) using `framer-motion` once timing curves are confirmed.
+4. Connect CMS or configuration layer if marketing needs self-serve edits during Phase 2.
