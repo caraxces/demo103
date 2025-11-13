@@ -24,7 +24,6 @@ const manrope = Manrope({
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
