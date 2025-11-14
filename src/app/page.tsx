@@ -510,7 +510,7 @@ function Header() {
             width={110}
             height={42}
           priority
-            className="h-auto w-[200px]"
+            className="h-auto w-[110px]"
         />
         </Link>
         <nav className="flex items-center gap-10 text-[15px] font-normal tracking-[0.06em]">
@@ -1265,7 +1265,7 @@ function Footer() {
                   alt="Stile"
                   width={200}
                   height={80}
-                  className="h-auto w-[110px]"
+                  className="h-auto w-[200px]"
                 />
                 <div>
                   <h3 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
