@@ -973,7 +973,7 @@ function Collections() {
               </div>
             </div>
 
-            <div className="absolute left-[950px] top-[650px] w-[280px] text-center text-white">
+            <div className="absolute left-[900px] top-[580px] w-[280px] text-center text-white">
               <p className="font-montserrat text-[22px] uppercase tracking-[0.25em]">
                 {slide.highlightTitle}
               </p>
