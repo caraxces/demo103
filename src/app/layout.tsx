@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Inter, Manrope, Montserrat } from "next/font/google";
 import "./globals.css";
@@ -30,6 +30,14 @@ export const metadata: Metadata = {
   title: "STILE — Spatial Team Control Center",
   description:
     "Experience an Apple-inspired operations canvas that orchestrates teams, rituals, and insights in real time.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

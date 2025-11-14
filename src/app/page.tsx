@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import "../styles/cta/button.css";
 
+const FULLPAGE_CONTAINER_ID = "fullpage-scroll";
+const HEADER_OFFSET = 80;
+
 const navItems = [
   { label: "Sản phẩm", href: "#featured" },
   { label: "Về STILE", href: "#about" },
@@ -235,7 +238,15 @@ const footerLinks = [
   "Dịch Vụ",
 ] as const;
 
-const socialIcons = ["tiktok", "facebook", "instagram", "youtube", "pinterest", "linkedin"] as const;
+const footerSocials = [
+  { src: "/FOOTER/tiktok 1.png", alt: "Tiktok" },
+  { src: "/FOOTER/zalo.png", alt: "Zalo" },
+  { src: "/FOOTER/linkedin.png", alt: "LinkedIn" },
+  { src: "/FOOTER/pinterest.png", alt: "Pinterest" },
+  { src: "/FOOTER/facebook.png", alt: "Facebook" },
+  { src: "/FOOTER/instagram.png", alt: "Instagram" },
+  { src: "/FOOTER/youtube.png", alt: "YouTube" },
+] as const;
 
 const heroSlides = [
   {
@@ -252,27 +263,179 @@ const heroSlides = [
   },
 ] as const;
 
+function DisableZoom() {
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        ["+", "-", "=", "_"].includes(event.key)
+      ) {
+        event.preventDefault();
+      }
+      if (event.key === "Meta" || event.key === "Control") {
+        window.addEventListener("wheel", handleWheel, { passive: false });
+      }
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Meta" || event.key === "Control") {
+        window.removeEventListener("wheel", handleWheel);
+      }
+    };
+
+    const preventGesture = (event: Event) => {
+      event.preventDefault();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("gesturestart", preventGesture);
+    window.addEventListener("gesturechange", preventGesture);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("gesturestart", preventGesture);
+      window.removeEventListener("gesturechange", preventGesture);
+    };
+  }, []);
+
+  return null;
+}
+
+function AnchorScrollManager() {
+  useEffect(() => {
+    const handleLinkClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+      const anchor = target.closest("a");
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href");
+      if (!href || href === "#" || !href.startsWith("#")) {
+        return;
+      }
+
+      if (window.innerWidth < 769) {
+        return;
+      }
+
+      const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+      const section = document.querySelector<HTMLElement>(href);
+
+      if (!container || !section) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const containerRect = container.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
+
+      const offset =
+        sectionRect.top - containerRect.top + container.scrollTop - HEADER_OFFSET + 4;
+
+      container.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+    };
+
+    document.addEventListener("click", handleLinkClick);
+    return () => {
+      document.removeEventListener("click", handleLinkClick);
+    };
+  }, []);
+
+  return null;
+}
+
+function SectionVisibilityManager() {
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>(".fullpage-section");
+    if (!sections.length) return;
+
+    sections.forEach((section) => section.classList.add("is-visible")); // initial hero
+
+    let scrolling = false;
+
+    const onWheel = (event: WheelEvent) => {
+      if (scrolling) return;
+      const direction = event.deltaY > 0 ? 1 : -1;
+      triggerAnimation(direction);
+    };
+
+    const onKey = (event: KeyboardEvent) => {
+      if (scrolling) return;
+      if (event.key === "ArrowDown" || event.key === "PageDown") {
+        triggerAnimation(1);
+      } else if (event.key === "ArrowUp" || event.key === "PageUp") {
+        triggerAnimation(-1);
+      }
+    };
+
+    const triggerAnimation = (direction: 1 | -1) => {
+      const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+      if (!container) return;
+      const currentIndex = Math.round(container.scrollTop / container.clientHeight);
+      const targetIndex = Math.max(0, Math.min(sections.length - 1, currentIndex + direction));
+      const targetSection = sections[targetIndex];
+
+      scrolling = true;
+      targetSection.classList.add("is-visible");
+
+      setTimeout(() => {
+        scrolling = false;
+      }, 600);
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  return null;
+}
+
 export default function Home() {
   return (
     <div className="bg-white text-[#111111]">
-      <Header />
-      <Hero />
-      <main>
-        <About />
-        <Gallery />
-        <FeaturedProducts />
-        <Collections />
-        <Applications />
-        <Projects />
-        <CatalogueCta />
-      </main>
-      <Footer />
+      <DisableZoom />
+      <AnchorScrollManager />
+      <SectionVisibilityManager />
+      <div id="desktop-layout-wrapper" className="desktop-fixed-layout">
+        <Header />
+        <main id={FULLPAGE_CONTAINER_ID} className="fullpage-container">
+          <Hero />
+          <About />
+          <Gallery />
+          <FeaturedProducts />
+          <Collections />
+          <Applications />
+          <Projects />
+          <CatalogueCta />
+          <Footer />
+        </main>
+      </div>
     </div>
   );
 }
 
 function Header() {
   const [pastHero, setPastHero] = useState(false);
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  const [onLightSection, setOnLightSection] = useState(false);
 
   useEffect(() => {
     const heroEl = document.getElementById("hero");
@@ -294,23 +457,52 @@ function Header() {
     };
   }, []);
 
-  const navLinkClass = pastHero
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>('[data-header-light="true"]');
+    if (!sections.length) return;
+
+    const visibility = new Map<Element, boolean>();
+    sections.forEach((section) => visibility.set(section, false));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          visibility.set(entry.target, entry.isIntersecting);
+        });
+        const anyVisible = Array.from(visibility.values()).some(Boolean);
+        setOnLightSection(anyVisible);
+      },
+      {
+        threshold: 0.35,
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const navLinkClass = onLightSection
     ? "text-[#111111] hover:text-[#555555]"
     : "text-white hover:text-[#f2f2f2]";
 
   const logoSrc = pastHero
     ? "/LOGO/STILE Logo HEADER-14.svg"
-    : "/LOGO/STILE Logo HEADER-12.svg";
+    : "/LOGO/STILE Logo HEADER-14.svg";
+
+  const baseHeight = pastHero ? 58 : 80;
+  const headerHeight = isHeaderHovered ? baseHeight + 12 : baseHeight;
 
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-50 transition-colors duration-500 ${
-        pastHero
-          ? "bg-white/95 text-[#111111] backdrop-blur"
-          : "bg-transparent text-white"
+      onMouseEnter={() => setIsHeaderHovered(true)}
+      onMouseLeave={() => setIsHeaderHovered(false)}
+      className={`fixed left-0 right-0 top-0 z-50 bg-transparent transition-[color,height] duration-500 ${
+        onLightSection ? "text-[#111111]" : "text-white"
       }`}
+      style={{ height: `${headerHeight}px` }}
     >
-      <div className="mx-auto flex h-[80px] w-full max-w-[1440px] items-center justify-between px-[57px]">
+      <div className="mx-auto flex h-full w-full items-center justify-between px-[57px]">
         <Link href="#hero" className="flex items-center">
         <Image
             src={logoSrc}
@@ -318,24 +510,24 @@ function Header() {
             width={110}
             height={42}
           priority
-            className="h-auto w-[110px]"
+            className="h-auto w-[200px]"
         />
         </Link>
-        <nav className="flex items-center gap-10 text-[15px] font-medium tracking-[0.06em]">
+        <nav className="flex items-center gap-10 text-[15px] font-normal tracking-[0.06em]">
           {navItems.map((item) => (
             <Link key={item.label} href={item.href} className={`transition ${navLinkClass}`}>
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-6 text-[15px] font-medium tracking-[0.06em]">
+        <div className="flex items-center gap-6 text-[15px] font-normal tracking-[0.06em]">
           <Link href="#contact" className={`transition ${navLinkClass}`}>
             Liên hệ
           </Link>
           <button
             type="button"
             className={`rounded-full border px-4 py-1 text-[13px] tracking-[0.12em] transition ${
-              pastHero
+              onLightSection
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                 : "border-white text-white hover:bg-white/20"
             }`}
@@ -361,7 +553,7 @@ function Hero() {
   return (
     <section
       id="hero"
-      className="relative h-screen min-h-[814px] w-full overflow-hidden text-white"
+      className="fullpage-section relative w-full overflow-hidden text-white"
     >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
@@ -430,25 +622,38 @@ function About() {
     const update = () => {
       frame = 0;
       const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
       if (viewportWidth < 1024) {
         imageNode.style.transform = "translate3d(0px, 0px, 0px)";
         textNode.style.transform = "translate3d(0px, 0px, 0px)";
         return;
       }
 
-      const rect = sectionNode.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      const sectionHeight = rect.height || sectionNode.offsetHeight || 1;
+      const viewportCenterX = viewportWidth / 2;
+      const viewportCenterY = viewportHeight / 2;
 
-      const progress = Math.min(
-        1,
-        Math.max(0, (viewportHeight - rect.top) / (viewportHeight + sectionHeight))
-      );
+      const sectionRect = sectionNode.getBoundingClientRect();
+      const sectionCenterY = sectionRect.top + sectionRect.height / 2;
 
-      const translate = (progress - 0.5) * 300;
-      const textTranslate = (progress - 0.5) * -300;
-      imageNode.style.transform = `translate3d(0px, ${translate.toFixed(2)}px, 0px)`;
-      textNode.style.transform = `translate3d(0px, ${textTranslate.toFixed(2)}px, 0px)`;
+      const distanceToCenter = Math.abs(sectionCenterY - viewportCenterY);
+      const maxDistance = viewportHeight / 2;
+      const rawProgress = 1 - Math.min(distanceToCenter / maxDistance, 1);
+      const progress = Math.max(0, Math.min(1, rawProgress));
+
+      const textRect = textNode.getBoundingClientRect();
+      const textCenterX = textRect.left + textRect.width / 2;
+      const textCenterY = textRect.top + textRect.height / 2;
+      const textTranslateX = (viewportCenterX - textCenterX) * progress;
+      const textTranslateY = (viewportCenterY - textCenterY) * progress;
+      textNode.style.transform = `translate3d(${textTranslateX.toFixed(2)}px, ${textTranslateY.toFixed(2)}px, 0px)`;
+
+      const imageRect = imageNode.getBoundingClientRect();
+      const imageCenterX = imageRect.left + imageRect.width / 2;
+      const imageCenterY = imageRect.top + imageRect.height / 2;
+      const imageTranslateX = (viewportCenterX - imageCenterX) * progress;
+      const imageTranslateY = (viewportCenterY - imageCenterY) * progress;
+      imageNode.style.transform = `translate3d(${imageTranslateX.toFixed(2)}px, ${imageTranslateY.toFixed(2)}px, 0px)`;
     };
 
     const onScroll = () => {
@@ -470,28 +675,31 @@ function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="mx-auto grid grid-cols-[minmax(0,640px)_minmax(0,1fr)] items-start gap-20 px-[104px] pb-[140px] pt-[115px] scroll-mt-[120px]"
+      data-header-light="true"
+      className="fullpage-section flex items-center"
     >
-      <div
-        ref={textRef}
-        className="flex flex-col gap-6 transition-transform duration-300 ease-out will-change-transform"
-      >
-        <span className="font-alt text-[20px] font-medium tracking-[0.05em]">VỀ CHÚNG TÔI</span>
-        <h2 className="font-heading text-[48px] leading-[60px] tracking-[0.02em] uppercase text-[#000000]">
-          ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
-        </h2>
-        <p className="font-manrope text-[14px] leading-[25px] text-justify text-[#1a1a1a]">
-          STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
-          triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
-          dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
-          nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
-          thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
-        </p>
-        <div className="pt-2">
-          <PillButton label="Khám phá ngay" />
-        </div>
-      </div>
-      <div className="relative flex justify-center xl:justify-end">
+      <div className="section-inner">
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] items-center gap-20 px-[104px]">
+          <div
+            ref={textRef}
+            className="flex flex-col gap-6 transition-transform duration-300 ease-out will-change-transform"
+          >
+            <span className="font-alt text-[20px] font-medium tracking-[0.05em]">VỀ CHÚNG TÔI</span>
+            <h2 className="font-heading text-[48px] leading-[60px] tracking-[0.02em] uppercase text-[#000000]">
+              ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
+            </h2>
+            <p className="font-manrope text-[14px] leading-[25px] text-justify text-[#1a1a1a]">
+              STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
+              triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
+              dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
+              nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
+              thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
+            </p>
+            <div className="pt-2">
+              <PillButton label="Khám phá ngay" />
+            </div>
+          </div>
+          <div className="relative flex justify-center xl:justify-end">
         <div
           ref={stickyRef}
           className={`hidden h-[601px] w-[534px] overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out lg:block lg:sticky lg:top-[140px] ${
@@ -514,6 +722,8 @@ function About() {
             className="object-cover"
             sizes="480px"
           />
+        </div>
+        </div>
         </div>
       </div>
     </section>
@@ -584,9 +794,10 @@ function Gallery() {
   }, []);
 
   return (
-    <section id="gallery" className="relative w-full overflow-hidden bg-[#282828] py-[120px] text-white scroll-mt-[120px]">
-      <div className="mx-auto flex w-full flex-col gap-10 px-6 lg:flex-row lg:items-center lg:px-0">
-        <div className="relative w-full overflow-visible lg:w-[60%]">
+    <section id="gallery" className="fullpage-section relative w-full overflow-hidden bg-[#282828] text-white">
+      <div className="section-inner">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-6 lg:flex-row lg:items-center lg:px-0">
+          <div className="relative w-full overflow-visible lg:w-[60%]">
           <div
             ref={scrollRef}
             className="gallery-scroll relative flex gap-8 overflow-x-auto pb-10"
@@ -601,21 +812,22 @@ function Gallery() {
               </div>
             ))}
           </div>
-        </div>
-        <div
-          className="relative z-20 flex w-full max-w-[520px] flex-col gap-6 transition-transform duration-500 lg:w-[40%] lg:pl-12"
-          style={{
-            opacity: Math.max(0.4, 1 - contentFade * 1.1),
-            transform: `translateX(${-(contentFade * 60)}px)`,
-            pointerEvents: contentFade > 0.3 || isDragging ? "none" : "auto",
-          }}
-        >
-          <h2 className="font-heading text-[80px] leading-[70px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
-          <p className="max-w-[460px] font-montserrat text-[14px] leading-[25px] text-justify">
-            Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
-          </p>
-          <div className="pt-6">
-            <PillButton label="Khám phá ngay" theme="light" />
+          </div>
+          <div
+            className="relative z-20 flex w-full max-w-[520px] flex-col gap-6 transition-transform duration-500 lg:w-[40%] lg:pl-12"
+            style={{
+              opacity: Math.max(0.4, 1 - contentFade * 1.1),
+              transform: `translateX(${-(contentFade * 60)}px)`,
+              pointerEvents: contentFade > 0.3 || isDragging ? "none" : "auto",
+            }}
+          >
+            <h2 className="font-heading text-[80px] leading-[70px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
+            <p className="max-w-[460px] font-montserrat text-[14px] leading-[25px] text-justify">
+              Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
+            </p>
+            <div className="pt-6">
+              <PillButton label="Khám phá ngay" theme="light" />
+            </div>
           </div>
         </div>
       </div>
@@ -651,7 +863,7 @@ function FeaturedProducts() {
   }, []);
 
   return (
-    <section id="featured" className="relative w-full overflow-hidden bg-[#f0f0f0] text-[#1a1a1a]" style={{ minHeight: "850px" }}>
+    <section id="featured" data-header-light="true" className="fullpage-section relative w-full overflow-hidden bg-[#f0f0f0] text-[#1a1a1a]">
       <div className="absolute inset-0">
         <Image
           key={variant.id}
@@ -664,7 +876,7 @@ function FeaturedProducts() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#f4f4f4]/95 via-[#f4f4f4]/88 to-[#f4f4f4]/20" />
       </div>
 
-      <div className="relative flex h-[850px] w-full flex-col justify-between px-8 lg:px-[6vw]">
+      <div className="relative flex h-full w-full flex-col justify-between px-8 lg:px-[6vw]">
         <div className="pt-10 text-center">
           <h2 className="font-heading text-[48px] uppercase tracking-[0.3em] text-[#151515]">
             SẢN PHẨM NỔI BẬT
@@ -724,9 +936,10 @@ function Collections() {
   }, []);
 
   return (
-    <section id="collections" className="relative w-full overflow-x-auto bg-black text-white">
-      <div className="relative h-[820px] min-w-[1440px]">
-        {collectionSlides.map((slide, index) => (
+    <section id="collections" className="fullpage-section relative w-full overflow-hidden bg-black text-white">
+      <div className="section-inner !p-0">
+        <div className="relative h-full min-w-[1440px]">
+          {collectionSlides.map((slide, index) => (
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-700 ${
@@ -746,7 +959,7 @@ function Collections() {
               <h2 className="font-heading text-[48px] tracking-[0.05em] uppercase">{slide.heading}</h2>
             </div>
 
-            <div className="absolute left-[700px] top-[200px] w-[360px] text-left text-white">
+            <div className="absolute left-[670px] top-[180px] w-[360px] text-left text-white">
               <div className="mb-10">
                 <Image src="/BỘ SƯU TẬP/Vector.png" alt="Tile outline" width={64} height={112} className="h-auto w-[64px]" />
               </div>
@@ -769,10 +982,10 @@ function Collections() {
               </p>
             </div>
           </div>
-        ))}
+          ))}
 
-        <div className="absolute bottom-[60px] left-[120px] flex gap-3">
-          {collectionSlides.map((slide, index) => {
+          <div className="absolute bottom-[60px] left-[120px] flex gap-3">
+            {collectionSlides.map((slide, index) => {
             const isActive = index === activeSlide;
             return (
               <button
@@ -783,9 +996,10 @@ function Collections() {
                 className={`h-[16px] w-[16px] rounded-full border border-white/50 transition-colors ${
                   isActive ? "bg-white" : "bg-transparent hover:border-white"
                 }`}
-              />
-            );
-          })}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -911,71 +1125,103 @@ function Applications() {
   }, [activeSection, originalItems.length]);
 
   return (
-    <section className="w-full py-[120px] scroll-mt-[120px]">
-      <div className="px-[104px]">
-        <h2 className="text-center font-heading text-[48px] tracking-[0.05em] text-[#000]">
-          ỨNG DỤNG
-        </h2>
-        <div className="mt-[48px] flex justify-center">
-          <div ref={tabsRef} className="relative flex items-center gap-[32px]">
-            <span
-              className="pointer-events-none absolute rounded-[11px] bg-[#282828] transition-all duration-300"
-              style={{
-                left: highlightStyle.left,
-                top: highlightStyle.top,
-                width: highlightStyle.width,
-                height: highlightStyle.height,
-                opacity: highlightStyle.width ? 1 : 0,
-              }}
-            />
-            {applicationSections.map((tab, index) => {
-              const active = index === activeTab;
-              return (
-                <button
-                  type="button"
-                  key={tab.label}
-                  onClick={() => setActiveTab(index)}
-                  ref={(node) => {
-                    tabRefs.current[index] = node;
-                  }}
-                  className={`relative z-10 flex h-[54px] items-center rounded-[28px] px-[5px] font-montserrat text-[16px] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                    active ? "text-white !text-white" : "text-[#1a1a1a] hover:text-[#000]"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+    <section id="applications" className="fullpage-section flex w-full flex-col justify-center">
+      <div className="section-inner">
+        <div className="flex w-full max-w-[1440px] flex-col px-[104px]">
+          <h2 className="mt-[72px] text-center font-heading text-[48px] tracking-[0.05em] text-[#000]">
+            ỨNG DỤNG
+          </h2>
+          <div className="mt-[32px] flex justify-center">
+            <div ref={tabsRef} className="relative flex items-center gap-[24px]">
+              <span
+                className="pointer-events-none absolute rounded-[11px] bg-[#282828] transition-all duration-300"
+                style={{
+                  left: highlightStyle.left,
+                  top: highlightStyle.top,
+                  width: highlightStyle.width,
+                  height: highlightStyle.height,
+                  opacity: highlightStyle.width ? 1 : 0,
+                }}
+              />
+              {applicationSections.map((tab, index) => {
+                const active = index === activeTab;
+                return (
+                  <button
+                    type="button"
+                    key={tab.label}
+                    onClick={() => setActiveTab(index)}
+                    ref={(node) => {
+                      tabRefs.current[index] = node;
+                    }}
+                    className={`relative z-10 flex h-[54px] items-center rounded-[28px] px-[5px] font-montserrat text-[16px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                      active ? "text-white !text-white" : "text-[#1a1a1a] hover:text-[#000]"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="mt-[48px] -mx-[104px]">
+            <div className="relative">
+              <div
+                ref={trackRef}
+                className="application-track flex cursor-grab gap-[32px] overflow-x-scroll overflow-y-hidden scroll-smooth pb-6"
+                style={{ scrollSnapType: "x mandatory" }}
+              >
+                {loopedItems.map((item, index) => (
+                  <div
+                    key={`${activeSection.label}-${item.title}-${index}`}
+                    data-app-card
+                    className="group relative flex h-[516px] w-[460px] flex-shrink-0 snap-center"
+                  >
+                    <div className="relative h-full w-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05]">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="460px"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      <div className="absolute inset-x-0 bottom-16 flex translate-y-8 justify-center opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                        <span className="font-heading text-[18px] uppercase tracking-[0.28em] text-white">
+                          {item.title}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div className="mt-[48px] -mx-[104px]">
-        <div className="relative">
-          <div
-            ref={trackRef}
-            className="application-track flex cursor-grab gap-[32px] overflow-x-scroll overflow-y-hidden scroll-smooth pb-6"
-            style={{ scrollSnapType: "x mandatory" }}
-          >
-            {loopedItems.map((item, index) => (
-              <div
-                key={`${activeSection.label}-${item.title}-${index}`}
-                data-app-card
-                className="group relative flex h-[516px] w-[460px] flex-shrink-0 snap-center"
-              >
-                <div className="relative h-full w-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05]">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="460px"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="absolute inset-x-0 bottom-16 flex translate-y-8 justify-center opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="font-heading text-[18px] uppercase tracking-[0.28em] text-white">
-                      {item.title}
-                    </span>
-                  </div>
+    </section>
+  );
+}
+
+function Projects() {
+  return (
+    <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center bg-white">
+      <div className="section-inner">
+        <div className="mx-auto w-full max-w-[1440px] px-[104px]">
+          <h2 className="font-heading text-[48px] tracking-[0.05em] text-[#000]">
+            CÔNG TRÌNH &amp; XU HƯỚNG
+          </h2>
+          <div className="mt-[48px] grid grid-cols-2 gap-[60px]">
+            {trendArticles.map((article) => (
+              <div key={article.title} className="flex flex-col gap-5">
+                <div className="relative h-[320px] w-full overflow-hidden rounded-lg">
+                  <Image src={article.image} alt={article.title} fill className="object-cover" sizes="601px" />
+                </div>
+                <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
+                  {article.title}
+                </h3>
+                <p className="font-montserrat text-[14px] leading-[19px] text-[#111]">{article.description}</p>
+                <div>
+                  <PillButton label="Khám phá ngay" />
                 </div>
               </div>
             ))}
@@ -986,35 +1232,9 @@ function Applications() {
   );
 }
 
-function Projects() {
-  return (
-    <section id="projects" className="mx-auto px-[104px] pb-[120px] scroll-mt-[120px]">
-      <h2 className="font-heading text-[48px] tracking-[0.05em] text-[#000]">
-        CÔNG TRÌNH &amp; XU HƯỚNG
-      </h2>
-      <div className="mt-[64px] grid grid-cols-2 gap-[75px]">
-        {trendArticles.map((article) => (
-          <div key={article.title} className="flex flex-col gap-5">
-            <div className="relative h-[355px] w-full overflow-hidden rounded-lg">
-              <Image src={article.image} alt={article.title} fill className="object-cover" sizes="601px" />
-            </div>
-            <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
-              {article.title}
-            </h3>
-            <p className="font-montserrat text-[14px] leading-[19px] text-[#111]">{article.description}</p>
-            <div>
-              <PillButton label="Khám phá ngay" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function CatalogueCta() {
   return (
-    <section className="relative mx-auto flex h-[563px] items-center justify-center overflow-hidden text-white">
+    <section className="fullpage-section relative flex items-center justify-center overflow-hidden text-white">
       <Image
         src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
         alt="Đăng ký nhận catalogue"
@@ -1034,70 +1254,87 @@ function CatalogueCta() {
 
 function Footer() {
   return (
-    <footer id="contact" className="mx-auto bg-white px-[104px] pb-8 pt-[72px] text-[#000]">
-      <div className="grid grid-cols-[286px_286px_1fr] gap-[72px] border-b border-[#d0d0d0] pb-[72px]">
-        <div className="flex flex-col gap-6">
-          <Image
-            src="/LOGO/STILE Logo HEADER-14.svg"
-            alt="Stile"
-            width={110}
-            height={42}
-            className="h-auto w-[110px]"
-          />
-          <div>
-            <h3 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
-              CÔNG TY TNHH STILE
-            </h3>
-            <div className="mt-6 space-y-4 font-montserrat text-[14px] leading-6">
-              <p>098 165 0042</p>
-              <p>infor@stile.com.vn</p>
-              <p>155 - 157 Nguyễn Cơ Thạch, P. An Khánh, TP. HCM</p>
+    <footer id="contact" data-header-light="true" className="fullpage-section mx-auto bg-white text-[#000]">
+      <div className="section-inner">
+        <div className="w-full max-w-[1440px] px-[104px]">
+          <div className="flex flex-col gap-[48px] border-b border-[#d0d0d0] pb-[48px]">
+            <div className="flex items-start justify-between gap-[32px]">
+              <div className="flex flex-col gap-6">
+                <Image
+                  src="/LOGO/STILE Logo HEADER-12.svg"
+                  alt="Stile"
+                  width={200}
+                  height={80}
+                  className="h-auto w-[110px]"
+                />
+                <div>
+                  <h3 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
+                    CÔNG TY TNHH STILE
+                  </h3>
+                  <div className="mt-6 space-y-4 font-montserrat text-[14px] leading-6">
+                    <p>098 165 0042</p>
+                    <p>infor@stile.com.vn</p>
+                    <p>155 - 157 Nguyễn Cơ Thạch, P. An Khánh, TP. HCM</p>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-x-[60px] gap-y-[16px] font-montserrat text-[14px] leading-6">
+                {footerLinks.map((link) => (
+                  <Link key={link} href="#" className="transition hover:text-[#555]">
+                    {link}
+                  </Link>
+                ))}
+              </div>
+              <div className="flex flex-col gap-6">
+                <h4 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
+                  Liên hệ ngay
+                </h4>
+                <form className="grid grid-cols-2 gap-x-[16px] gap-y-3 font-manrope text-[12px]">
+                  <InputField placeholder="Họ và Tên" />
+                  <InputField placeholder="Số Điện Thoại" />
+                  <InputField placeholder="Email" full />
+                  <TextareaField placeholder="Nội dung tin nhắn..." />
+                </form>
+                <div className="flex justify-end">
+                  <PillButton label="Gửi" />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                {footerSocials.map((item) => (
+                  <Image
+                    key={item.alt}
+                    src={item.src}
+                    alt={item.alt}
+                    width={36}
+                    height={36}
+                    className="h-9 w-9"
+                  />
+                ))}
+              </div>
+              <div className="flex gap-6 font-manrope text-[12px]">
+                <Link href="#" className="transition hover:text-[#555]">
+                  Chính sách bảo mật
+                </Link>
+                <Link href="#" className="transition hover:text-[#555]">
+                  Điều khoản sử dụng
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-4 font-montserrat text-[14px] leading-6">
-          {footerLinks.map((link) => (
-            <Link key={link} href="#" className="transition hover:text-[#555]">
-              {link}
-            </Link>
-          ))}
-        </div>
-        <div className="flex flex-col gap-6">
-          <h4 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
-            Liên hệ ngay
-          </h4>
-          <form className="grid grid-cols-2 gap-x-[29px] gap-y-3 font-manrope text-[12px]">
-            <InputField placeholder="Họ và Tên" />
-            <InputField placeholder="Số Điện Thoại" />
-            <InputField placeholder="Email" full />
-            <TextareaField placeholder="Nội dung tin nhắn..." />
-          </form>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="flex h-10 w-[200px] items-center justify-center rounded-full bg-[#282828] font-manrope text-[12px] text-white transition hover:bg-black"
-            >
-              Liên hệ ngay
-            </button>
+          <div className="flex items-center justify-between pt-6 font-manrope text-[12px]">
+            <Image
+              src="/FOOTER/da-thong-bao.png"
+              alt="Đã thông báo bộ công thương"
+              width={160}
+              height={48}
+              className="h-auto w-[160px]"
+            />
+            <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-between pt-6 font-manrope text-[12px]">
-        <div className="flex gap-6">
-          <Link href="#" className="transition hover:text-[#555]">
-            Chính sách bảo mật
-          </Link>
-          <Link href="#" className="transition hover:text-[#555]">
-            Điều khoản sử dụng
-          </Link>
-        </div>
-        <div className="flex items-center gap-4">
-          {socialIcons.map((icon) => (
-            <SocialIcon key={icon} icon={icon} />
-          ))}
-        </div>
-        <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
-    </div>
     </footer>
   );
 }
@@ -1120,12 +1357,6 @@ function PillButton({
           <span className="btn__outline" />
           <span className="btn__hover" />
           <span className="btn__text">{label}</span>
-          <span className="ico" aria-hidden="true">
-            <span className="ico__circle" />
-            <svg className="ico__svg" viewBox="0 0 24 24">
-              <use xlinkHref="#ic-arrow-launch" />
-            </svg>
-          </span>
         </button>
       </div>
     </div>

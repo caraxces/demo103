@@ -16,6 +16,7 @@ button {
   padding: 0;
   border: none;
   outline: none;
+  appearance: none;
   -webkit-appearance: none;
 }
 
@@ -37,26 +38,21 @@ button {
   border-radius: 60px;
   overflow: hidden;
   overflow-clip-margin: 1px;
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 .btn {
   --btn-bg: #ffffff;
-  --btn-border: #ffffff;
+  --btn-border: #111111;
   --btn-text: #111111;
   --btn-hover-text: #ffffff;
   --btn-hover-fill: #111111;
-  --btn-circle-bg: #111111;
-  --btn-circle-icon: #ffffff;
-  --btn-circle-hover-bg: #ffffff;
-  --btn-circle-hover-icon: #111111;
 
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  min-width: 260px;
-  padding: 12px 60px 12px 16px;
+  justify-content: center;
+  min-width: 220px;
+  padding: 14px 48px;
   border-radius: 60px;
   background: transparent;
   color: var(--btn-text);
@@ -67,6 +63,7 @@ button {
   text-transform: uppercase;
   line-height: 1;
   transition: color 0.4s ease, box-shadow 0.45s ease;
+  overflow: hidden;
 }
 
 .btn::before {
@@ -81,14 +78,10 @@ button {
 
 .btn.btn--dark {
   --btn-bg: #111111;
-  --btn-border: #111111;
+  --btn-border: #ffffff;
   --btn-text: #ffffff;
   --btn-hover-text: #111111;
   --btn-hover-fill: #ffffff;
-  --btn-circle-bg: #ffffff;
-  --btn-circle-icon: #111111;
-  --btn-circle-hover-bg: #111111;
-  --btn-circle-hover-icon: #ffffff;
 }
 
 .btn__outline {
@@ -103,16 +96,12 @@ button {
 
 .btn__hover {
   position: absolute;
-  top: 50%;
-  left: 25%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
+  inset: 0;
+  border-radius: inherit;
   background: var(--btn-hover-fill);
-  transform: translate(-50%, -50%);
-  transition:
-    width 0.5s var(--cta-ease),
-    height 0.5s var(--cta-ease);
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  transition: transform 0.75s var(--cta-ease);
   z-index: 1;
 }
 
@@ -121,38 +110,7 @@ button {
   z-index: 3;
   color: var(--btn-text);
   white-space: nowrap;
-  transition: color 0.4s ease;
-}
-
-.ico {
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  transform: translateY(-50%);
-  transition: all 0.45s ease;
-  z-index: 3;
-}
-
-.ico__circle {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--btn-circle-bg);
-  border: 1px solid transparent;
-  transition: all 0.45s ease;
-}
-
-.ico__svg {
-  position: relative;
-  width: 16px;
-  height: 16px;
-  color: var(--btn-circle-icon);
-  transition: all 0.45s ease;
+  transition: color 0.6s ease;
 }
 
 .btn:hover {
@@ -161,12 +119,12 @@ button {
 }
 
 .btn:hover::before {
+  transition: background 0.6s ease;
   background: var(--btn-hover-fill);
 }
 
 .btn:hover .btn__hover {
-  width: 360px;
-  height: 360px;
+  transform: scaleY(1);
 }
 
 .btn:hover .btn__outline {
@@ -177,28 +135,3 @@ button {
   color: var(--btn-hover-text);
 }
 
-.btn:hover .ico {
-  width: 32px;
-  height: 32px;
-  right: 4px;
-}
-
-.btn:hover .ico__circle {
-  width: 30px;
-  height: 30px;
-  background: var(--btn-circle-hover-bg);
-}
-
-.btn:hover .ico__svg {
-  width: 18px;
-  height: 18px;
-  color: var(--btn-circle-hover-icon);
-}
-
-.btn .ico__svg use {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
