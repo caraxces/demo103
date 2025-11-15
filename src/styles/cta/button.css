@@ -41,7 +41,7 @@ button {
 }
 
 .btn {
-  --btn-bg: #ffffff;
+  --btn-bg: transparent;
   --btn-border: #111111;
   --btn-text: #111111;
   --btn-hover-text: #ffffff;
@@ -60,7 +60,6 @@ button {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   line-height: 1;
   transition: color 0.4s ease, box-shadow 0.45s ease;
   overflow: hidden;
@@ -76,8 +75,16 @@ button {
   transition: background 0.45s ease;
 }
 
+.btn.btn--light {
+  --btn-bg: transparent;
+  --btn-border: #111111;
+  --btn-text: #111111;
+  --btn-hover-text: #ffffff;
+  --btn-hover-fill: #111111;
+}
+
 .btn.btn--dark {
-  --btn-bg: #111111;
+  --btn-bg: transparent;
   --btn-border: #ffffff;
   --btn-text: #ffffff;
   --btn-hover-text: #111111;

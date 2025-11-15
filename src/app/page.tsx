@@ -502,25 +502,48 @@ function Header() {
       }`}
       style={{ height: `${headerHeight}px` }}
     >
-      <div className="mx-auto flex h-full w-full items-center justify-between px-[57px]">
+      <div className="mx-auto flex h-full w-full items-center justify-between px-6 lg:px-[57px]">
         <Link href="#hero" className="flex items-center">
-        <Image
+          <Image
             src={logoSrc}
             alt="Stile logo"
-            width={110}
-            height={42}
-          priority
-            className="h-auto w-[110px]"
-        />
+            width={90}
+            height={34}
+            priority
+            className="h-auto w-[90px] lg:w-[110px]"
+          />
         </Link>
-        <nav className="flex items-center gap-10 text-[15px] font-normal tracking-[0.06em]">
+        <nav className="hidden items-center gap-10 text-[15px] font-normal tracking-[0.06em] lg:flex">
           {navItems.map((item) => (
             <Link key={item.label} href={item.href} className={`transition ${navLinkClass}`}>
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-6 text-[15px] font-normal tracking-[0.06em]">
+        <div className="hidden items-center gap-6 text-[15px] font-normal tracking-[0.06em] lg:flex">
+          <button
+            type="button"
+            aria-label="Tìm kiếm"
+            className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
+              onLightSection
+                ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
+                : "border-white text-white hover:bg-white/20"
+            }`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.5" y1="16.5" x2="21" y2="21" />
+            </svg>
+          </button>
           <Link href="#contact" className={`transition ${navLinkClass}`}>
             Liên hệ
           </Link>
@@ -533,6 +556,23 @@ function Header() {
             }`}
           >
             VN / EN
+          </button>
+        </div>
+        <div className="flex items-center gap-3 lg:hidden">
+          <button
+            type="button"
+            aria-label="Mở menu"
+            className={`flex h-11 w-11 items-center justify-center rounded-full border transition ${
+              onLightSection
+                ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
+                : "border-white text-white hover:bg-white/20"
+            }`}
+          >
+            <span className="flex flex-col items-center justify-center gap-[6px]">
+              <span className="block h-[2px] w-5 bg-current" />
+              <span className="block h-[2px] w-5 bg-current" />
+              <span className="block h-[2px] w-5 bg-current" />
+            </span>
           </button>
         </div>
       </div>
@@ -553,7 +593,7 @@ function Hero() {
   return (
     <section
       id="hero"
-      className="fullpage-section relative w-full overflow-hidden text-white"
+      className="fullpage-section relative w-full overflow-hidden text-white min-h-[640px] lg:min-h-0"
     >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
@@ -581,14 +621,18 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center gap-[32px] px-6 text-center">
-        <h1 className="max-w-[685px] text-[58px] leading-[73px] tracking-[0.02em] font-heading uppercase">
-          BỀ MẶT LẤY CẢM HỨNG TỪ THIÊN NHIÊN
+      <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center gap-[28px] px-6 text-center">
+        <h1 className="max-w-[685px] font-heading uppercase text-[46px] leading-[56px] tracking-[0.02em] lg:text-[58px] lg:leading-[73px]">
+          <span className="hidden lg:inline">BỀ MẶT LẤY CẢM HỨNG TỪ THIÊN NHIÊN</span>
+          <span className="block lg:hidden">ART OF SURFACE</span>
         </h1>
         <p className="max-w-[593px] font-alt text-[18px] font-normal leading-6">
-          Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.
+          <span className="hidden lg:inline">Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.</span>
+          <span className="block lg:hidden text-[18px] leading-[28px]">
+            Nơi Vật Liệu Kể Câu Chuyện Của Không Gian
+          </span>
         </p>
-        <PillButton theme="light" label="Khám phá ngay" />
+        <PillButton theme="dark" label="Khám phá ngay" />
       </div>
     </section>
   );
@@ -612,62 +656,16 @@ function About() {
   }, []);
 
   useEffect(() => {
-    const sectionNode = sectionRef.current;
     const imageNode = stickyRef.current;
     const textNode = textRef.current;
-    if (!sectionNode || !imageNode || !textNode) return;
+    if (!imageNode || !textNode) return;
 
-    let frame = 0;
-
-    const update = () => {
-      frame = 0;
-      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-      if (viewportWidth < 1024) {
-        imageNode.style.transform = "translate3d(0px, 0px, 0px)";
-        textNode.style.transform = "translate3d(0px, 0px, 0px)";
-        return;
-      }
-
-      const viewportCenterX = viewportWidth / 2;
-      const viewportCenterY = viewportHeight / 2;
-
-      const sectionRect = sectionNode.getBoundingClientRect();
-      const sectionCenterY = sectionRect.top + sectionRect.height / 2;
-
-      const distanceToCenter = Math.abs(sectionCenterY - viewportCenterY);
-      const maxDistance = viewportHeight / 2;
-      const rawProgress = 1 - Math.min(distanceToCenter / maxDistance, 1);
-      const progress = Math.max(0, Math.min(1, rawProgress));
-
-      const textRect = textNode.getBoundingClientRect();
-      const textCenterX = textRect.left + textRect.width / 2;
-      const textCenterY = textRect.top + textRect.height / 2;
-      const textTranslateX = (viewportCenterX - textCenterX) * progress;
-      const textTranslateY = (viewportCenterY - textCenterY) * progress;
-      textNode.style.transform = `translate3d(${textTranslateX.toFixed(2)}px, ${textTranslateY.toFixed(2)}px, 0px)`;
-
-      const imageRect = imageNode.getBoundingClientRect();
-      const imageCenterX = imageRect.left + imageRect.width / 2;
-      const imageCenterY = imageRect.top + imageRect.height / 2;
-      const imageTranslateX = (viewportCenterX - imageCenterX) * progress;
-      const imageTranslateY = (viewportCenterY - imageCenterY) * progress;
-      imageNode.style.transform = `translate3d(${imageTranslateX.toFixed(2)}px, ${imageTranslateY.toFixed(2)}px, 0px)`;
-    };
-
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(update);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    update();
+    imageNode.style.transform = "translate3d(0px, 0px, 0px)";
+    textNode.style.transform = "translate3d(0px, 0px, 0px)";
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
+      imageNode.style.transform = "";
+      textNode.style.transform = "";
     };
   }, []);
 
@@ -700,30 +698,34 @@ function About() {
             </div>
           </div>
           <div className="relative flex justify-center xl:justify-end">
-        <div
-          ref={stickyRef}
-          className={`hidden h-[601px] w-[534px] overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out lg:block lg:sticky lg:top-[140px] ${
-            imageVisible ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <Image
-            src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
-            alt="Logo Stile trên mặt đá"
-            fill
-            className="object-cover"
-            sizes="534px"
-          />
-        </div>
-        <div className="block h-[420px] w-full max-w-[480px] overflow-hidden rounded-lg shadow-lg lg:hidden">
-          <Image
-            src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
-            alt="Logo Stile trên mặt đá"
-            fill
-            className="object-cover"
-            sizes="480px"
-          />
-        </div>
-        </div>
+            <div className="hidden lg:block lg:sticky lg:top-[140px]">
+              <div
+                ref={stickyRef}
+                className={`relative w-[534px] aspect-[534/601] overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out ${
+                  imageVisible ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <Image
+                  src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
+                  alt="Logo Stile trên mặt đá"
+                  fill
+                  className="object-cover"
+                  sizes="534px"
+                />
+              </div>
+            </div>
+            <div className="block w-full max-w-[480px] lg:hidden">
+              <div className="relative w-full aspect-[534/601] overflow-hidden rounded-lg shadow-lg">
+                <Image
+                  src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
+                  alt="Logo Stile trên mặt đá"
+                  fill
+                  className="object-cover"
+                  sizes="480px"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -826,7 +828,7 @@ function Gallery() {
               Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
             </p>
             <div className="pt-6">
-              <PillButton label="Khám phá ngay" theme="light" />
+              <PillButton label="Khám phá ngay" theme="dark" />
             </div>
           </div>
         </div>
@@ -844,7 +846,7 @@ function Gallery() {
           <p className="font-montserrat text-[14px] leading-[24px] text-justify">
             Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
           </p>
-          <PillButton label="Khám phá ngay" theme="light" />
+          <PillButton label="Khám phá ngay" theme="dark" />
         </div>
       </div>
     </section>
@@ -1246,7 +1248,7 @@ function CatalogueCta() {
         <h2 className="font-heading text-[36px] tracking-[0.05em] uppercase">
           ĐĂNG KÝ NHẬN CATALOGUE
         </h2>
-        <PillButton label="Khám phá ngay" theme="light" />
+        <PillButton label="Khám phá ngay" theme="dark" />
       </div>
     </section>
   );
@@ -1341,18 +1343,19 @@ function Footer() {
 
 function PillButton({
   label,
-  theme = "dark",
+  theme = "light",
 }: {
   label: string;
   theme?: "dark" | "light";
 }) {
   const isLight = theme === "light";
+  const themeClass = isLight ? "btn--light" : "btn--dark";
   return (
     <div data-magnet-btn>
       <div className="cta__item">
         <button
           type="button"
-          className={`btn ${isLight ? "btn--light" : ""}`}
+          className={`btn ${themeClass}`}
         >
           <span className="btn__outline" />
           <span className="btn__hover" />
