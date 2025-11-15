@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import "../styles/cta/button.css";
@@ -10,7 +11,7 @@ const HEADER_OFFSET = 80;
 
 const navItems = [
   { label: "Sản phẩm", href: "#featured" },
-  { label: "Về STILE", href: "#about" },
+  { label: "Về STile", href: "#about" },
   { label: "Công trình & Xu hướng", href: "#projects" },
   { label: "Artile Gallery", href: "#gallery" },
   { label: "Dịch vụ", href: "#contact" },
@@ -41,6 +42,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Acero",
     image: "/SẢN PHẨM NỔI BẬT/1GEMINI_ACERO.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Acero_Interactive LightMix.jpg",
     description:
       "The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth mirror each other and collaborate in perfect synergy.",
     swatch: "#b68363",
@@ -50,6 +52,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Grano",
     image: "/SẢN PHẨM NỔI BẬT/2GEMINI_GRANO.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Grano_Interactive LightMix.jpg",
     description:
       "A tactile shade that blends warm minerals and muted neutrals, creating calm, grounding spaces with subtle surface movement.",
     swatch: "#a88b6a",
@@ -59,6 +62,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Cielo",
     image: "/SẢN PHẨM NỔI BẬT/3GEMINI_CIELO.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Ceilo_Interactive LightMix.jpg",
     description:
       "Inspired by expansive skies, Cielo layers delicate veining over a soft base, ideal for serene living environments.",
     swatch: "#9aa0a8",
@@ -68,6 +72,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Cerene",
     image: "/SẢN PHẨM NỔI BẬT/4GEMINI_CERENE.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Cenere_Interactive LightMix.jpg",
     description:
       "Cerene balances matte and gloss accents to elevate contemporary interiors with refined simplicity.",
     swatch: "#c7b4a3",
@@ -77,6 +82,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Muschio",
     image: "/SẢN PHẨM NỔI BẬT/6GEMINI_MUSCHIO.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Muschio_Interactive LightMix.jpg",
     description:
       "Earthy greens paired with organic textures bring a biophilic sensibility to large feature surfaces.",
     swatch: "#71806a",
@@ -86,6 +92,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Luce",
     image: "/SẢN PHẨM NỔI BẬT/6GEMINI_LUCE.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Luce_Interactive LightMix.jpg",
     description:
       "Luce captures luminous gradients, echoing the softly diffused daylight of refined residential settings.",
     swatch: "#d3c7be",
@@ -95,6 +102,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Flora Luce",
     image: "/SẢN PHẨM NỔI BẬT/7GEMINI_FLORA LUCE.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/FLO_Interactive LightMix.jpg",
     description:
       "Flora Luce celebrates botanical motifs layered over a satin base, creating immersive, nature-led surfaces.",
     swatch: "#8f826d",
@@ -104,6 +112,7 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Flora Pelle",
     image: "/SẢN PHẨM NỔI BẬT/8GEMINI_FLORA PELLE.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/FloraPelle_Interactive LightMix.jpg",
     description:
       "A sophisticated interplay of warm undertones and soft botanicals, tailored for hospitality statements.",
     swatch: "#b18e6d",
@@ -113,8 +122,9 @@ const featuredVariants = [
     collection: "Gemini",
     title: "Pelle",
     image: "/SẢN PHẨM NỔI BẬT/9GEMINI_PELLE.jpg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Pelle_Interactive LightMix.jpg",
     description:
-      "Pelle channels handcrafted leather hues, adding depth and character to expansive wall and floor planes.",
+      "Pelle channels handcrafted leather hues, adding depth and character to expansive wall and floor planes. The profound dialog between humans and nature translates into an interplay of glimpsesand reflections, where humans and the earth, twin faces, reflect each other and collaboratein perfect synergy. In the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.",
     swatch: "#b17f5d",
   },
 ];
@@ -140,6 +150,46 @@ const collectionSlides = [
       "Từ nguồn cảm hứng nghệ thuật Ý, Gemini Heritage mở ra những bề mặt sang trọng nhưng vẫn phóng khoáng.",
     highlightTitle: "Crafted Layers",
     highlightCopy: "Sự phối hợp giữa các lớp vật liệu tạo nên cảm giác ấm áp và tinh tế.",
+    ctaLabel: "Khám phá ngay",
+  },
+] as const;
+
+const collectionMobileSlides = [
+  {
+    id: "gemini-mobile-01",
+    image: "/BỘ SƯU TẬP/Clip path group.png",
+    heading: "BỘ SƯU TẬP",
+    title: "Gemini",
+    subtitle: "Collection",
+    description:
+      "Hòa quyện thiên nhiên và công nghệ, tạo nên bề mặt tinh tế, bền vững và đậm chất đương đại.",
+    ctaLabel: "Khám phá ngay",
+  },
+  {
+    id: "gemini-mobile-02",
+    image: "/BỘ SƯU TẬP/Clip path group2.png",
+    heading: "BỘ SƯU TẬP",
+    title: "Gemini",
+    subtitle: "Collection",
+    description: "Những mảng màu trung tính kết hợp ánh sáng tự nhiên mang đến chiều sâu thư thái cho không gian.",
+    ctaLabel: "Khám phá ngay",
+  },
+  {
+    id: "gemini-mobile-03",
+    image: "/BỘ SƯU TẬP/Clip path group3.png",
+    heading: "BỘ SƯU TẬP",
+    title: "Gemini",
+    subtitle: "Collection",
+    description: "Đường nét tinh giản và bề mặt mịn màng tạo nên phông nền hoàn hảo cho mọi phong cách nội thất.",
+    ctaLabel: "Khám phá ngay",
+  },
+  {
+    id: "gemini-mobile-04",
+    image: "/BỘ SƯU TẬP/Clip path group4.png",
+    heading: "BỘ SƯU TẬP",
+    title: "Gemini",
+    subtitle: "Collection",
+    description: "Gam màu ấm áp cùng điểm nhấn thiên nhiên đem lại nguồn cảm hứng mới cho những bộ sưu tập cao cấp.",
     ctaLabel: "Khám phá ngay",
   },
 ] as const;
@@ -593,7 +643,7 @@ function Hero() {
   return (
     <section
       id="hero"
-      className="fullpage-section relative w-full overflow-hidden text-white min-h-[640px] lg:min-h-0"
+      className="fullpage-section relative flex min-h-[100vh] w-full items-center justify-center overflow-hidden text-white lg:min-h-0"
     >
       <div className="absolute inset-0">
         {heroSlides.map((slide, index) => {
@@ -619,9 +669,10 @@ function Hero() {
           );
         })}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent lg:hidden" />
       </div>
 
-      <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center gap-[28px] px-6 text-center">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[28px] px-6 text-center">
         <h1 className="max-w-[685px] font-heading uppercase text-[46px] leading-[56px] tracking-[0.02em] lg:text-[58px] lg:leading-[73px]">
           <span className="hidden lg:inline">BỀ MẶT LẤY CẢM HỨNG TỪ THIÊN NHIÊN</span>
           <span className="block lg:hidden">ART OF SURFACE</span>
@@ -677,28 +728,28 @@ function About() {
       className="fullpage-section flex items-center"
     >
       <div className="section-inner">
-        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] items-center gap-20 px-[104px]">
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] items-center gap-20 px-[104px] max-lg:flex max-lg:flex-col max-lg:gap-10 max-lg:px-0 max-lg:pt-16">
           <div
             ref={textRef}
-            className="flex flex-col gap-6 transition-transform duration-300 ease-out will-change-transform"
+            className="flex flex-col gap-6 transition-transform duration-300 ease-out will-change-transform text-left max-lg:text-center max-lg:px-6"
           >
-            <span className="font-alt text-[20px] font-medium tracking-[0.05em]">VỀ CHÚNG TÔI</span>
-            <h2 className="font-heading text-[48px] leading-[60px] tracking-[0.02em] uppercase text-[#000000]">
+            <span className="font-alt text-[20px] font-medium tracking-[0.05em] max-lg:mt-6 max-lg:text-[14px]">VỀ CHÚNG TÔI</span>
+            <h2 className="font-heading text-[48px] leading-[60px] tracking-[0.02em] uppercase text-[#000000] max-lg:text-[42px] max-lg:leading-[52px]">
               ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
             </h2>
-            <p className="font-manrope text-[14px] leading-[25px] text-justify text-[#1a1a1a]">
+            <p className="font-manrope text-[14px] leading-[25px] text-justify text-[#1a1a1a] max-lg:text-center max-lg:text-[16px] max-lg:leading-[28px]">
               STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
               triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
               dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
               nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
               thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
             </p>
-            <div className="pt-2">
+            <div className="pt-2 flex justify-start max-lg:justify-center">
               <PillButton label="Khám phá ngay" />
             </div>
           </div>
-          <div className="relative flex justify-center xl:justify-end">
-            <div className="hidden lg:block lg:sticky lg:top-[140px]">
+          <div className="relative flex justify-center xl:justify-end w-full">
+            <div className="hidden lg:block lg:sticky lg:top-[140px] w-full flex justify-end">
               <div
                 ref={stickyRef}
                 className={`relative w-[534px] aspect-[534/601] overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out ${
@@ -714,8 +765,8 @@ function About() {
                 />
               </div>
             </div>
-            <div className="block w-full max-w-[480px] lg:hidden">
-              <div className="relative w-full aspect-[534/601] overflow-hidden rounded-lg shadow-lg">
+            <div className="block w-full max-w-none lg:hidden mt-10">
+              <div className="relative left-1/2 w-screen -translate-x-1/2 transform aspect-[534/601] overflow-hidden max-lg:rounded-none">
                 <Image
                   src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
                   alt="Logo Stile trên mặt đá"
@@ -797,26 +848,10 @@ function Gallery() {
 
   return (
     <section id="gallery" className="fullpage-section relative w-full overflow-hidden bg-[#282828] text-white">
-      <div className="section-inner">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-6 lg:flex-row lg:items-center lg:px-0">
-          <div className="relative w-full overflow-visible lg:w-[60%]">
+      <div className="section-inner py-12 lg:py-0">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-0 lg:flex-row lg:items-center lg:px-0">
           <div
-            ref={scrollRef}
-            className="gallery-scroll relative flex gap-8 overflow-x-auto pb-10"
-            style={{ width: "60vw", maxWidth: "60vw", paddingRight: "45vw" }}
-          >
-            {galleryImages.map((image) => (
-              <div
-                key={image.alt}
-                className="relative h-[520px] w-[460px] flex-shrink-0 overflow-hidden rounded-[48px] shadow-[0_28px_60px_rgba(0,0,0,0.35)]"
-              >
-                <Image src={image.src} alt={image.alt} fill className="pointer-events-none object-cover" sizes="460px" />
-              </div>
-            ))}
-          </div>
-          </div>
-          <div
-            className="relative z-20 flex w-full max-w-[520px] flex-col gap-6 transition-transform duration-500 lg:w-[40%] lg:pl-12"
+            className="relative z-20 hidden w-full max-w-[520px] flex-col gap-6 transition-transform duration-500 lg:flex lg:w-[40%] lg:pl-12"
             style={{
               opacity: Math.max(0.4, 1 - contentFade * 1.1),
               transform: `translateX(${-(contentFade * 60)}px)`,
@@ -831,22 +866,40 @@ function Gallery() {
               <PillButton label="Khám phá ngay" theme="dark" />
             </div>
           </div>
+          <div className="hidden w-full overflow-visible lg:block lg:w-[60%]">
+            <div
+              ref={scrollRef}
+              className="gallery-scroll relative flex gap-8 overflow-x-auto pb-10"
+              style={{ width: "60vw", maxWidth: "60vw", paddingRight: "45vw" }}
+            >
+              {galleryImages.map((image) => (
+                <div
+                  key={image.alt}
+                  className="relative h-[520px] w-[460px] flex-shrink-0 overflow-hidden rounded-[48px] shadow-[0_28px_60px_rgba(0,0,0,0.35)]"
+                >
+                  <Image src={image.src} alt={image.alt} fill className="pointer-events-none object-cover" sizes="460px" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex w-full flex-col gap-6 px-6 lg:hidden">
-        <div className="flex gap-4 overflow-x-auto pb-6">
+      <div className="flex w-full flex-col gap-8 px-0 pt-10 pb-6 lg:hidden">
+        <div className="space-y-4 px-6 text-center">
+          <h2 className="font-heading text-[48px] leading-[48px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
+          <p className="font-montserrat text-[14px] leading-[24px]">
+            Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
+          </p>
+          <div className="pt-2 flex justify-center">
+            <PillButton label="Khám phá ngay" theme="dark" />
+          </div>
+        </div>
+        <div className="flex w-full gap-4 overflow-x-auto pb-6 px-0">
           {galleryImages.map((image) => (
-            <div key={image.alt} className="relative h-[320px] w-[240px] flex-shrink-0 overflow-hidden rounded-[32px]">
+            <div key={image.alt} className="relative h-[320px] w-[260px] flex-shrink-0 overflow-hidden">
               <Image src={image.src} alt={image.alt} fill className="object-cover" sizes="240px" />
             </div>
           ))}
-        </div>
-        <div className="space-y-4">
-          <h2 className="font-heading text-[48px] leading-[48px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
-          <p className="font-montserrat text-[14px] leading-[24px] text-justify">
-            Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
-          </p>
-          <PillButton label="Khám phá ngay" theme="dark" />
         </div>
       </div>
     </section>
@@ -855,6 +908,7 @@ function Gallery() {
 
 function FeaturedProducts() {
   const [activeVariant, setActiveVariant] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const variant = featuredVariants[activeVariant];
 
   useEffect(() => {
@@ -864,29 +918,53 @@ function FeaturedProducts() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const imageSrc = isMobile && variant.mobileImage ? variant.mobileImage : variant.image;
+
+  const sectionStyle = isMobile ? { minHeight: 846 } : undefined;
+
   return (
-    <section id="featured" data-header-light="true" className="fullpage-section relative w-full overflow-hidden bg-[#f0f0f0] text-[#1a1a1a]">
-      <div className="absolute inset-0">
+    <section
+      id="featured"
+      data-header-light="true"
+      className="fullpage-section relative w-full min-h-[100vh] overflow-hidden bg-[#f0f0f0] text-[#1a1a1a] lg:min-h-0"
+      style={sectionStyle}
+    >
+      <div className="absolute inset-0 overflow-hidden">
         <Image
           key={variant.id}
-          src={variant.image}
+          src={imageSrc}
           alt={variant.title}
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover"
+          style={{
+            objectPosition: isMobile ? "calc(50% - 60px) center" : "center",
+            transform: isMobile ? "scale(1.6)" : undefined,
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#f4f4f4]/95 via-[#f4f4f4]/88 to-[#f4f4f4]/20" />
       </div>
 
-      <div className="relative flex h-full w-full flex-col justify-between px-8 lg:px-[6vw]">
+      <div className="relative flex h-full w-full flex-col justify-between px-8 lg:px-[6vw] lg:pt-10">
         <div className="pt-10 text-center">
-          <h2 className="font-heading text-[48px] uppercase tracking-[0.3em] text-[#151515]">
+          {/* <h2 className="font-heading text-[48px] uppercase tracking-[0.3em] text-[#151515]">
             SẢN PHẨM NỔI BẬT
-          </h2>
+          </h2> */}
         </div>
 
-        <div className="flex flex-1 flex-col justify-center gap-12 lg:flex-row lg:items-center">
-          <div key={variant.id} className="animate-text-fade max-w-[520px] space-y-6 text-left">
+        <div className={`flex flex-1 flex-col justify-end ${isMobile ? "gap-[520px]" : "gap-[120px]"} lg:flex-row lg:items-center`}>
+          <div
+            key={variant.id}
+            className="animate-text-fade max-w-[520px] space-y-6 text-left pt-[100px] lg:space-y-6"
+          >
             <div className="space-y-3">
               <span className="font-montserrat text-[15px] uppercase tracking-[0.3em] text-[#6b6b6b]">
                 {variant.collection}
@@ -895,109 +973,33 @@ function FeaturedProducts() {
                 {variant.title}
               </h3>
             </div>
-            <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a]">
+            <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a] hidden lg:block">
               {variant.description}
             </p>
-            <div className="pt-4">
+            <div className="hidden pt-2 lg:block">
               <PillButton label="Khám phá ngay" />
             </div>
           </div>
           <div className="flex-1" />
         </div>
 
-        <div className="relative mb-10 flex items-center justify-center gap-4">
-          {featuredVariants.map((item, index) => {
-            const isActive = index === activeVariant;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setActiveVariant(index)}
-                aria-label={item.title}
-                className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
-                  isActive ? "border-black" : "border-transparent hover:border-black/40"
-                }`}
-                style={{ background: item.swatch }}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Collections() {
-  const [activeSlide, setActiveSlide] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % collectionSlides.length);
-    }, 5200);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <section id="collections" className="fullpage-section relative w-full overflow-hidden bg-black text-white">
-      <div className="section-inner !p-0">
-        <div className="relative h-full min-w-[1440px]">
-          {collectionSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              index === activeSlide ? "opacity-100" : "pointer-events-none opacity-0"
-            }`}
-          >
-            <Image
-              src="/BỘ SƯU TẬP/COLLECTION-01.png"
-              alt="Collection layout"
-              fill
-              priority={index === 0}
-              className="object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-black/5" />
-
-            <div className="absolute left-[120px] top-[92px]">
-              <h2 className="font-heading text-[48px] tracking-[0.05em] uppercase">{slide.heading}</h2>
-            </div>
-
-            <div className="absolute left-[670px] top-[180px] w-[360px] text-left text-white">
-              <div className="mb-10">
-                <Image src="/BỘ SƯU TẬP/Vector.png" alt="Tile outline" width={64} height={112} className="h-auto w-[64px]" />
-              </div>
-              <div className="flex items-baseline gap-4 font-montserrat text-[32px] uppercase tracking-[0.12em]">
-                <span>{slide.title}</span>
-                <span className="text-[18px] uppercase tracking-[0.6em] text-white/75">{slide.subtitle}</span>
-              </div>
-              <p className="mt-5 font-montserrat text-[15px] leading-[26px] text-white/90">{slide.description}</p>
-              <div className="pt-7">
-                <PillButton label={slide.ctaLabel} theme="light" />
-              </div>
-            </div>
-
-            <div className="absolute left-[900px] top-[580px] w-[280px] text-center text-white">
-              <p className="font-montserrat text-[22px] uppercase tracking-[0.25em]">
-                {slide.highlightTitle}
-              </p>
-              <p className="mt-5 font-montserrat text-[13px] leading-[20px] text-white/80">
-                {slide.highlightCopy}
-              </p>
-            </div>
+        <div className="relative mb-6 flex flex-col items-center justify-end gap-6 pb-6 lg:mb-10">
+          <div className="lg:hidden">
+            <PillButton label="Khám phá ngay" />
           </div>
-          ))}
-
-          <div className="absolute bottom-[60px] left-[120px] flex gap-3">
-            {collectionSlides.map((slide, index) => {
-            const isActive = index === activeSlide;
-            return (
-              <button
-                key={slide.id}
-                type="button"
-                onClick={() => setActiveSlide(index)}
-                aria-label={`Go to ${slide.title} slide`}
-                className={`h-[16px] w-[16px] rounded-full border border-white/50 transition-colors ${
-                  isActive ? "bg-white" : "bg-transparent hover:border-white"
-                }`}
+          <div className="flex items-center justify-center gap-4">
+            {featuredVariants.map((item, index) => {
+              const isActive = index === activeVariant;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActiveVariant(index)}
+                  aria-label={item.title}
+                  className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
+                    isActive ? "border-black" : "border-transparent hover:border-black/40"
+                  }`}
+                  style={{ background: item.swatch }}
                 />
               );
             })}
@@ -1008,16 +1010,188 @@ function Collections() {
   );
 }
 
+function Collections() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [mobileCollectionIndex, setMobileCollectionIndex] = useState(0);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchDiffRef = useRef<number>(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % collectionSlides.length);
+    }, 5200);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleMobilePrev = () => {
+    setMobileCollectionIndex((prev) => (prev - 1 + collectionMobileSlides.length) % collectionMobileSlides.length);
+  };
+
+  const handleMobileNext = () => {
+    setMobileCollectionIndex((prev) => (prev + 1) % collectionMobileSlides.length);
+  };
+
+  const handleTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
+    touchStartXRef.current = event.touches[0].clientX;
+    touchDiffRef.current = 0;
+  };
+
+  const handleTouchMove = (event: ReactTouchEvent<HTMLDivElement>) => {
+    if (touchStartXRef.current === null) return;
+    const currentX = event.touches[0].clientX;
+    touchDiffRef.current = currentX - touchStartXRef.current;
+  };
+
+  const handleTouchEnd = () => {
+    const threshold = 40;
+    if (touchDiffRef.current > threshold) {
+      handleMobilePrev();
+    } else if (touchDiffRef.current < -threshold) {
+      handleMobileNext();
+    }
+    touchStartXRef.current = null;
+    touchDiffRef.current = 0;
+  };
+
+  return (
+    <section id="collections" className="fullpage-section relative w-full overflow-hidden bg-black text-white">
+      <div className="section-inner !p-0 hidden lg:block">
+        <div className="relative h-full min-w-[1440px]">
+          {collectionSlides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === activeSlide ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+            >
+              <Image
+                src="/BỘ SƯU TẬP/COLLECTION-01.png"
+                alt="Collection layout"
+                fill
+                priority={index === 0}
+                className="object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-black/5" />
+
+              <div className="absolute left-[120px] top-[92px]">
+                <h2 className="font-heading text-[48px] tracking-[0.05em] uppercase">{slide.heading}</h2>
+              </div>
+
+              <div className="absolute left-[670px] top-[180px] w-[400px] text-left text-white">
+                <div className="mb-10">
+                  <Image src="/BỘ SƯU TẬP/Vector.png" alt="Tile outline" width={64} height={112} className="h-auto w-[64px]" />
+                </div>
+                <div className="flex items-baseline gap-4 font-montserrat text-[32px] uppercase tracking-[0.12em]">
+                  <span>{slide.title}</span>
+                  <span className="text-[18px] uppercase tracking-[0.6em] text-white/75">{slide.subtitle}</span>
+                </div>
+                <p className="mt-5 font-montserrat text-[15px] leading-[26px] text-white/90">{slide.description}</p>
+                <div className="pt-7">
+                  <PillButton label={slide.ctaLabel} theme="light" />
+                </div>
+              </div>
+
+              <div className="absolute left-[900px] top-[580px] w-[280px] text-center text-white">
+                <p className="font-montserrat text-[22px] uppercase tracking-[0.25em]">
+                  {slide.highlightTitle}
+                </p>
+                <p className="mt-5 font-montserrat text-[13px] leading-[20px] text-white/80">
+                  {slide.highlightCopy}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          <div className="absolute bottom-[60px] left-[120px] flex gap-3">
+            {collectionSlides.map((slide, index) => {
+              const isActive = index === activeSlide;
+              return (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => setActiveSlide(index)}
+                  aria-label={`Go to ${slide.title} slide`}
+                  className={`h-[16px] w-[16px] rounded-full border border-white/50 transition-colors ${
+                    isActive ? "bg-white" : "bg-transparent hover:border-white"
+                  }`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="lg:hidden bg-white text-[#111111]">
+          <div
+            className="relative h-[540px] w-full overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div
+              className="flex h-full w-full transition-transform duration-700 ease-out"
+              style={{ transform: `translateX(-${mobileCollectionIndex * 100}%)` }}
+            >
+          {collectionMobileSlides.map((slide) => {
+            const safeSrc = encodeURI(slide.image);
+            return (
+              <div key={slide.id} className="relative h-full w-full flex-shrink-0">
+                <Image src={safeSrc} alt={`${slide.title} ${slide.subtitle}`} fill className="object-cover" priority={slide.id === collectionMobileSlides[0].id} />
+                  <div className="absolute inset-x-0 top-10 text-center font-heading text-[32px] uppercase tracking-[0.2em] text-white drop-shadow">
+                    {slide.heading}
+                  </div>
+              </div>
+            );
+          })}
+            </div>
+          <button
+            type="button"
+            aria-label="Xem bộ sưu tập trước"
+            onClick={handleMobilePrev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/35 px-3 py-2 text-2xl text-white backdrop-blur-sm"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            aria-label="Xem bộ sưu tập tiếp theo"
+            onClick={handleMobileNext}
+            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/35 px-3 py-2 text-2xl text-white backdrop-blur-sm"
+          >
+            ›
+          </button>
+          </div>
+          <div className="bg-[#99653F] px-6 py-8 text-white">
+            <div className="space-y-3">
+              <div className="flex items-baseline gap-3 font-montserrat text-[32px] font-semibold leading-[36px]">
+                <span>{collectionMobileSlides[mobileCollectionIndex].title}</span>
+                <span className="text-[16px] tracking-[0.2em] text-white/80">
+                  {collectionMobileSlides[mobileCollectionIndex].subtitle}
+                </span>
+              </div>
+              <p className="font-montserrat text-[14px] leading-[22px]">
+                {collectionMobileSlides[mobileCollectionIndex].description}
+              </p>
+            </div>
+            <div className="mt-6 flex justify-start">
+              <PillButton label={collectionMobileSlides[mobileCollectionIndex].ctaLabel} theme="dark" />
+            </div>
+          </div>
+        </div>
+    </section>
+  );
+}
+
 function Applications() {
   const [activeTab, setActiveTab] = useState(0);
-  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [mobileSlideIndex, setMobileSlideIndex] = useState(0);
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const mobileTouchStartRef = useRef<number | null>(null);
+  const mobileTouchDeltaRef = useRef(0);
   const [highlightStyle, setHighlightStyle] = useState({ left: 0, top: 0, width: 0, height: 0 });
 
   const activeSection = applicationSections[activeTab];
-  const originalItems = activeSection.items;
-  const loopedItems = [originalItems[originalItems.length - 1], ...originalItems, originalItems[0]];
 
   const updateHighlight = useCallback(() => {
     const activeButton = tabRefs.current[activeTab];
@@ -1037,102 +1211,49 @@ function Applications() {
   }, [updateHighlight]);
 
   useEffect(() => {
-    window.addEventListener("resize", updateHighlight);
-    return () => window.removeEventListener("resize", updateHighlight);
+    window.addEventListener('resize', updateHighlight);
+    return () => window.removeEventListener('resize', updateHighlight);
   }, [updateHighlight]);
 
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
+  const mobileSlides = useMemo(
+    () =>
+      applicationSections.flatMap((section, sectionIndex) =>
+        section.items.map((item, itemIndex) => ({
+          key: `${section.label}-${sectionIndex}-${item.title}-${itemIndex}`,
+          title: item.title,
+          image: item.image,
+        }))
+      ),
+    []
+  );
 
-    const cards = track.querySelectorAll<HTMLElement>("[data-app-card]");
-    if (!cards.length) return;
-    const cardWidth = cards[0].offsetWidth + 32;
+  const handleMobileTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
+    mobileTouchStartRef.current = event.touches[0].clientX;
+    mobileTouchDeltaRef.current = 0;
+  };
 
-    const resetToMiddle = () => {
-      track.scrollLeft = cardWidth;
-    };
+  const handleMobileTouchMove = (event: ReactTouchEvent<HTMLDivElement>) => {
+    if (mobileTouchStartRef.current === null) return;
+    const currentX = event.touches[0].clientX;
+    mobileTouchDeltaRef.current = currentX - mobileTouchStartRef.current;
+  };
 
-    resetToMiddle();
-
-    const handleScroll = () => {
-      if (track.scrollLeft <= 0) {
-        track.scrollLeft = cardWidth * originalItems.length;
-      } else if (track.scrollLeft >= cardWidth * (originalItems.length + 1)) {
-        track.scrollLeft = cardWidth;
-      }
-    };
-
-    let isDragging = false;
-    let startX = 0;
-    let scrollStart = 0;
-
-    const onMouseDown = (event: MouseEvent) => {
-      isDragging = true;
-      track.classList.add("is-dragging");
-      startX = event.pageX;
-      scrollStart = track.scrollLeft;
-    };
-
-    const onMouseMove = (event: MouseEvent) => {
-      if (!isDragging) return;
-      event.preventDefault();
-      const walk = event.pageX - startX;
-      track.scrollLeft = scrollStart - walk;
-    };
-
-    const endDrag = () => {
-      isDragging = false;
-      track.classList.remove("is-dragging");
-    };
-
-    const onTouchStart = (event: TouchEvent) => {
-      isDragging = true;
-      startX = event.touches[0].pageX;
-      scrollStart = track.scrollLeft;
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (!isDragging) return;
-      const walk = event.touches[0].pageX - startX;
-      track.scrollLeft = scrollStart - walk;
-    };
-
-    const onTouchEnd = () => {
-      isDragging = false;
-    };
-
-    track.addEventListener("scroll", handleScroll, { passive: true });
-    track.addEventListener("mousedown", onMouseDown);
-    track.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", endDrag);
-    track.addEventListener("mouseleave", endDrag);
-    track.addEventListener("touchstart", onTouchStart, { passive: true });
-    track.addEventListener("touchmove", onTouchMove, { passive: true });
-    track.addEventListener("touchend", onTouchEnd);
-
-    window.addEventListener("resize", resetToMiddle);
-
-    return () => {
-      track.removeEventListener("scroll", handleScroll);
-      track.removeEventListener("mousedown", onMouseDown);
-      track.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", endDrag);
-      track.removeEventListener("mouseleave", endDrag);
-      track.removeEventListener("touchstart", onTouchStart);
-      track.removeEventListener("touchmove", onTouchMove);
-      track.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("resize", resetToMiddle);
-    };
-  }, [activeSection, originalItems.length]);
+  const handleMobileTouchEnd = () => {
+    const threshold = 40;
+    if (mobileTouchDeltaRef.current > threshold) {
+      setMobileSlideIndex((prev) => (prev - 1 + mobileSlides.length) % mobileSlides.length);
+    } else if (mobileTouchDeltaRef.current < -threshold) {
+      setMobileSlideIndex((prev) => (prev + 1) % mobileSlides.length);
+    }
+    mobileTouchStartRef.current = null;
+    mobileTouchDeltaRef.current = 0;
+  };
 
   return (
     <section id="applications" className="fullpage-section flex w-full flex-col justify-center">
       <div className="section-inner">
-        <div className="flex w-full max-w-[1440px] flex-col px-[104px]">
-          <h2 className="mt-[72px] text-center font-heading text-[48px] tracking-[0.05em] text-[#000]">
-            ỨNG DỤNG
-          </h2>
+        <div className="hidden w-full max-w-[1440px] flex-col px-[104px] lg:flex">
+          <h2 className="mt-[72px] text-center font-heading text-[48px] tracking-[0.05em] text-[#000] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">ỨNG DỤNG</h2>
           <div className="mt-[32px] flex justify-center">
             <div ref={tabsRef} className="relative flex items-center gap-[24px]">
               <span
@@ -1155,8 +1276,8 @@ function Applications() {
                     ref={(node) => {
                       tabRefs.current[index] = node;
                     }}
-                    className={`relative z-10 flex h-[54px] items-center rounded-[28px] px-[5px] font-montserrat text-[16px] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                      active ? "text-white !text-white" : "text-[#1a1a1a] hover:text-[#000]"
+                    className={`relative z-10 mx-[10px] flex h-[54px] items-center rounded-[28px] px-[12px] font-montserrat text-[16px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                      active ? 'text-white' : 'text-[#1a1a1a] hover:text-[#000]'
                     }`}
                   >
                     {tab.label}
@@ -1165,69 +1286,126 @@ function Applications() {
               })}
             </div>
           </div>
-          <div className="mt-[48px] -mx-[104px]">
-            <div className="relative">
-              <div
-                ref={trackRef}
-                className="application-track flex cursor-grab gap-[32px] overflow-x-scroll overflow-y-hidden scroll-smooth pb-6"
-                style={{ scrollSnapType: "x mandatory" }}
-              >
-                {loopedItems.map((item, index) => (
-                  <div
-                    key={`${activeSection.label}-${item.title}-${index}`}
-                    data-app-card
-                    className="group relative flex h-[516px] w-[460px] flex-shrink-0 snap-center"
-                  >
-                    <div className="relative h-full w-full overflow-hidden transition-transform duration-500 group-hover:scale-[1.05]">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="460px"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                      <div className="absolute inset-x-0 bottom-16 flex translate-y-8 justify-center opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                        <span className="font-heading text-[18px] uppercase tracking-[0.28em] text-white">
-                          {item.title}
-                        </span>
-                      </div>
-                    </div>
+          <div className="mt-[48px]">
+            <div className="grid grid-cols-3 gap-[32px]">
+              {activeSection.items.map((item) => (
+                <div key={`${activeSection.label}-${item.title}`} className="group relative overflow-hidden">
+                  <div className="aspect-[3/4] w-full">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(min-width: 1280px) 30vw, 100vw"
+                    />
                   </div>
-                ))}
-              </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 flex items-center justify-center text-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <span className="rounded-full bg-black/70 px-6 py-2 font-heading text-[18px] uppercase tracking-[0.28em]">
+                      {item.title}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+        </div>
+      </div>
+      <div className="px-6 py-10 lg:hidden">
+        <h2 className="mb-6 text-center font-heading text-[36px] tracking-[0.05em] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">ỨNG DỤNG</h2>
+        <div
+          className="relative overflow-hidden"
+          onTouchStart={handleMobileTouchStart}
+          onTouchMove={handleMobileTouchMove}
+          onTouchEnd={handleMobileTouchEnd}
+        >
+          <div
+            className="flex w-full transition-transform duration-700 ease-out"
+            style={{ transform: `translateX(-${mobileSlideIndex * 100}%)` }}
+          >
+            {mobileSlides.map((slide) => {
+              const safeSrc = encodeURI(slide.image);
+              return (
+                <div key={slide.key} className="relative w-full flex-shrink-0" style={{ aspectRatio: '314 / 587' }}>
+                  <Image src={safeSrc} alt={slide.title} fill className="object-cover" sizes="100vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
+                  <div className="absolute inset-0 flex items-center justify-center text-center text-white">
+                    <p className="font-heading text-[26px] uppercase tracking-[0.2em]">{slide.title}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            aria-label="Ứng dụng trước"
+            onClick={() => setMobileSlideIndex((prev) => (prev - 1 + mobileSlides.length) % mobileSlides.length)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/35 px-3 py-2 text-2xl text-white backdrop-blur-sm"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            aria-label="Ứng dụng tiếp theo"
+            onClick={() => setMobileSlideIndex((prev) => (prev + 1) % mobileSlides.length)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/35 px-3 py-2 text-2xl text-white backdrop-blur-sm"
+          >
+            ›
+          </button>
         </div>
       </div>
     </section>
   );
 }
 
+
 function Projects() {
   return (
     <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center bg-white">
-      <div className="section-inner">
-        <div className="mx-auto w-full max-w-[1440px] px-[104px]">
-          <h2 className="font-heading text-[48px] tracking-[0.05em] text-[#000]">
-            CÔNG TRÌNH &amp; XU HƯỚNG
-          </h2>
-          <div className="mt-[48px] grid grid-cols-2 gap-[60px]">
-            {trendArticles.map((article) => (
+      <div className="hidden w-full lg:block">
+        <div className="section-inner">
+          <div className="mx-auto w-full max-w-[1440px] px-[104px]">
+            <h2 className="font-heading text-[48px] tracking-[0.05em] text-[#000] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">
+              CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
+            </h2>
+            <div className="mt-[48px] grid grid-cols-2 gap-[60px]">
+              {trendArticles.map((article) => (
               <div key={article.title} className="flex flex-col gap-5">
-                <div className="relative h-[320px] w-full overflow-hidden rounded-lg">
-                  <Image src={article.image} alt={article.title} fill className="object-cover" sizes="601px" />
+                  <div className="relative h-[320px] w-full overflow-hidden rounded-lg">
+                    <Image src={article.image} alt={article.title} fill className="object-cover" sizes="601px" />
+                  </div>
+                  <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
+                    {article.title}
+                  </h3>
+                  <p className="font-montserrat text-[14px] leading-[19px] text-[#111]">{article.description}</p>
                 </div>
-                <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
-                  {article.title}
-                </h3>
-                <p className="font-montserrat text-[14px] leading-[19px] text-[#111]">{article.description}</p>
-                <div>
-                  <PillButton label="Khám phá ngay" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-screen py-10 lg:hidden -ml-[calc((100vw-100%)/2)]">
+        <div className="mb-6 px-6 font-heading text-[32px] leading-tight tracking-[0.05em]">
+          <p className="text-left">CÔNG TRÌNH &amp;</p>
+          <p className="text-right">XU HƯỚNG</p>
+        </div>
+        <div className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth">
+          {trendArticles.map((article) => (
+            <div key={article.title} className="w-screen flex-shrink-0 snap-center">
+              <div className="flex flex-col">
+                <div className="relative w-screen" style={{ aspectRatio: "360 / 188" }}>
+                  <Image src={article.image} alt={article.title} fill className="object-cover" sizes="100vw" />
+                </div>
+                <div className="bg-[#f1ede4] px-6 py-6">
+                  <p className="font-heading text-[22px] uppercase tracking-[0.2em] text-[#000]">{article.title}</p>
+                  <p className="mt-3 font-montserrat text-[14px] leading-[20px] text-[#111]">{article.description}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 flex justify-center px-6">
+          <PillButton label="Xem tất cả tin" />
         </div>
       </div>
     </section>
@@ -1236,19 +1414,25 @@ function Projects() {
 
 function CatalogueCta() {
   return (
-    <section className="fullpage-section relative flex items-center justify-center overflow-hidden text-white">
+    <section className="fullpage-section relative flex min-h-screen items-center justify-center overflow-hidden text-white">
       <Image
         src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
         alt="Đăng ký nhận catalogue"
         fill
         className="object-cover"
+        sizes="100vw"
+        priority
       />
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="relative flex flex-col items-center gap-6 text-center">
-        <h2 className="font-heading text-[36px] tracking-[0.05em] uppercase">
-          ĐĂNG KÝ NHẬN CATALOGUE
+      <div className="absolute inset-0 bg-black/45" />
+      <div className="relative z-10 flex w-full max-w-[660px] flex-col items-center justify-center gap-6 px-6 text-center">
+        <h2 className="font-heading text-[26px] uppercase leading-tight tracking-[0.08em] text-white lg:text-[48px]">
+          ĐĂNG KÝ NHẬN
+          <br />
+          CATALOGUE
         </h2>
-        <PillButton label="Khám phá ngay" theme="dark" />
+        <div className="flex justify-center">
+          <PillButton label="Liên hệ ngay" theme="dark" />
+        </div>
       </div>
     </section>
   );
@@ -1258,7 +1442,7 @@ function Footer() {
   return (
     <footer id="contact" data-header-light="true" className="fullpage-section mx-auto bg-white text-[#000]">
       <div className="section-inner">
-        <div className="w-full max-w-[1440px] px-[104px]">
+        <div className="hidden w-full max-w-[1440px] px-[104px] lg:block">
           <div className="flex flex-col gap-[48px] border-b border-[#d0d0d0] pb-[48px]">
             <div className="flex items-start justify-between gap-[32px]">
               <div className="flex flex-col gap-6">
@@ -1303,7 +1487,7 @@ function Footer() {
               </div>
             </div>
             <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 {footerSocials.map((item) => (
                   <Image
                     key={item.alt}
@@ -1334,6 +1518,87 @@ function Footer() {
               className="h-auto w-[160px]"
             />
             <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
+          </div>
+        </div>
+        <div className="w-full px-6 py-10 lg:hidden">
+          <div className="flex flex-col gap-6 border-b border-[#d0d0d0]/70 pb-8">
+            <Image
+              src="/LOGO/STILE Logo HEADER-12.svg"
+              alt="Stile"
+              width={120}
+              height={60}
+              className="h-auto w-[120px]"
+            />
+            <div>
+              <h3 className="font-heading text-[18px] uppercase tracking-[0.08em]">CÔNG TY TNHH STILE</h3>
+              <div className="mt-4 space-y-3 font-montserrat text-[14px] leading-6">
+                <p>098 165 0042</p>
+                <p>infor@stile.com.vn</p>
+                <p>155 - 157 Nguyễn Cơ Thạch, P. An Khánh, TP. HCM</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {footerSocials.map((item) => (
+                <Image key={item.alt} src={item.src} alt={item.alt} width={32} height={32} className="h-8 w-8" />
+              ))}
+            </div>
+            <form className="space-y-3 font-manrope text-[13px]">
+              <input
+                type="text"
+                placeholder="Họ và Tên"
+                className="h-11 w-full rounded border border-[#b3b3b3] px-4 text-[#222] placeholder:text-[#a4a4a4]"
+              />
+              <input
+                type="text"
+                placeholder="Số Điện Thoại"
+                className="h-11 w-full rounded border border-[#b3b3b3] px-4 text-[#222] placeholder:text-[#a4a4a4]"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="h-11 w-full rounded border border-[#b3b3b3] px-4 text-[#222] placeholder:text-[#a4a4a4]"
+              />
+              <textarea
+                rows={4}
+                placeholder="Nội dung tin nhắn.."
+                className="w-full rounded border border-[#b3b3b3] px-4 py-3 text-[#222] placeholder:text-[#a4a4a4]"
+              />
+              <button
+                type="submit"
+                className="h-11 w-full rounded bg-[#242424] text-center font-heading text-[15px] uppercase tracking-[0.1em] text-white"
+              >
+                Gửi
+              </button>
+            </form>
+            <div className="grid grid-cols-2 gap-4 font-montserrat text-[14px] leading-6">
+              {footerLinks.map((link) => (
+                <Link key={link} href="#" className="transition hover:text-[#555]">
+                  {link}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-4 pt-8 font-manrope text-[12px]">
+            <div className="flex justify-center">
+              <Image
+                src="/FOOTER/da-thong-bao.png"
+                alt="Đã thông báo bộ công thương"
+                width={140}
+                height={42}
+                className="h-auto w-[140px]"
+              />
+            </div>
+            <div className="flex flex-col gap-2 text-center">
+              <div className="flex justify-center gap-6 text-[#111]">
+                <Link href="#" className="transition hover:text-[#555]">
+                  Chính sách bảo mật
+                </Link>
+                <Link href="#" className="transition hover:text-[#555]">
+                  Điều khoản sử dụng
+                </Link>
+              </div>
+              <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
+            </div>
           </div>
         </div>
       </div>
