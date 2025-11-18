@@ -519,6 +519,7 @@ function Header() {
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [onLightSection, setOnLightSection] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -690,10 +691,11 @@ function Header() {
             VN / EN
           </button>
         </div>
-        <div className="flex items-center gap-3 lg:hidden">
+        <div className="relative lg:hidden">
           <button
             type="button"
             aria-label="Mở menu"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`flex h-11 w-11 items-center justify-center rounded-full border transition ${
               onLightSection
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
@@ -701,11 +703,57 @@ function Header() {
             }`}
           >
             <span className="flex flex-col items-center justify-center gap-[6px]">
-              <span className="block h-[2px] w-5 bg-current" />
-              <span className="block h-[2px] w-5 bg-current" />
-              <span className="block h-[2px] w-5 bg-current" />
+              <span className={`block h-[2px] w-5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-[8px]' : ''}`} />
+              <span className={`block h-[2px] w-5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block h-[2px] w-5 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-[8px]' : ''}`} />
             </span>
           </button>
+          {isMobileMenuOpen && (
+            <>
+              <div 
+                className="fixed inset-0 bg-black/50 z-40"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <div
+                className={`fixed right-0 top-0 bottom-0 w-[280px] shadow-lg transition-transform duration-300 ease-in-out ${
+                  isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                } ${
+                  onLightSection 
+                    ? 'bg-white' 
+                    : 'bg-[#111111]'
+                }`}
+                style={{ zIndex: 1000 }}
+              >
+                <nav className="flex flex-col py-4 h-full">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`px-6 py-3 transition text-[15px] font-normal tracking-[0.06em] ${
+                        onLightSection
+                          ? 'text-[#111111] hover:bg-gray-100'
+                          : 'text-white hover:bg-gray-800'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <Link
+                    href="#contact"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`px-6 py-3 transition text-[15px] font-normal tracking-[0.06em] ${
+                      onLightSection
+                        ? 'text-[#111111] hover:bg-gray-100'
+                        : 'text-white hover:bg-gray-800'
+                    }`}
+                  >
+                    Liên hệ
+                  </Link>
+                </nav>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>
@@ -1495,44 +1543,35 @@ function Applications() {
       <div className="px-6 py-10 lg:hidden">
         <h2 className="mb-6 text-center font-heading text-[36px] tracking-[0.05em] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">ỨNG DỤNG</h2>
         <div
-          className="relative overflow-hidden"
+          className="relative overflow-x-auto scroll-smooth snap-x snap-mandatory"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           onTouchStart={handleMobileTouchStart}
           onTouchMove={handleMobileTouchMove}
           onTouchEnd={handleMobileTouchEnd}
         >
-          <div
-            className="flex w-full transition-transform duration-700 ease-out"
-            style={{ transform: `translateX(-${mobileSlideIndex * 100}%)` }}
-          >
-            {mobileSlides.map((slide) => {
+          <div className="flex gap-4">
+            {mobileSlides.map((slide, index) => {
               const safeSrc = encodeURI(slide.image);
               return (
-                <div key={slide.key} className="relative w-full flex-shrink-0" style={{ aspectRatio: '314 / 587' }}>
-                  <Image src={safeSrc} alt={slide.title} fill className="object-cover" sizes="100vw" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
-                  <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-                    <p className="font-heading text-[26px] uppercase tracking-[0.2em]">{slide.title}</p>
+                <div 
+                  key={slide.key} 
+                  className="relative flex-shrink-0 snap-center" 
+                  style={{ 
+                    width: 'calc(100vw - 48px - 16px)',
+                    aspectRatio: '314 / 587'
+                  }}
+                >
+                  <div className="relative w-full" style={{ aspectRatio: '314 / 587' }}>
+                    <Image src={safeSrc} alt={slide.title} fill className="object-cover" sizes="100vw" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
+                    <div className="absolute inset-0 flex items-center justify-center text-center text-white">
+                      <p className="font-heading text-[26px] uppercase tracking-[0.2em]">{slide.title}</p>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
-          <button
-            type="button"
-            aria-label="Ứng dụng trước"
-            onClick={() => setMobileSlideIndex((prev) => (prev - 1 + mobileSlides.length) % mobileSlides.length)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/35 px-3 py-2 text-2xl text-white backdrop-blur-sm"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            aria-label="Ứng dụng tiếp theo"
-            onClick={() => setMobileSlideIndex((prev) => (prev + 1) % mobileSlides.length)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/35 px-3 py-2 text-2xl text-white backdrop-blur-sm"
-          >
-            ›
-          </button>
         </div>
       </div>
     </section>
@@ -1546,9 +1585,14 @@ function Projects() {
       <div className="hidden w-full lg:block">
         <div className="section-inner">
           <div className="mx-auto w-full max-w-[1440px] px-[82px]">
-            <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-[76px]">
-              CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
-            </h2>
+            <div className="flex items-start justify-between mb-[76px]">
+              <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000]">
+                CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
+              </h2>
+              <div className="pt-2">
+                <PillButton label="Xem tất cả" />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-[60px]">
               {trendArticles.map((article) => (
               <div key={article.title} className="flex flex-col gap-5">
@@ -1569,27 +1613,54 @@ function Projects() {
         </div>
       </div>
       <div className="w-screen py-10 lg:hidden -ml-[calc((100vw-100%)/2)]">
-        <div className="mb-6 px-6 font-heading text-[32px] leading-tight tracking-[0.05em]">
-          <p className="text-left">CÔNG TRÌNH &amp;</p>
-          <p className="text-right">XU HƯỚNG</p>
+        <div className="mb-6 px-6">
+          <h2 className="font-heading text-[30px] leading-[34px] tracking-[1.5px] text-black">
+            <span className="block text-left">CÔNG TRÌNH &</span>
+            <span className="block text-right">XU HƯỚNG</span>
+          </h2>
         </div>
-        <div className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth">
-          {trendArticles.map((article) => (
-            <div key={article.title} className="w-screen flex-shrink-0 snap-center">
-              <div className="flex flex-col">
-                <div className="relative w-screen" style={{ aspectRatio: "360 / 188" }}>
-                  <Image src={article.image} alt={article.title} fill className="object-cover" sizes="100vw" />
+        <div className="relative" style={{ height: '434px' }}>
+          <div className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth" style={{ height: '434px' }}>
+            {trendArticles.map((article, index) => (
+              <div key={article.title} className="relative w-screen flex-shrink-0 snap-center" style={{ height: '434px' }}>
+                <div className="absolute bg-[#d9d9d9] inset-0" />
+                <div className="absolute left-0 top-0 h-[248px] w-full px-6">
+                  <div className="relative h-full w-full overflow-hidden rounded-[7px]">
+                    <Image 
+                      src={article.image} 
+                      alt={article.title} 
+                      fill 
+                      className="object-cover" 
+                      sizes="100vw"
+                    />
+                  </div>
                 </div>
-                <div className="bg-[#f1ede4] px-6 py-6">
-                  <p className="font-heading text-[22px] uppercase tracking-[0.2em] text-[#000]">{article.title}</p>
-                  <p className="mt-3 font-montserrat text-[14px] leading-[20px] text-[#111]">{article.description}</p>
+                <div className="absolute left-[15px] top-[275px] w-[calc(100%-30px)] max-w-[328px]">
+                  <h3 className="font-montserrat font-medium text-[25px] leading-[24px] text-black">
+                    {article.title.includes('&') ? (
+                      <>
+                        <p className="mb-0">{article.title.split('&')[0].trim()}</p>
+                        <p>& {article.title.split('&')[1].trim()}</p>
+                      </>
+                    ) : article.title.includes('TRONG') ? (
+                      <>
+                        <p className="mb-0">{article.title.split('TRONG')[0].trim()}</p>
+                        <p>{article.title.split('TRONG')[1].trim()}</p>
+                      </>
+                    ) : (
+                      article.title
+                    )}
+                  </h3>
                 </div>
+                <p className="absolute left-[15px] top-[340px] w-[calc(100%-30px)] max-w-[328px] font-montserrat font-normal text-[14px] leading-[19px] text-black">
+                  {article.description}
+                </p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         <div className="mt-8 flex justify-center px-6">
-          <PillButton label="Xem tất cả tin" />
+          <PillButton label="Xem tất cả" />
         </div>
       </div>
     </section>
