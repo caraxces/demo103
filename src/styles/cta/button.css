@@ -25,7 +25,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 60px;
+  border-radius: 360px;
 }
 
 [data-magnet-btn] .cta__item {
@@ -34,7 +34,7 @@ button {
   align-items: center;
   justify-content: left;
   height: 100%;
-  border-radius: 60px;
+  border-radius: 360px;
   overflow: hidden;
   overflow-clip-margin: 1px;
 }
@@ -50,17 +50,18 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 220px;
-  padding: 14px 48px;
-  border-radius: 60px;
+  min-width: 130px;
+  height: 30px;
+  padding: 0 24px;
+  border-radius: 360px;
   background: transparent;
   color: var(--btn-text);
   font-family: var(--font-manrope, "Manrope", sans-serif);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 400;
   letter-spacing: 0.05em;
   line-height: 1;
-  transition: color 0.4s ease, box-shadow 0.45s ease;
+  transition: color 0.8s ease, box-shadow 0.9s ease;
   overflow: hidden;
 }
 
@@ -71,7 +72,7 @@ button {
   border-radius: inherit;
   background: var(--btn-bg);
   z-index: 0;
-  transition: background 0.45s ease;
+  transition: background 0.9s ease;
 }
 
 .btn.btn--light {
@@ -95,20 +96,24 @@ button {
   inset: 0;
   border-radius: inherit;
   border: 1px solid var(--btn-border);
-  transition: border-color 0.45s ease;
+  transition: border-color 0.9s ease;
   pointer-events: none;
   z-index: 2;
 }
 
 .btn__hover {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
+  left: 50%;
+  bottom: -26px;
+  width: 12px;
+  height: 12px;
+  border-radius: 100%;
   background: var(--btn-hover-fill);
-  transform-origin: center bottom;
-  transform: scaleY(0);
-  transition: transform 0.75s var(--cta-ease);
+  transform: translateX(-50%) scale(0);
+  transform-origin: center center;
+  transition: transform 1s var(--cta-ease), width 1s var(--cta-ease), height 1s var(--cta-ease), left 1s var(--cta-ease), bottom 1s var(--cta-ease);
   z-index: 1;
+  aspect-ratio: 1;
 }
 
 .btn__text {
@@ -116,7 +121,7 @@ button {
   z-index: 3;
   color: var(--btn-text);
   white-space: nowrap;
-  transition: color 0.6s ease;
+  transition: color 1.2s ease;
 }
 
 .btn:hover {
@@ -125,12 +130,18 @@ button {
 }
 
 .btn:hover::before {
-  transition: background 0.6s ease;
+  transition: background 1.2s ease;
   background: var(--btn-hover-fill);
 }
 
 .btn:hover .btn__hover {
-  transform: scaleY(1);
+  left: 50%;
+  bottom: 50%;
+  width: 200%;
+  height: 200%;
+  border-radius: 100%;
+  transform: translate(-50%, 50%) scale(1);
+  aspect-ratio: 1;
 }
 
 .btn:hover .btn__outline {

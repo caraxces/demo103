@@ -201,14 +201,22 @@ const applicationSections = [
       {
         title: "ỐP TƯỜNG",
         image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        isMain: true,
       },
       {
         title: "LÁT SÀN",
         image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        isMain: false,
       },
       {
         title: "ĐỒ NỘI THẤT",
         image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        isMain: false,
+      },
+      {
+        title: "MẶT TIỀN KIẾN TRÚC",
+        image: "/ỨNG DỤNG/4 - Ảnh Mặt Tiền Kiến Trúc.jpeg",
+        isMain: false,
       },
     ],
   },
@@ -218,14 +226,22 @@ const applicationSections = [
       {
         title: "LÁT SÀN",
         image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        isMain: true,
       },
       {
         title: "ỐP TƯỜNG",
         image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        isMain: false,
+      },
+      {
+        title: "ĐỒ NỘI THẤT",
+        image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        isMain: false,
       },
       {
         title: "MẶT TIỀN KIẾN TRÚC",
         image: "/ỨNG DỤNG/4 - Ảnh Mặt Tiền Kiến Trúc.jpeg",
+        isMain: false,
       },
     ],
   },
@@ -235,14 +251,22 @@ const applicationSections = [
       {
         title: "ĐỒ NỘI THẤT",
         image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        isMain: true,
       },
       {
         title: "ỐP TƯỜNG",
         image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        isMain: false,
+      },
+      {
+        title: "LÁT SÀN",
+        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        isMain: false,
       },
       {
         title: "MẶT TIỀN KIẾN TRÚC",
         image: "/ỨNG DỤNG/4 - Ảnh Mặt Tiền Kiến Trúc.jpeg",
+        isMain: false,
       },
     ],
   },
@@ -252,14 +276,22 @@ const applicationSections = [
       {
         title: "MẶT TIỀN KIẾN TRÚC",
         image: "/ỨNG DỤNG/4 - Ảnh Mặt Tiền Kiến Trúc.jpeg",
-      },
-      {
-        title: "LÁT SÀN",
-        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        isMain: true,
       },
       {
         title: "ỐP TƯỜNG",
         image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        isMain: false,
+      },
+      {
+        title: "LÁT SÀN",
+        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        isMain: false,
+      },
+      {
+        title: "ĐỒ NỘI THẤT",
+        image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        isMain: false,
       },
     ],
   },
@@ -486,6 +518,8 @@ function Header() {
   const [pastHero, setPastHero] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [onLightSection, setOnLightSection] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const heroEl = document.getElementById("hero");
@@ -504,6 +538,49 @@ function Header() {
 
     return () => {
       observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+          const scrollY = container ? container.scrollTop : window.scrollY || window.pageYOffset;
+          
+          // Nếu scroll xuống và đã scroll quá một khoảng nhỏ
+          if (scrollY > lastScrollY.current && scrollY > 100) {
+            setIsHeaderVisible(false);
+          } 
+          // Nếu scroll lên
+          else if (scrollY < lastScrollY.current) {
+            setIsHeaderVisible(true);
+          }
+          
+          // Nếu ở đầu trang, luôn hiển thị header
+          if (scrollY <= 0) {
+            setIsHeaderVisible(true);
+          }
+          
+          lastScrollY.current = scrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+    const target = container || window;
+    
+    // Set initial scroll position
+    lastScrollY.current = container ? container.scrollTop : window.scrollY || window.pageYOffset;
+    
+    target.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      target.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -547,10 +624,15 @@ function Header() {
     <header
       onMouseEnter={() => setIsHeaderHovered(true)}
       onMouseLeave={() => setIsHeaderHovered(false)}
-      className={`fixed left-0 right-0 top-0 z-50 bg-transparent transition-[color,height] duration-500 ${
+      className={`fixed left-0 right-0 top-0 z-50 bg-transparent transition-all duration-500 ease-in-out ${
         onLightSection ? "text-[#111111]" : "text-white"
       }`}
-      style={{ height: `${headerHeight}px` }}
+      style={{ 
+        height: `${headerHeight}px`,
+        transform: isHeaderVisible ? 'translateY(0)' : 'translateY(-100%)',
+        opacity: isHeaderVisible ? 1 : 0,
+        pointerEvents: isHeaderVisible ? 'auto' : 'none',
+      }}
     >
       <div className="mx-auto flex h-full w-full items-center justify-between px-6 lg:px-[57px]">
         <Link href="#hero" className="flex items-center">
@@ -673,14 +755,20 @@ function Hero() {
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[28px] px-6 text-center">
-        <h1 className="max-w-[685px] font-heading uppercase text-[46px] leading-[56px] tracking-[0.02em] lg:text-[58px] lg:leading-[73px]">
-          <span className="hidden lg:inline">BỀ MẶT LẤY CẢM HỨNG TỪ THIÊN NHIÊN</span>
-          <span className="block lg:hidden">ART OF SURFACE</span>
+        <h1 className="max-w-[685px] font-heading uppercase text-[46px] leading-[56px] tracking-[0.02em] lg:text-[58px] lg:leading-[73px] lg:tracking-[1.16px]">
+          <span className="hidden lg:inline whitespace-pre">
+            <span className="block">BỀ MẶT LẤY CẢM HỨNG</span>
+            <span className="block">TỪ THIÊN NHIÊN</span>
+          </span>
+          <span className="block lg:hidden whitespace-pre">
+            <span className="block">BỀ MẶT LẤY CẢM HỨNG</span>
+            <span className="block">TỪ THIÊN NHIÊN</span>
+          </span>
         </h1>
-        <p className="max-w-[593px] font-alt text-[18px] font-normal leading-6">
+        <p className="max-w-[593px] font-alt text-[18px] font-normal leading-6 lg:leading-[24px]">
           <span className="hidden lg:inline">Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.</span>
-          <span className="block lg:hidden text-[18px] leading-[28px]">
-            Nơi Vật Liệu Kể Câu Chuyện Của Không Gian
+          <span className="block lg:hidden text-[18px] leading-[24px]">
+            Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.
           </span>
         </p>
         <PillButton theme="dark" label="Khám phá ngay" />
@@ -1190,6 +1278,10 @@ function Applications() {
   const mobileTouchStartRef = useRef<number | null>(null);
   const mobileTouchDeltaRef = useRef(0);
   const [highlightStyle, setHighlightStyle] = useState({ left: 0, top: 0, width: 0, height: 0 });
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHoveringImage, setIsHoveringImage] = useState(false);
+  const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
 
   const activeSection = applicationSections[activeTab];
 
@@ -1199,9 +1291,9 @@ function Applications() {
     if (activeButton && container) {
       setHighlightStyle({
         left: activeButton.offsetLeft,
-        top: activeButton.offsetTop,
+        top: 0,
         width: activeButton.offsetWidth,
-        height: activeButton.offsetHeight,
+        height: 53,
       });
     }
   }, [activeTab]);
@@ -1214,6 +1306,26 @@ function Applications() {
     window.addEventListener('resize', updateHighlight);
     return () => window.removeEventListener('resize', updateHighlight);
   }, [updateHighlight]);
+
+  useEffect(() => {
+    // Reset hover state when tab changes
+    setHoveredImageIndex(null);
+  }, [activeTab]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${e.clientX}px`;
+        cursorRef.current.style.top = `${e.clientY}px`;
+      }
+    };
+
+    if (typeof window !== 'undefined' && window.innerWidth >= 769) {
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, []);
 
   const mobileSlides = useMemo(
     () =>
@@ -1250,19 +1362,24 @@ function Applications() {
   };
 
   return (
-    <section id="applications" className="fullpage-section flex w-full flex-col justify-center">
-      <div className="section-inner">
-        <div className="hidden w-full max-w-[1440px] flex-col px-[104px] lg:flex">
-          <h2 className="mt-[72px] text-center font-heading text-[48px] tracking-[0.05em] text-[#000] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">ỨNG DỤNG</h2>
-          <div className="mt-[32px] flex justify-center">
-            <div ref={tabsRef} className="relative flex items-center gap-[24px]">
+    <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible">
+      <div className="section-inner overflow-visible">
+        <div className="hidden w-full max-w-[1440px] flex-col px-[104px] lg:flex overflow-visible">
+          <div className="relative mb-[38px]">
+            <h2 className="text-center font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-[68px]">
+              ỨNG DỤNG
+            </h2>
+            <div className="absolute left-0 right-0 top-[68px] h-[0.5px] bg-black" />
+          </div>
+          <div className="mb-[38px] flex justify-center">
+            <div ref={tabsRef} className="relative inline-flex h-[53px] items-center gap-[32px]">
               <span
                 className="pointer-events-none absolute rounded-[11px] bg-[#282828] transition-all duration-300"
                 style={{
                   left: highlightStyle.left,
-                  top: highlightStyle.top,
+                  top: 0,
                   width: highlightStyle.width,
-                  height: highlightStyle.height,
+                  height: '53px',
                   opacity: highlightStyle.width ? 1 : 0,
                 }}
               />
@@ -1276,9 +1393,14 @@ function Applications() {
                     ref={(node) => {
                       tabRefs.current[index] = node;
                     }}
-                    className={`relative z-10 mx-[10px] flex h-[54px] items-center rounded-[28px] px-[12px] font-montserrat text-[16px] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                      active ? 'text-white' : 'text-[#1a1a1a] hover:text-[#000]'
+                    className={`relative z-10 flex h-[48px] items-center justify-center font-montserrat text-[20px] font-normal uppercase tracking-[1px] transition-colors duration-300 whitespace-nowrap ${
+                      active ? 'text-white' : 'text-[#000]'
                     }`}
+                    style={{
+                      marginTop: '3px',
+                      padding: '10px 20px',
+                      color: active ? '#ffffff' : '#000000',
+                    }}
                   >
                     {tab.label}
                   </button>
@@ -1286,28 +1408,87 @@ function Applications() {
               })}
             </div>
           </div>
-          <div className="mt-[48px]">
-            <div className="grid grid-cols-3 gap-[32px]">
-              {activeSection.items.map((item) => (
-                <div key={`${activeSection.label}-${item.title}`} className="group relative overflow-hidden">
-                  <div className="aspect-[3/4] w-full">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(min-width: 1280px) 30vw, 100vw"
-                    />
+          <div className="px-[15px] -mx-[104px] overflow-visible">
+            <div className="relative" style={{ height: hoveredImageIndex !== null ? '600px' : '514px', transition: 'height 0.5s ease-in-out' }}>
+              {(() => {
+                const mainItem = activeSection.items.find(i => i.isMain);
+                const mainIndex = mainItem ? activeSection.items.findIndex(i => i.isMain) : 0;
+                const otherItems = activeSection.items.filter(item => !item.isMain);
+                
+                // Chỉ lấy 3 items: 1 item trước main, main item, 1 item sau main
+                const prevIndex = (mainIndex - 1 + activeSection.items.length) % activeSection.items.length;
+                const nextIndex = (mainIndex + 1) % activeSection.items.length;
+                
+                const displayItems = [
+                  activeSection.items[prevIndex],
+                  activeSection.items[mainIndex],
+                  activeSection.items[nextIndex],
+                ];
+                
+                return (
+                  <div 
+                    className="flex transition-all duration-500 ease-in-out"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      gap: hoveredImageIndex !== null ? '30px' : '15px',
+                    }}
+                  >
+                    {displayItems.map((item, index) => {
+                      const isHovered = hoveredImageIndex === index;
+                      return (
+                        <div 
+                          key={`${activeSection.label}-${item.title}-${index}`} 
+                          className="group relative flex-1 overflow-visible cursor-none transition-all duration-500 ease-in-out"
+                          style={{
+                            height: isHovered ? '600px' : '514px',
+                            transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                            zIndex: isHovered ? 10 : 1,
+                          }}
+                          onMouseEnter={() => {
+                            setIsHoveringImage(true);
+                            setHoveredImageIndex(index);
+                          }}
+                          onMouseLeave={() => {
+                            setIsHoveringImage(false);
+                            setHoveredImageIndex(null);
+                          }}
+                        >
+                          <Link href={`#${item.title.toLowerCase().replace(/\s+/g, '-')}`} className="block h-full w-full">
+                            <div className="absolute inset-0 overflow-visible">
+                              <Image
+                                src={item.image}
+                                alt={item.title}
+                                fill
+                                className="object-cover object-center transition-transform duration-500"
+                                sizes="(min-width: 1440px) calc((100vw - 208px - 30px) / 3), 458px"
+                              />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                              <p className="font-montserrat text-[20px] font-normal text-white text-center tracking-[1px] whitespace-pre">
+                                {item.title}
+                              </p>
+                            </div>
+                          </Link>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <div className="absolute inset-0 flex items-center justify-center text-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <span className="rounded-full bg-black/70 px-6 py-2 font-heading text-[18px] uppercase tracking-[0.28em]">
-                      {item.title}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })()}
             </div>
+            {typeof window !== 'undefined' && window.innerWidth >= 769 && (
+              <div
+                ref={cursorRef}
+                className={`custom-cursor ${isHoveringImage ? 'is-hovering' : ''}`}
+                style={{
+                  display: isHoveringImage ? 'flex' : 'none',
+                  left: `${mousePosition.x}px`,
+                  top: `${mousePosition.y}px`,
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -1364,20 +1545,23 @@ function Projects() {
     <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center bg-white">
       <div className="hidden w-full lg:block">
         <div className="section-inner">
-          <div className="mx-auto w-full max-w-[1440px] px-[104px]">
-            <h2 className="font-heading text-[48px] tracking-[0.05em] text-[#000] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">
+          <div className="mx-auto w-full max-w-[1440px] px-[82px]">
+            <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-[76px]">
               CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
             </h2>
-            <div className="mt-[48px] grid grid-cols-2 gap-[60px]">
+            <div className="grid grid-cols-2 gap-[60px]">
               {trendArticles.map((article) => (
               <div key={article.title} className="flex flex-col gap-5">
-                  <div className="relative h-[320px] w-full overflow-hidden rounded-lg">
+                  <div className="relative h-[355px] w-full overflow-hidden rounded-[7px]">
                     <Image src={article.image} alt={article.title} fill className="object-cover" sizes="601px" />
                   </div>
                   <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
                     {article.title}
                   </h3>
-                  <p className="font-montserrat text-[14px] leading-[19px] text-[#111]">{article.description}</p>
+                  <p className="font-montserrat text-[14px] font-normal leading-[19px] text-[#000]">{article.description}</p>
+                  <div className="pt-2">
+                    <PillButton label="Khám phá ngay" />
+                  </div>
                 </div>
               ))}
             </div>
