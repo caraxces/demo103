@@ -1065,14 +1065,12 @@ function FeaturedProducts() {
 
   const imageSrc = isMobile && variant.mobileImage ? variant.mobileImage : variant.image;
 
-  const sectionStyle = isMobile ? { minHeight: 846 } : undefined;
-
   return (
     <section
       id="featured"
       data-header-light="true"
-      className="fullpage-section relative w-full min-h-[100vh] overflow-hidden bg-[#f0f0f0] text-[#1a1a1a] lg:min-h-0"
-      style={sectionStyle}
+      className="fullpage-section relative w-full overflow-hidden bg-[#f0f0f0] text-[#1a1a1a] lg:min-h-0"
+      style={isMobile ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}
     >
       <div className="absolute inset-0 overflow-hidden">
         <Image
@@ -1089,58 +1087,97 @@ function FeaturedProducts() {
         />
       </div>
 
-      <div className="relative flex h-full w-full flex-col justify-between px-8 lg:px-[6vw] lg:pt-10">
-        <div className="pt-10 text-center">
+      <div 
+        className="relative flex w-full flex-col px-8 lg:justify-between lg:px-[6vw] lg:pt-10"
+        style={isMobile ? { height: '100vh' } : { height: '100%' }}
+      >
+        <div className="pt-10 text-center hidden lg:block">
           {/* <h2 className="font-heading text-[48px] uppercase tracking-[0.3em] text-[#151515]">
             SẢN PHẨM NỔI BẬT
           </h2> */}
         </div>
 
-        <div className={`flex flex-1 flex-col justify-end ${isMobile ? "gap-[520px]" : "gap-[120px]"} lg:flex-row lg:items-center`}>
-          <div
-            key={variant.id}
-            className="animate-text-fade max-w-[520px] space-y-6 text-left pt-[100px] lg:space-y-6"
-          >
-            <div className="space-y-3">
-              <span className="font-montserrat text-[15px] uppercase tracking-[0.3em] text-[#6b6b6b]">
-                {variant.collection}
-              </span>
-              <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
-                {variant.title}
-              </h3>
+        {isMobile ? (
+          <>
+            <div className="flex flex-1 items-center justify-center">
+              <div
+                key={variant.id}
+                className="animate-text-fade max-w-[520px] w-full space-y-3 text-left"
+              >
+                <span className="font-montserrat text-[15px] uppercase tracking-[0.3em] text-[#6b6b6b]">
+                  {variant.collection}
+                </span>
+                <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
+                  {variant.title}
+                </h3>
+              </div>
             </div>
-            <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a] hidden lg:block">
-              {variant.description}
-            </p>
-            <div className="hidden pt-2 lg:block">
+            <div className="absolute bottom-0 left-0 right-0 mb-6 flex flex-col items-center gap-6 pb-6 px-8">
               <PillButton label="Khám phá ngay" />
+              <div className="flex items-center justify-center gap-4">
+                {featuredVariants.map((item, index) => {
+                  const isActive = index === activeVariant;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setActiveVariant(index)}
+                      aria-label={item.title}
+                      className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
+                        isActive ? "border-black" : "border-transparent hover:border-black/40"
+                      }`}
+                      style={{ background: item.swatch }}
+                    />
+                  );
+                })}
+              </div>
             </div>
-          </div>
-          <div className="flex-1" />
-        </div>
-
-        <div className="relative mb-6 flex flex-col items-center justify-end gap-6 pb-6 lg:mb-10">
-          <div className="lg:hidden">
-            <PillButton label="Khám phá ngay" />
-          </div>
-          <div className="flex items-center justify-center gap-4">
-            {featuredVariants.map((item, index) => {
-              const isActive = index === activeVariant;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActiveVariant(index)}
-                  aria-label={item.title}
-                  className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
-                    isActive ? "border-black" : "border-transparent hover:border-black/40"
-                  }`}
-                  style={{ background: item.swatch }}
-                />
-              );
-            })}
-          </div>
-        </div>
+          </>
+        ) : (
+          <>
+            <div className={`flex flex-1 flex-col justify-end gap-[120px] lg:flex-row lg:items-center`}>
+              <div
+                key={variant.id}
+                className="animate-text-fade max-w-[520px] space-y-6 text-left lg:pt-0 lg:space-y-6"
+              >
+                <div className="space-y-3">
+                  <span className="font-montserrat text-[15px] uppercase tracking-[0.3em] text-[#6b6b6b]">
+                    {variant.collection}
+                  </span>
+                  <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
+                    {variant.title}
+                  </h3>
+                </div>
+                <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a] hidden lg:block">
+                  {variant.description}
+                </p>
+                <div className="hidden pt-2 lg:block">
+                  <PillButton label="Khám phá ngay" />
+                </div>
+              </div>
+              <div className="flex-1" />
+            </div>
+            <div className="relative mb-6 flex flex-col items-center justify-end gap-6 pb-6 lg:mb-10">
+              <div className="flex items-center justify-center gap-4">
+                {featuredVariants.map((item, index) => {
+                  const isActive = index === activeVariant;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setActiveVariant(index)}
+                      aria-label={item.title}
+                      className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
+                        isActive ? "border-black" : "border-transparent hover:border-black/40"
+                      }`}
+                      style={{ background: item.swatch }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
