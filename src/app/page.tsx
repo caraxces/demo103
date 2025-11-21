@@ -132,24 +132,24 @@ const featuredVariants = [
 const collectionSlides = [
   {
     id: "gemini-01",
+    image: "/BỘ SƯU TẬP/COLLECTION-01.png",
     heading: "BỘ SƯU TẬP",
     title: "Gemini",
     subtitle: "Collection",
     description:
       "Hòa quyện thiên nhiên và công nghệ, tạo nên bề mặt tinh tế, bền vững và đậm chất đương đại.",
-    highlightTitle: " Less is More ",
-    highlightCopy: "Thiết kế tối giản khai thác ánh sáng và chất liệu để tạo chiều sâu cho không gian.",
+    highlightTitle: "Less is More",
     ctaLabel: "Khám phá ngay",
   },
   {
     id: "gemini-02",
+    image: "/BỘ SƯU TẬP/image.png",
     heading: "BỘ SƯU TẬP",
     title: "Gemini",
     subtitle: "Heritage",
     description:
       "Từ nguồn cảm hứng nghệ thuật Ý, Gemini Heritage mở ra những bề mặt sang trọng nhưng vẫn phóng khoáng.",
     highlightTitle: "Crafted Layers",
-    highlightCopy: "Sự phối hợp giữa các lớp vật liệu tạo nên cảm giác ấm áp và tinh tế.",
     ctaLabel: "Khám phá ngay",
   },
 ] as const;
@@ -490,12 +490,176 @@ function SectionVisibilityManager() {
   return null;
 }
 
+function BackgroundColorManager() {
+  useEffect(() => {
+    if (window.innerWidth < 769) return; // Only for desktop
+    
+    const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+    if (!container) return;
+
+    // Sections without fullwidth images (will transition to #E3DCD1)
+    const sectionsWithoutFullwidth = [
+      '#about',
+      '#applications',
+      '#projects',
+      '#contact'
+    ];
+
+    // Track target color and current color for smooth animation
+    // Start with white, then transition to #E3DCD1 when scrolling to sections without fullwidth
+    let targetColor = '#ffffff';
+    let currentColor = '#ffffff';
+    let animationFrameId: number | null = null;
+
+    // Convert hex to RGB
+    const hexToRgb = (hex: string): [number, number, number] => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+          ]
+        : [255, 255, 255];
+    };
+
+    // Convert RGB to hex
+    const rgbToHex = (r: number, g: number, b: number): string => {
+      return '#' + [r, g, b].map(x => {
+        const hex = Math.round(x).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('');
+    };
+
+    const updateColor = () => {
+      const targetRgb = hexToRgb(targetColor);
+      const currentRgb = hexToRgb(currentColor);
+      
+      // Calculate difference
+      const diffR = targetRgb[0] - currentRgb[0];
+      const diffG = targetRgb[1] - currentRgb[1];
+      const diffB = targetRgb[2] - currentRgb[2];
+      
+      // Check if we need to continue animating
+      if (Math.abs(diffR) > 0.5 || Math.abs(diffG) > 0.5 || Math.abs(diffB) > 0.5) {
+        // Very slow animation - only move 2% of the difference per frame (waterfall effect)
+        currentRgb[0] += diffR * 0.02;
+        currentRgb[1] += diffG * 0.02;
+        currentRgb[2] += diffB * 0.02;
+        
+        currentColor = rgbToHex(currentRgb[0], currentRgb[1], currentRgb[2]);
+        document.body.style.backgroundColor = currentColor;
+        document.documentElement.style.backgroundColor = currentColor;
+        
+        animationFrameId = requestAnimationFrame(updateColor);
+      } else {
+        // Animation complete
+        currentColor = targetColor;
+        document.body.style.backgroundColor = currentColor;
+        document.documentElement.style.backgroundColor = currentColor;
+        animationFrameId = null;
+      }
+    };
+
+    const calculateTargetColor = () => {
+      const viewportHeight = window.innerHeight;
+      let maxVisibility = 0;
+      let isSectionWithoutFullwidth = false;
+
+      sectionsWithoutFullwidth.forEach((selector) => {
+        const section = document.querySelector<HTMLElement>(selector);
+        if (!section) return;
+
+        const rect = section.getBoundingClientRect();
+        
+        // Calculate how much of the section is visible in viewport
+        // rect.top and rect.bottom are relative to viewport
+        const sectionTop = rect.top;
+        const sectionBottom = rect.bottom;
+        
+        // Calculate visible portion
+        const visibleTop = Math.max(0, -sectionTop);
+        const visibleBottom = Math.min(rect.height, viewportHeight - sectionTop);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const visibility = visibleHeight / Math.min(viewportHeight, rect.height);
+
+        if (visibility > maxVisibility) {
+          maxVisibility = visibility;
+          isSectionWithoutFullwidth = true;
+        }
+      });
+
+      // Set target color based on visibility
+      if (isSectionWithoutFullwidth && maxVisibility > 0.2) {
+        // Transition to #E3DCD1 when on sections without fullwidth (at least 20% visible)
+        targetColor = '#E3DCD1';
+      } else {
+        // Transition to white when on sections with fullwidth images
+        targetColor = '#ffffff';
+      }
+
+      // Start animation if not already running
+      if (animationFrameId === null) {
+        animationFrameId = requestAnimationFrame(updateColor);
+      }
+    };
+
+    // Set initial body and html background to white
+    document.body.style.backgroundColor = '#ffffff';
+    document.documentElement.style.backgroundColor = '#ffffff';
+    document.body.style.transition = 'none'; // No CSS transition, we handle it manually
+
+    // Use IntersectionObserver for better performance
+    const observer = new IntersectionObserver(
+      () => {
+        calculateTargetColor();
+      },
+      {
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        rootMargin: "0px",
+      }
+    );
+
+    // Observe all sections without fullwidth
+    sectionsWithoutFullwidth.forEach((selector) => {
+      const section = document.querySelector<HTMLElement>(selector);
+      if (section) {
+        observer.observe(section);
+      }
+    });
+
+    // Listen to scroll for smooth updates
+    const handleScroll = () => {
+      calculateTargetColor();
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Initial call
+    calculateTargetColor();
+    animationFrameId = requestAnimationFrame(updateColor);
+
+    return () => {
+      observer.disconnect();
+      container.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
+
+  return null;
+}
+
 export default function Home() {
   return (
-    <div className="bg-white text-[#111111]">
+    <div className="text-[#111111]" style={{ backgroundColor: 'transparent' }}>
       <DisableZoom />
       <AnchorScrollManager />
       <SectionVisibilityManager />
+      <BackgroundColorManager />
       <div id="desktop-layout-wrapper" className="desktop-fixed-layout">
         <Header />
         <main id={FULLPAGE_CONTAINER_ID} className="fullpage-container">
@@ -920,106 +1084,101 @@ function About() {
 }
 
 function Gallery() {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [contentFade, setContentFade] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const [activePair, setActivePair] = useState(0);
+
+  const imagePairs = [
+    [
+      { src: "/ARTILE GALLERY/image4.png", alt: "Artile Gallery 4" },
+      { src: "/ARTILE GALLERY/image2.png", alt: "Artile Gallery 2" },
+    ],
+    [
+      { src: "/ARTILE GALLERY/image1.png", alt: "Artile Gallery 1" },
+      { src: "/ARTILE GALLERY/imag5.png", alt: "Artile Gallery 5" },
+    ],
+  ];
 
   useEffect(() => {
-    const node = scrollRef.current;
-    if (!node) return;
-
-    let dragging = false;
-    let startX = 0;
-    let scrollLeft = 0;
-
-    const onMouseDown = (event: MouseEvent) => {
-      dragging = true;
-      setIsDragging(true);
-      node.classList.add("is-dragging");
-      startX = event.pageX - node.offsetLeft;
-      scrollLeft = node.scrollLeft;
-    };
-
-    const endDrag = () => {
-      dragging = false;
-      setIsDragging(false);
-      node.classList.remove("is-dragging");
-    };
-
-    const handleScrollPosition = () => {
-      const maxScroll = node.scrollWidth - node.clientWidth;
-      if (maxScroll <= 0) {
-        setContentFade(0);
-        return;
-      }
-      const ratio = Math.min(1, Math.max(0, node.scrollLeft / maxScroll));
-      setContentFade(ratio);
-    };
-
-    const onMouseMove = (event: MouseEvent) => {
-      if (!dragging) return;
-      event.preventDefault();
-      const x = event.pageX - node.offsetLeft;
-      const walk = x - startX;
-      node.scrollLeft = scrollLeft - walk;
-      handleScrollPosition();
-    };
-
-    node.addEventListener("mousedown", onMouseDown);
-    node.addEventListener("mouseleave", endDrag);
-    node.addEventListener("mouseup", endDrag);
-    node.addEventListener("mousemove", onMouseMove);
-    node.addEventListener("scroll", handleScrollPosition, { passive: true });
-
-    handleScrollPosition();
-
-    return () => {
-      node.removeEventListener("mousedown", onMouseDown);
-      node.removeEventListener("mouseleave", endDrag);
-      node.removeEventListener("mouseup", endDrag);
-      node.removeEventListener("mousemove", onMouseMove);
-      node.removeEventListener("scroll", handleScrollPosition);
-    };
+    const timer = setInterval(() => {
+      setActivePair((prev) => (prev + 1) % imagePairs.length);
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
     <section id="gallery" className="fullpage-section relative w-full overflow-hidden bg-[#282828] text-white">
-      <div className="section-inner py-12 lg:py-0">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-0 lg:flex-row lg:items-center lg:px-0">
-          <div
-            className="relative z-20 hidden w-full max-w-[520px] flex-col gap-6 transition-transform duration-500 lg:flex lg:w-[40%] lg:pl-12"
-            style={{
-              opacity: Math.max(0.4, 1 - contentFade * 1.1),
-              transform: `translateX(${-(contentFade * 60)}px)`,
-              pointerEvents: contentFade > 0.3 || isDragging ? "none" : "auto",
-            }}
-          >
-            <h2 className="font-heading text-[80px] leading-[70px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
-            <p className="max-w-[460px] font-montserrat text-[14px] leading-[25px] text-justify">
+      <div className="hidden lg:block relative h-full w-full">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/ARTILE GALLERY/image.png"
+            alt="Artile Gallery Background"
+            fill
+            priority
+            className="object-cover"
+          />
+        </div>
+
+        {/* Image 1 - Top/Left */}
+        <div
+          className="absolute z-20 transition-opacity duration-700"
+          style={{
+            left: '330px',
+            top: '42%',
+            width: '400px',
+            height: '400px',
+            transform: 'translateY(-50%) rotate(12deg)',
+          }}
+        >
+          <div className="relative w-full h-full overflow-hidden">
+            <Image
+              src={imagePairs[activePair][0].src}
+              alt={imagePairs[activePair][0].alt}
+              fill
+              className="object-cover"
+              sizes="400px"
+            />
+          </div>
+        </div>
+
+        {/* Image 2 - Bottom/Left */}
+        <div
+          className="absolute z-[5] transition-opacity duration-700"
+          style={{
+            left: '80px',
+            top: '70%',
+            width: '400px',
+            height: '400px',
+            transform: 'translateY(-50%) rotate(0deg)',
+          }}
+        >
+          <div className="relative w-full h-full overflow-hidden">
+            <Image
+              src={imagePairs[activePair][1].src}
+              alt={imagePairs[activePair][1].alt}
+              fill
+              className="object-cover"
+              sizes="400px"
+            />
+          </div>
+        </div>
+
+        {/* Content - Right Side */}
+        <div className="absolute right-[100px] top-1/2 z-30 max-w-[500px] pr-8 lg:pr-16">
+          <div className="space-y-6">
+            <h2 className="font-heading text-[64px] leading-[64px] tracking-[0.05em] uppercase text-white">
+              ARTILE<br />GALLERY
+            </h2>
+            <p className="font-montserrat text-[16px] leading-[28px] text-gray-300">
               Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
             </p>
-            <div className="pt-6">
+            <div className="pt-2">
               <PillButton label="Khám phá ngay" theme="dark" />
-            </div>
-          </div>
-          <div className="hidden w-full overflow-visible lg:block lg:w-[60%]">
-            <div
-              ref={scrollRef}
-              className="gallery-scroll relative flex gap-8 overflow-x-auto pb-10"
-              style={{ width: "60vw", maxWidth: "60vw", paddingRight: "45vw" }}
-            >
-              {galleryImages.map((image) => (
-                <div
-                  key={image.alt}
-                  className="relative h-[520px] w-[460px] flex-shrink-0 overflow-hidden rounded-[48px] shadow-[0_28px_60px_rgba(0,0,0,0.35)]"
-                >
-                  <Image src={image.src} alt={image.alt} fill className="pointer-events-none object-cover" sizes="460px" />
-                </div>
-              ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Version - Keep existing mobile layout */}
       <div className="flex w-full flex-col gap-8 px-0 pt-10 pb-6 lg:hidden">
         <div className="space-y-4 px-6 text-center">
           <h2 className="font-heading text-[48px] leading-[48px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
@@ -1229,53 +1388,50 @@ function Collections() {
   return (
     <section id="collections" className="fullpage-section relative w-full overflow-hidden bg-black text-white">
       <div className="section-inner !p-0 hidden lg:block">
-        <div className="relative h-full min-w-[1440px]">
-          {collectionSlides.map((slide, index) => (
-            <div
-              key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-700 ${
-                index === activeSlide ? "opacity-100" : "pointer-events-none opacity-0"
-              }`}
-            >
-              <Image
-                src="/BỘ SƯU TẬP/COLLECTION-01.png"
-                alt="Collection layout"
-                fill
-                priority={index === 0}
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-black/5" />
+        <div className="relative h-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory">
+          <div 
+            className="flex h-full transition-transform duration-700 ease-out"
+            style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+          >
+            {collectionSlides.map((slide, index) => (
+              <div
+                key={slide.id}
+                className="relative h-full w-screen flex-shrink-0 snap-center"
+              >
+                <Image
+                  src={slide.image}
+                  alt="Collection layout"
+                  fill
+                  priority={index === 0}
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-black/5" />
 
-              <div className="absolute left-[120px] top-[92px]">
-                <h2 className="font-heading text-[48px] tracking-[0.05em] uppercase">{slide.heading}</h2>
-              </div>
-
-              <div className="absolute left-[670px] top-[180px] w-[400px] text-left text-white">
-                <div className="mb-10">
-                  <Image src="/BỘ SƯU TẬP/Vector.png" alt="Tile outline" width={64} height={112} className="h-auto w-[64px]" />
+                <div className="absolute left-[180px] top-[92px]">
+                  <h2 className="font-heading text-[48px] tracking-[0.05em] uppercase">{slide.heading}</h2>
                 </div>
-                <div className="flex items-baseline gap-4 font-montserrat text-[32px] uppercase tracking-[0.12em]">
-                  <span>{slide.title}</span>
-                  <span className="text-[18px] uppercase tracking-[0.6em] text-white/75">{slide.subtitle}</span>
+
+                <div className="absolute left-[670px] top-[290px] w-[400px] text-left text-white">
+                  <div className="mb-10 flex items-baseline gap-4 font-montserrat text-[32px] uppercase tracking-[0.12em]">
+                    <span>{slide.title}</span>
+                    <span className="text-[18px] uppercase tracking-[0.6em] text-white/75">{slide.subtitle}</span>
+                  </div>
+                  <p className="mt-5 font-montserrat text-[15px] leading-[26px] text-white/90">{slide.description}</p>
+                  <div className="pt-7">
+                    <PillButton label={slide.ctaLabel} theme="light" />
+                  </div>
                 </div>
-                <p className="mt-5 font-montserrat text-[15px] leading-[26px] text-white/90">{slide.description}</p>
-                <div className="pt-7">
-                  <PillButton label={slide.ctaLabel} theme="light" />
+
+                <div className="absolute left-[920px] top-[640px] w-[280px] text-center text-white">
+                  <p className="font-montserrat text-[22px] italic tracking-[0.25em]">
+                    &ldquo;{slide.highlightTitle}&rdquo;
+                  </p>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="absolute left-[900px] top-[580px] w-[280px] text-center text-white">
-                <p className="font-montserrat text-[22px] uppercase tracking-[0.25em]">
-                  {slide.highlightTitle}
-                </p>
-                <p className="mt-5 font-montserrat text-[13px] leading-[20px] text-white/80">
-                  {slide.highlightCopy}
-                </p>
-              </div>
-            </div>
-          ))}
-
-          <div className="absolute bottom-[60px] left-[120px] flex gap-3">
+          <div className="absolute bottom-[60px] left-[120px] flex gap-3 z-10">
             {collectionSlides.map((slide, index) => {
               const isActive = index === activeSlide;
               return (
@@ -1334,7 +1490,7 @@ function Collections() {
             ›
           </button>
           </div>
-          <div className="bg-[#99653F] px-6 py-8 text-white">
+          <div className="bg-[#5C493A] px-6 py-8 text-white">
             <div className="space-y-3">
               <div className="flex items-baseline gap-3 font-montserrat text-[32px] font-semibold leading-[36px]">
                 <span>{collectionMobileSlides[mobileCollectionIndex].title}</span>
@@ -1618,7 +1774,7 @@ function Applications() {
 
 function Projects() {
   return (
-    <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center bg-white">
+    <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center" style={{ backgroundColor: 'transparent' }}>
       <div className="hidden w-full lg:block">
         <div className="section-inner">
           <div className="mx-auto w-full max-w-[1440px] px-[82px]">
@@ -1732,7 +1888,7 @@ function CatalogueCta() {
 
 function Footer() {
   return (
-    <footer id="contact" data-header-light="true" className="fullpage-section mx-auto bg-white text-[#000]">
+    <footer id="contact" data-header-light="true" className="fullpage-section mx-auto text-[#000]" style={{ backgroundColor: 'transparent' }}>
       <div className="section-inner">
         <div className="hidden w-full max-w-[1440px] px-[104px] lg:block">
           <div className="flex flex-col gap-[48px] border-b border-[#d0d0d0] pb-[48px]">
