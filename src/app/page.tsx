@@ -344,13 +344,43 @@ const trendArticles = [
     title: "TÂN CỔ ĐIỂN & NỘI THẤT HIỆN ĐẠI",
     description:
       "Sự dung hòa tinh thần Tân Cổ Điển và đường nét đồ nội thất hiện đại tạo nên một không gian độc đáo bật nhất giữa nét sang trọng và nét nhẹ nhàng tinh tế.",
-    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/BÀI POST TRANG 1.jpg",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/BÀI POST TRANG 2.jpg",
+    href: "#",
   },
   {
     title: "THIÊN NHIÊN TRONG PHÒNG NGỦ",
     description:
       "Thổi hồn vào phòng ngủ của bạn với bộ sưu tập Gemini. Được lấy cảm hứng từ sự hòa trộn giữa thiên nhiên với những màu sắc nhẹ nhàng, thanh lịch.",
-    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/XU HƯỚNG/BÀI POST TRANG 2.jpg",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/image.png",
+    href: "#",
+  },
+  {
+    title: "KHÔNG GIAN SỐNG HIỆN ĐẠI",
+    description:
+      "Khám phá những xu hướng thiết kế nội thất hiện đại, tạo nên không gian sống sang trọng và tiện nghi cho gia đình bạn.",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/XU HƯỚNG/BÀI POST TRANG 1.jpg",
+    href: "#",
+  },
+  {
+    title: "THIẾT KẾ BỀN VỮNG",
+    description:
+      "Tìm hiểu về các giải pháp thiết kế bền vững, kết hợp giữa vẻ đẹp thẩm mỹ và trách nhiệm với môi trường.",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/BÀI POST TRANG 1.jpg",
+    href: "#",
+  },
+  {
+    title: "XU HƯỚNG MÀU SẮC 2025",
+    description:
+      "Cập nhật những xu hướng màu sắc mới nhất trong thiết kế nội thất, mang đến không gian sống tươi mới và hiện đại.",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/XU HƯỚNG/2025-11-22_16-01-03.png",
+    href: "#",
+  },
+  {
+    title: "CÔNG TRÌNH TIÊU BIỂU",
+    description:
+      "Chiêm ngưỡng những công trình tiêu biểu được thiết kế và thi công bởi đội ngũ chuyên nghiệp của chúng tôi.",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/BÀI POST TRANG 2.jpg",
+    href: "#",
   },
 ] as const;
 
@@ -2357,38 +2387,163 @@ function Applications() {
 
 
 function Projects() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${e.clientX}px`;
+        cursorRef.current.style.top = `${e.clientY}px`;
+      }
+    };
+
+    if (typeof window !== 'undefined' && window.innerWidth >= 769) {
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, []);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => {
+      if (prev === 0) {
+        // Nếu đang ở cặp đầu tiên, chuyển đến cặp cuối cùng
+        const lastPairIndex = Math.floor((trendArticles.length - 2) / 2) * 2;
+        return lastPairIndex;
+      }
+      return prev - 2;
+    });
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.floor((trendArticles.length - 2) / 2) * 2;
+      if (prev >= maxIndex) {
+        // Nếu đang ở cặp cuối cùng, quay về đầu
+        return 0;
+      }
+      return prev + 2;
+    });
+  };
+
+  const displayedArticles = [
+    trendArticles[currentIndex],
+    trendArticles[currentIndex + 1] || trendArticles[0],
+  ];
+
   return (
     <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center" style={{ backgroundColor: 'transparent' }}>
       <div className="hidden w-full lg:block">
         <div className="section-inner">
           <div className="mx-auto w-full max-w-[1440px] px-[82px]">
-            <div className="flex items-start justify-between mb-[76px]">
-              <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000]">
+            <div className="mb-[76px]">
+              <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-4">
                 CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
               </h2>
-              <div className="pt-2">
-                <PillButton label="Xem tất cả" />
+              <div className="h-[1px] bg-black" />
+            </div>
+            <div className="relative overflow-hidden">
+              <div 
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{
+                  transform: `translateX(-${(currentIndex / 2) * 100}%)`,
+                }}
+              >
+                {Array.from({ length: Math.ceil(trendArticles.length / 2) }).map((_, pairIndex) => (
+                  <div 
+                    key={pairIndex}
+                    className="grid grid-cols-2 gap-[60px] flex-shrink-0"
+                    style={{ width: '100%' }}
+                  >
+                    {[0, 1].map((offset) => {
+                      const articleIndex = pairIndex * 2 + offset;
+                      const article = trendArticles[articleIndex];
+                      if (!article) return null;
+                      
+                      return (
+                        <Link
+                          key={article.title}
+                          href={article.href}
+                          className="group relative flex flex-col gap-5 cursor-none overflow-visible"
+                          onMouseEnter={() => setHoveredCardIndex(articleIndex)}
+                          onMouseLeave={() => setHoveredCardIndex(null)}
+                        >
+                          <div className="relative w-full overflow-hidden rounded-[7px]" style={{ aspectRatio: '601/355' }}>
+                            <Image 
+                              src={article.image} 
+                              alt={article.title} 
+                              fill 
+                              className="object-cover transition-transform duration-500"
+                              style={{
+                                transform: hoveredCardIndex === articleIndex ? 'scale(1.05)' : 'scale(1)',
+                              }}
+                              sizes="601px" 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                              <p className="font-montserrat text-[20px] font-normal text-white text-center tracking-[1px] whitespace-pre">
+                                Khám phá thêm
+                              </p>
+                            </div>
+                          </div>
+                          <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
+                            {article.title}
+                          </h3>
+                          <p className="font-montserrat text-[14px] font-normal leading-[19px] text-[#000]">
+                            {article.description}
+                          </p>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-[60px]">
-              {trendArticles.map((article) => (
-              <div key={article.title} className="flex flex-col gap-5">
-                  <div className="relative h-[355px] w-full overflow-hidden rounded-[7px]">
-                    <Image src={article.image} alt={article.title} fill className="object-cover" sizes="601px" />
-                  </div>
-                  <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
-                    {article.title}
-                  </h3>
-                  <p className="font-montserrat text-[14px] font-normal leading-[19px] text-[#000]">{article.description}</p>
-                  <div className="pt-2">
-                    <PillButton label="Khám phá ngay" />
-                  </div>
-                </div>
-              ))}
+            
+            {/* Navigation buttons */}
+            <div className="flex items-center justify-center gap-4 mt-8">
+              
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Bài viết tiếp theo"
+                className="flex h-10 w-10 items-center justify-center transition hover:opacity-70"
+              >
+                <svg width="7" height="15" viewBox="0 0 7 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5.61523 0.290649L0.615235 7.29065L5.61523 14.2906" stroke="black" strokeWidth="1"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Bài viết trước"
+                className="flex h-10 w-10 items-center justify-center transition hover:opacity-70"
+              >
+                <svg width="7" height="15" viewBox="0 0 7 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0.40625 14.2906L5.40625 7.29065L0.406252 0.290649" stroke="black" strokeWidth="1"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Custom cursor */}
+      {hoveredCardIndex !== null && (
+        <div
+          ref={cursorRef}
+          className="custom-cursor is-hovering"
+          style={{
+            position: 'fixed',
+            left: `${mousePosition.x}px`,
+            top: `${mousePosition.y}px`,
+            zIndex: 9999,
+          }}
+        />
+      )}
       <div className="w-screen py-10 lg:hidden -ml-[calc((100vw-100%)/2)]">
         <div className="mb-6 px-6">
           <h2 className="font-heading text-[30px] leading-[34px] tracking-[1.5px] text-black">
