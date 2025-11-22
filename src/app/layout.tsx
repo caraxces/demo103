@@ -27,9 +27,35 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "STILE — Spatial Team Control Center",
+  title: "STILE — Chuyên Ốp Lát Bề Mặt Cao Cấp | Gạch Ốp Lát Sang Trọng",
   description:
-    "Experience an Apple-inspired operations canvas that orchestrates teams, rituals, and insights in real time.",
+    "STILE là công ty chuyên về ốp lát bề mặt cao cấp, cung cấp các giải pháp hoàn thiện không gian với bộ sưu tập gạch ốp lát cao cấp, đá tự nhiên và vật liệu bề mặt sang trọng cho nội thất, ngoại thất và kiến trúc. Chuyên nghiệp trong ốp tường, lát sàn, mặt tiền kiến trúc và đồ nội thất cao cấp.",
+  keywords: [
+    "ốp lát bề mặt cao cấp",
+    "gạch ốp lát sang trọng",
+    "ốp tường cao cấp",
+    "lát sàn cao cấp",
+    "mặt tiền kiến trúc",
+    "vật liệu ốp lát",
+    "đá tự nhiên",
+    "bề mặt cao cấp",
+    "nội thất cao cấp",
+    "STILE",
+    "Gemini Collection",
+  ],
+  openGraph: {
+    title: "STILE — Chuyên Ốp Lát Bề Mặt Cao Cấp",
+    description:
+      "Công ty chuyên về ốp lát bề mặt cao cấp với bộ sưu tập gạch ốp lát sang trọng cho nội thất, ngoại thất và kiến trúc.",
+    type: "website",
+    locale: "vi_VN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "STILE — Chuyên Ốp Lát Bề Mặt Cao Cấp",
+    description:
+      "Công ty chuyên về ốp lát bề mặt cao cấp với bộ sưu tập gạch ốp lát sang trọng.",
+  },
 };
 
 export const viewport: Viewport = {
@@ -46,7 +72,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <body
         className={`${angularFlow.variable} ${inter.variable} ${manrope.variable} ${montserrat.variable} antialiased`}
       >
