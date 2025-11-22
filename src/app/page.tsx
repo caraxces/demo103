@@ -344,7 +344,7 @@ const trendArticles = [
     title: "TÂN CỔ ĐIỂN & NỘI THẤT HIỆN ĐẠI",
     description:
       "Sự dung hòa tinh thần Tân Cổ Điển và đường nét đồ nội thất hiện đại tạo nên một không gian độc đáo bật nhất giữa nét sang trọng và nét nhẹ nhàng tinh tế.",
-    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/BÀI POST TRANG 2.jpg",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/image2.jpg",
     href: "#",
   },
   {
