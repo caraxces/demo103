@@ -10,11 +10,53 @@ const FULLPAGE_CONTAINER_ID = "fullpage-scroll";
 const HEADER_OFFSET = 80;
 
 const navItems = [
-  { label: "Sản phẩm", href: "#featured" },
-  { label: "Về STile", href: "#about" },
-  { label: "Công trình & Xu hướng", href: "#projects" },
-  { label: "Artile Gallery", href: "#gallery" },
-  { label: "Dịch vụ", href: "#contact" },
+  { label: "Sản Phẩm", href: "#featured", hasDropdown: true as const },
+  { label: "Về STile", href: "#about", hasDropdown: false as const },
+  { label: "Công Trình & Xu Hướng", href: "#projects", hasDropdown: false as const },
+  { label: "Dịch Vụ & Thi Công", href: "#contact", hasDropdown: true as const },
+] as const;
+
+const productDropdownItems = [
+  { 
+    label: "Châu Á", 
+    href: "#",
+    submenu: {
+      title: "KÍCH THƯỚC",
+      type: "dimensions",
+      leftColumn: ["1200x3000mm", "1200x2780mm", "1200x2400mm", "1200x1200mm", "195x1200mm"],
+      rightColumn: ["800x1600mm", "600x1200mm", "800x800mm", "600x600mm", "400x800mm"],
+      other: "Khác"
+    }
+  },
+  { 
+    label: "Châu Âu", 
+    href: "#",
+    submenu: {
+      title: "KÍCH THƯỚC",
+      type: "dimensions",
+      leftColumn: ["1620x3240mm", "1200x2800mm", "1200x2780mm", "1200x3000mm", "1000x3000mm"],
+      rightColumn: ["200x1200mm", "600x1200mm", "800x800mm", "600x600mm", "300x600mm"],
+      other: "Khác"
+    }
+  },
+  { 
+    label: "Trang Trí", 
+    href: "#",
+    submenu: {
+      title: "SẢN PHẨM",
+      type: "products",
+      items: ["Mosaic", "Decor Tiles", "Tranh Mosaic"]
+    }
+  },
+  { 
+    label: "Sản Phẩm Khác", 
+    href: "#",
+    submenu: {
+      title: "SẢN PHẨM",
+      type: "products",
+      items: ["Mosaic", "Decor Tiles", "Tranh Mosaic"]
+    }
+  },
 ] as const;
 
 const galleryImages = [
@@ -200,17 +242,17 @@ const applicationSections = [
     items: [
       {
         title: "ỐP TƯỜNG",
-        image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        image: "/ỨNG DỤNG/ốp tường.png",
         isMain: true,
       },
       {
         title: "LÁT SÀN",
-        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        image: "/ỨNG DỤNG/lát sàn.png",
         isMain: false,
       },
       {
         title: "ĐỒ NỘI THẤT",
-        image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        image: "/ỨNG DỤNG/nội thất.png",
         isMain: false,
       },
       {
@@ -225,17 +267,17 @@ const applicationSections = [
     items: [
       {
         title: "LÁT SÀN",
-        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        image: "/ỨNG DỤNG/lát sàn.png",
         isMain: true,
       },
       {
         title: "ỐP TƯỜNG",
-        image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        image: "/ỨNG DỤNG/ốp tường.png",
         isMain: false,
       },
       {
         title: "ĐỒ NỘI THẤT",
-        image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        image: "/ỨNG DỤNG/nội thất.png",
         isMain: false,
       },
       {
@@ -250,17 +292,17 @@ const applicationSections = [
     items: [
       {
         title: "ĐỒ NỘI THẤT",
-        image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        image: "/ỨNG DỤNG/nội thất.png",
         isMain: true,
       },
       {
         title: "ỐP TƯỜNG",
-        image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        image: "/ỨNG DỤNG/ốp tường.png",
         isMain: false,
       },
       {
         title: "LÁT SÀN",
-        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        image: "/ỨNG DỤNG/lát sàn.png",
         isMain: false,
       },
       {
@@ -280,17 +322,17 @@ const applicationSections = [
       },
       {
         title: "ỐP TƯỜNG",
-        image: "/ỨNG DỤNG/1 - Ảnh Ốp Tường.jpg",
+        image: "/ỨNG DỤNG/ốp tường.png",
         isMain: false,
       },
       {
         title: "LÁT SÀN",
-        image: "/ỨNG DỤNG/2 - Ảnh Lát Sàn.jpg",
+        image: "/ỨNG DỤNG/lát sàn.png",
         isMain: false,
       },
       {
         title: "ĐỒ NỘI THẤT",
-        image: "/ỨNG DỤNG/3 - Ảnh Đồ Nội Thất.jpg",
+        image: "/ỨNG DỤNG/nội thất.png",
         isMain: false,
       },
     ],
@@ -332,16 +374,16 @@ const footerSocials = [
 
 const heroSlides = [
   {
-    src: "/BANNER/_SecondoImportThron_i_naturali_verde_alpi_bocciardato_still_life_7.jpg",
-    alt: "Bề mặt Verde Alpi",
+    src: "/BANNER/image.png",
+    alt: "Bề mặt image",
   },
   {
-    src: "/BANNER/_SecondoImportThron_i_naturali_invisible_white_still_life_2.jpg",
-    alt: "Bề mặt Invisible White",
+    src: "/BANNER/image copy 2.png",
+    alt: "Bề mặt image copy 2",
   },
   {
-    src: "/BANNER/_SecondoImportThron_i_naturali_sahara_noir_extra_lucidato_still_life_2.jpg",
-    alt: "Bề mặt Sahara Noir",
+    src: "/BANNER/image copy.png",
+    alt: "Bề mặt image copy",
   },
 ] as const;
 
@@ -766,28 +808,6 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`hidden lg:flex items-center gap-2 ${textColor} transition hover:opacity-70`}
-        aria-label="Mở menu"
-      >
-        <span className="text-[15px] font-normal tracking-[0.06em]">Menu</span>
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-        >
-          <path d="M3 4.5L6 7.5L9 4.5" />
-        </svg>
-      </button>
-
       {isOpen && (
         <>
           <div
@@ -861,6 +881,303 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
             </div>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const navLinkClass = "text-[#111111] hover:text-[#555555]";
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+      setHoveredItemIndex(null);
+    }, 200); // 200ms delay before closing
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const hoveredItem = hoveredItemIndex !== null ? productDropdownItems[hoveredItemIndex] : null;
+
+  return (
+    <div 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      ref={menuRef}
+    >
+      <Link href="#featured" className={`transition ${navLinkClass} inline-block`}>
+        Sản Phẩm
+      </Link>
+      {isHovered && (
+        <div
+          className="fixed left-0 right-0 bg-[#E3DCD1] z-50 border-t border-b border-black"
+          style={{ 
+            top: '80px',
+            width: '100%',
+            minHeight: '200px'
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="max-w-[1440px] mx-auto px-[104px]">
+            <div className="grid grid-cols-2 gap-0 py-8">
+              {/* Left Column - GẠCH ỐP LÁT */}
+              <div className="flex flex-col border-r border-black pr-8">
+                <h3 
+                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
+                  style={{ letterSpacing: '6%' }}
+                >
+                  GẠCH ỐP LÁT
+                </h3>
+                <ul className="space-y-3">
+                  {productDropdownItems.map((item, index) => (
+                    <li 
+                      key={item.label}
+                      onMouseEnter={() => {
+                        if (timeoutRef.current) {
+                          clearTimeout(timeoutRef.current);
+                          timeoutRef.current = null;
+                        }
+                        setHoveredItemIndex(index);
+                      }}
+                      onMouseLeave={() => {
+                        timeoutRef.current = setTimeout(() => {
+                          setHoveredItemIndex(null);
+                        }, 200);
+                      }}
+                    >
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ color: '#111111' }}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Right Column - Sub-dropdown Content */}
+              <div className="flex flex-col pl-8">
+                {hoveredItem && hoveredItem.submenu && (
+                  <>
+                    <h4 
+                      className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
+                      style={{ letterSpacing: '6%' }}
+                    >
+                      {hoveredItem.submenu.title}
+                    </h4>
+                    {hoveredItem.submenu.type === "dimensions" && (
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="flex flex-col space-y-2">
+                          {hoveredItem.submenu.leftColumn.map((dim, i) => (
+                            <span key={i} className="font-montserrat text-[14px] text-[#111111]">
+                              {dim}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          {hoveredItem.submenu.rightColumn.map((dim, i) => (
+                            <span key={i} className="font-montserrat text-[14px] text-[#111111]">
+                              {dim}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-montserrat text-[14px] text-[#111111]">
+                            {hoveredItem.submenu.other}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    {hoveredItem.submenu.type === "products" && (
+                      <div className="flex flex-col space-y-3">
+                        {hoveredItem.submenu.items.map((product, i) => (
+                          <span key={i} className="font-montserrat text-[14px] text-[#111111]">
+                            {product}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const navLinkClass = "text-[#111111] hover:text-[#555555]";
+
+  const menuItems = {
+    studio: {
+      title: "STILE STUDIO",
+      items: [
+        { label: "Thiết Kế", href: "#" },
+        { label: "Thi Công", href: "#" },
+      ],
+    },
+    policy: {
+      title: "CHÍNH SÁCH",
+      items: [
+        { label: "Bảo Hành", href: "#" },
+        { label: "Chứng Nhận", href: "#" },
+        { label: "Đổi Trả", href: "#" },
+      ],
+    },
+    download: {
+      title: "DOWNLOAD",
+      items: [
+        { label: "Catalogue", href: "#" },
+        { label: "Hướng Dẫn Thi Công", href: "#" },
+        { label: "Thông Số Kỹ Thuật", href: "#" },
+        { label: "Hướng Dẫn Vệ Sinh", href: "#" },
+      ],
+    },
+  };
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 200);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      ref={menuRef}
+    >
+      <Link href="#contact" className={`transition ${navLinkClass} inline-block`}>
+        Dịch Vụ & Thi Công
+      </Link>
+      {isHovered && (
+        <div
+          className="fixed left-0 right-0 bg-[#E3DCD1] z-50 border-t border-b border-black"
+          style={{ 
+            top: '80px',
+            width: '100%',
+            minHeight: '200px'
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="max-w-[1440px] mx-auto px-[104px]">
+            <div className="grid grid-cols-3 gap-0 py-8">
+              {/* Column 1: STILE STUDIO */}
+              <div className="flex flex-col border-r border-black pr-8">
+                <h3 
+                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
+                  style={{ letterSpacing: '6%' }}
+                >
+                  {menuItems.studio.title}
+                </h3>
+                <ul className="space-y-3">
+                  {menuItems.studio.items.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ color: '#111111' }}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 2: CHÍNH SÁCH */}
+              <div className="flex flex-col border-r border-black pl-8 pr-8">
+                <h3 
+                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
+                  style={{ letterSpacing: '6%' }}
+                >
+                  {menuItems.policy.title}
+                </h3>
+                <ul className="space-y-3">
+                  {menuItems.policy.items.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ color: '#111111' }}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 3: DOWNLOAD */}
+              <div className="flex flex-col pl-8">
+                <h3 
+                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
+                  style={{ letterSpacing: '6%' }}
+                >
+                  {menuItems.download.title}
+                </h3>
+                <ul className="space-y-3">
+                  {menuItems.download.items.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ color: '#111111' }}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1000,9 +1317,19 @@ function Header() {
         </Link>
         <nav className="hidden items-center gap-10 text-[15px] font-normal tracking-[0.06em] lg:flex">
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href} className={`transition ${navLinkClass}`}>
-              {item.label}
-            </Link>
+            <div key={item.label} className="group">
+              {item.hasDropdown ? (
+                item.label === "Sản Phẩm" ? (
+                  <ProductDropdownMenu onLightSection={onLightSection} />
+                ) : (
+                  <ServiceDropdownMenu onLightSection={onLightSection} />
+                )
+              ) : (
+                <Link href={item.href} className={`transition ${navLinkClass}`}>
+                  {item.label}
+                </Link>
+              )}
+            </div>
           ))}
           <HeaderDropdownMenu onLightSection={onLightSection} />
         </nav>
@@ -1606,12 +1933,12 @@ function Collections() {
                 <div className="absolute inset-0 bg-black/5" />
 
                 <div className="absolute left-[180px] top-[92px]">
-                  <h2 className={`font-heading text-[48px] tracking-[0.05em] uppercase ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
+                  <h2 className={`font-montserrat text-[48px] tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
                 </div>
 
                 <div className={`absolute left-[670px] top-[290px] w-[400px] text-left ${index === 1 ? 'text-black' : 'text-white'}`}>
-                  <div className="mb-10 flex items-baseline gap-4 font-montserrat text-[32px] uppercase tracking-[0.12em]">
-                    <span>{slide.title}</span>
+                  <div className="mb-10 flex items-baseline gap-10px font-montserrat text-[32px] tracking-[0.1em]">
+                    <span className="normal-case">{slide.title}</span>
                     <span className={`text-[18px] normal-case tracking-normal ${index === 1 ? 'text-black' : 'text-white/75'}`}>{slide.subtitle}</span>
                   </div>
                   <p className={`mt-5 font-montserrat text-[15px] leading-[26px] ${index === 1 ? 'text-black/90' : 'text-white/90'}`}>{slide.description}</p>
@@ -1664,7 +1991,7 @@ function Collections() {
             return (
               <div key={slide.id} className="relative h-full w-full flex-shrink-0">
                 <Image src={safeSrc} alt={`${slide.title} ${slide.subtitle}`} fill className="object-cover" priority={slide.id === collectionMobileSlides[0].id} />
-                  <div className="absolute inset-x-0 top-10 text-center font-heading text-[32px] uppercase tracking-[0.2em] text-white drop-shadow">
+                  <div className="absolute inset-x-0 top-10 text-center font-montserrat text-[32px] normal-case tracking-[0.2em] text-white drop-shadow">
                     {slide.heading}
                   </div>
               </div>
@@ -1879,7 +2206,7 @@ function Applications() {
                         <div 
                           key={`${activeSection.label}-${item.title}-${index}`} 
                           className="group relative flex-1 overflow-visible cursor-none transition-all duration-500 ease-in-out"
-                          style={{
+                          style={{  
                             height: isHovered ? '600px' : '514px',
                             transform: isHovered ? 'scale(1.1)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
