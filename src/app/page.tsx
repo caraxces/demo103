@@ -441,12 +441,43 @@ function AnchorScrollManager() {
 
 function SectionVisibilityManager() {
   useEffect(() => {
+    if (window.innerWidth < 769) return; // Only for desktop
+
+    const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+    if (!container) return;
+
     const sections = document.querySelectorAll<HTMLElement>(".fullpage-section");
     if (!sections.length) return;
 
-    sections.forEach((section) => section.classList.add("is-visible")); // initial hero
+    // Only show hero section initially, hide all others
+    sections.forEach((section, index) => {
+      if (index === 0) {
+        section.classList.add("is-visible");
+      } else {
+        section.classList.remove("is-visible");
+      }
+    });
 
     let scrolling = false;
+
+    const checkVisibleSections = () => {
+      const containerRect = container.getBoundingClientRect();
+      const viewportHeight = container.clientHeight;
+      const scrollTop = container.scrollTop;
+
+      sections.forEach((section, index) => {
+        const sectionTop = index * viewportHeight;
+        const sectionBottom = (index + 1) * viewportHeight;
+        
+        // Check if section is in viewport (at least 50% visible)
+        const isInViewport = scrollTop >= sectionTop - viewportHeight * 0.5 && 
+                            scrollTop < sectionBottom - viewportHeight * 0.5;
+
+        if (isInViewport) {
+          section.classList.add("is-visible");
+        }
+      });
+    };
 
     const onWheel = (event: WheelEvent) => {
       if (scrolling) return;
@@ -464,8 +495,6 @@ function SectionVisibilityManager() {
     };
 
     const triggerAnimation = (direction: 1 | -1) => {
-      const container = document.getElementById(FULLPAGE_CONTAINER_ID);
-      if (!container) return;
       const currentIndex = Math.round(container.scrollTop / container.clientHeight);
       const targetIndex = Math.max(0, Math.min(sections.length - 1, currentIndex + direction));
       const targetSection = sections[targetIndex];
@@ -475,13 +504,21 @@ function SectionVisibilityManager() {
 
       setTimeout(() => {
         scrolling = false;
+        checkVisibleSections();
       }, 600);
     };
 
+    // Check visible sections on scroll
+    container.addEventListener("scroll", checkVisibleSections, { passive: true });
+    
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("keydown", onKey);
 
+    // Initial check
+    checkVisibleSections();
+
     return () => {
+      container.removeEventListener("scroll", checkVisibleSections);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
     };
@@ -506,9 +543,9 @@ function BackgroundColorManager() {
     ];
 
     // Track target color and current color for smooth animation
-    // Start with white, then transition to #E3DCD1 when scrolling to sections without fullwidth
-    let targetColor = '#ffffff';
-    let currentColor = '#ffffff';
+    // Start with #E3DCD1 (homepage background color)
+    let targetColor = '#E3DCD1';
+    let currentColor = '#E3DCD1';
     let animationFrameId: number | null = null;
 
     // Convert hex to RGB
@@ -590,12 +627,13 @@ function BackgroundColorManager() {
       });
 
       // Set target color based on visibility
+      // Homepage background is always #E3DCD1
       if (isSectionWithoutFullwidth && maxVisibility > 0.2) {
-        // Transition to #E3DCD1 when on sections without fullwidth (at least 20% visible)
+        // Keep #E3DCD1 when on sections without fullwidth (at least 20% visible)
         targetColor = '#E3DCD1';
       } else {
-        // Transition to white when on sections with fullwidth images
-        targetColor = '#ffffff';
+        // Keep #E3DCD1 as default homepage background
+        targetColor = '#E3DCD1';
       }
 
       // Start animation if not already running
@@ -604,9 +642,9 @@ function BackgroundColorManager() {
       }
     };
 
-    // Set initial body and html background to white
-    document.body.style.backgroundColor = '#ffffff';
-    document.documentElement.style.backgroundColor = '#ffffff';
+    // Set initial body and html background to #E3DCD1 (homepage background)
+    document.body.style.backgroundColor = '#E3DCD1';
+    document.documentElement.style.backgroundColor = '#E3DCD1';
     document.body.style.transition = 'none'; // No CSS transition, we handle it manually
 
     // Use IntersectionObserver for better performance
@@ -655,7 +693,7 @@ function BackgroundColorManager() {
 
 export default function Home() {
   return (
-    <div className="text-[#111111]" style={{ backgroundColor: 'transparent' }}>
+    <div className="text-[#111111]" style={{ backgroundColor: '#E3DCD1' }}>
       <DisableZoom />
       <AnchorScrollManager />
       <SectionVisibilityManager />
@@ -670,10 +708,160 @@ export default function Home() {
           <Collections />
           <Applications />
           <Projects />
-          <CatalogueCta />
-          <Footer />
+          <CatalogueCtaAndFooter />
         </main>
       </div>
+    </div>
+  );
+}
+
+function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const menuItems = {
+    studio: {
+      title: "STILE STUDIO",
+      items: [
+        { label: "Thiết Kế", href: "#" },
+        { label: "Thi Công", href: "#" },
+      ],
+    },
+    policy: {
+      title: "CHÍNH SÁCH",
+      items: [
+        { label: "Bảo Hành", href: "#" },
+        { label: "Chứng Nhận", href: "#" },
+        { label: "Đổi Trả", href: "#" },
+      ],
+    },
+    download: {
+      title: "DOWNLOAD",
+      items: [
+        { label: "Catalogue", href: "#" },
+        { label: "Hướng Dẫn Thi Công", href: "#" },
+        { label: "Thông Số Kỹ Thuật", href: "#" },
+        { label: "Hướng Dẫn Vệ Sinh", href: "#" },
+      ],
+    },
+  };
+
+  const textColor = onLightSection ? "text-[#111111]" : "text-white";
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`hidden lg:flex items-center gap-2 ${textColor} transition hover:opacity-70`}
+        aria-label="Mở menu"
+      >
+        <span className="text-[15px] font-normal tracking-[0.06em]">Menu</span>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+        >
+          <path d="M3 4.5L6 7.5L9 4.5" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/20 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div
+            className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#E3DCD1] shadow-lg z-50 min-w-[600px]`}
+            style={{ marginTop: '16px' }}
+          >
+            <div className="grid grid-cols-3 gap-0 p-8">
+              {/* Column 1: STILE STUDIO */}
+              <div className="flex flex-col">
+                <h3 className="font-heading text-[18px] font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]">
+                  {menuItems.studio.title}
+                </h3>
+                <ul className="space-y-3">
+                  {menuItems.studio.items.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 2: CHÍNH SÁCH */}
+              <div className="flex flex-col border-l border-gray-300 pl-8">
+                <h3 className="font-heading text-[18px] font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]">
+                  {menuItems.policy.title}
+                </h3>
+                <ul className="space-y-3">
+                  {menuItems.policy.items.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 3: DOWNLOAD */}
+              <div className="flex flex-col border-l border-gray-300 pl-8">
+                <h3 className="font-heading text-[18px] font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]">
+                  {menuItems.download.title}
+                </h3>
+                <ul className="space-y-3">
+                  {menuItems.download.items.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -816,6 +1004,7 @@ function Header() {
               {item.label}
             </Link>
           ))}
+          <HeaderDropdownMenu onLightSection={onLightSection} />
         </nav>
         <div className="hidden items-center gap-6 text-[15px] font-normal tracking-[0.06em] lg:flex">
           <button
@@ -1057,7 +1246,7 @@ function About() {
                 }`}
               >
                 <Image
-                  src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
+                  src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
                   alt="Logo Stile trên mặt đá"
                   fill
                   className="object-cover"
@@ -1068,7 +1257,7 @@ function About() {
             <div className="block w-full max-w-none lg:hidden mt-10">
               <div className="relative left-1/2 w-screen -translate-x-1/2 transform aspect-[534/601] overflow-hidden max-lg:rounded-none">
                 <Image
-                  src="/VỀ CHÚNG TÔI/Logo STILE on Verde alpi slabs.png"
+                  src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
                   alt="Logo Stile trên mặt đá"
                   fill
                   className="object-cover"
@@ -1206,6 +1395,11 @@ function FeaturedProducts() {
   const [isMobile, setIsMobile] = useState(false);
   const variant = featuredVariants[activeVariant];
 
+  // DEBUG: Điều chỉnh vị trí header fixed trên desktop
+  const DEBUG_HEADER_TOP = '120px';      // Vị trí top của header (từ trên xuống)
+  const DEBUG_HEADER_LEFT = '6vw';       // Vị trí left của header (từ trái sang)
+  const DEBUG_CONTENT_PADDING_TOP = '240px'; // Padding-top của phần nội dung (khoảng cách từ header)
+
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveVariant((prev) => (prev + 1) % featuredVariants.length);
@@ -1246,16 +1440,31 @@ function FeaturedProducts() {
         />
       </div>
 
+      {/* Desktop: Fixed Header */}
       <div 
-        className="relative flex w-full flex-col px-8 lg:justify-between lg:px-[6vw] lg:pt-10"
-        style={isMobile ? { height: '100vh' } : { height: '100%' }}
+        className="hidden lg:block fixed z-10"
+        style={{
+          top: DEBUG_HEADER_TOP,
+          left: DEBUG_HEADER_LEFT,
+        }}
       >
-        <div className="pt-10 text-center hidden lg:block">
-          {/* <h2 className="font-heading text-[48px] uppercase tracking-[0.3em] text-[#151515]">
-            SẢN PHẨM NỔI BẬT
-          </h2> */}
+        <div
+          key={variant.id}
+          className="animate-text-fade max-w-[520px] space-y-3"
+        >
+          <span className="font-montserrat text-[15px] tracking-[0.3em] text-[#151515]">
+            {variant.collection}
+          </span>
+          <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
+            {variant.title}
+          </h3>
         </div>
+      </div>
 
+      <div 
+        className="relative flex w-full flex-col px-8 lg:px-[6vw]"
+        style={isMobile ? { height: '100vh' } : { height: '100%', paddingTop: DEBUG_CONTENT_PADDING_TOP }}
+      >
         {isMobile ? (
           <>
             <div className="flex flex-1 items-center justify-center">
@@ -1263,7 +1472,7 @@ function FeaturedProducts() {
                 key={variant.id}
                 className="animate-text-fade max-w-[520px] w-full space-y-3 text-left"
               >
-                <span className="font-montserrat text-[15px] uppercase tracking-[0.3em] text-[#6b6b6b]">
+                <span className="font-montserrat text-[15px] text-[#151515]">
                   {variant.collection}
                 </span>
                 <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
@@ -1294,29 +1503,18 @@ function FeaturedProducts() {
           </>
         ) : (
           <>
-            <div className={`flex flex-1 flex-col justify-end gap-[120px] lg:flex-row lg:items-center`}>
-              <div
-                key={variant.id}
-                className="animate-text-fade max-w-[520px] space-y-6 text-left lg:pt-0 lg:space-y-6"
-              >
-                <div className="space-y-3">
-                  <span className="font-montserrat text-[15px] uppercase tracking-[0.3em] text-[#6b6b6b]">
-                    {variant.collection}
-                  </span>
-                  <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
-                    {variant.title}
-                  </h3>
-                </div>
-                <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a] hidden lg:block">
-                  {variant.description}
-                </p>
-                <div className="hidden pt-2 lg:block">
-                  <PillButton label="Khám phá ngay" />
-                </div>
+            {/* Desktop: Content below fixed header */}
+            <div className="max-w-[520px] space-y-6">
+              <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a]">
+                The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.
+                <br /><br />
+                In the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.
+              </p>
+              <div className="pt-2">
+                <PillButton label="Khám phá ngay" />
               </div>
-              <div className="flex-1" />
             </div>
-            <div className="relative mb-6 flex flex-col items-center justify-end gap-6 pb-6 lg:mb-10">
+            <div className="absolute bottom-0 left-0 right-0 mb-6 flex flex-col items-center justify-end gap-6 pb-6 lg:mb-10">
               <div className="flex items-center justify-center gap-4">
                 {featuredVariants.map((item, index) => {
                   const isActive = index === activeVariant;
@@ -1408,21 +1606,21 @@ function Collections() {
                 <div className="absolute inset-0 bg-black/5" />
 
                 <div className="absolute left-[180px] top-[92px]">
-                  <h2 className="font-heading text-[48px] tracking-[0.05em] uppercase">{slide.heading}</h2>
+                  <h2 className={`font-heading text-[48px] tracking-[0.05em] uppercase ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
                 </div>
 
-                <div className="absolute left-[670px] top-[290px] w-[400px] text-left text-white">
+                <div className={`absolute left-[670px] top-[290px] w-[400px] text-left ${index === 1 ? 'text-black' : 'text-white'}`}>
                   <div className="mb-10 flex items-baseline gap-4 font-montserrat text-[32px] uppercase tracking-[0.12em]">
                     <span>{slide.title}</span>
-                    <span className="text-[18px] uppercase tracking-[0.6em] text-white/75">{slide.subtitle}</span>
+                    <span className={`text-[18px] normal-case tracking-normal ${index === 1 ? 'text-black' : 'text-white/75'}`}>{slide.subtitle}</span>
                   </div>
-                  <p className="mt-5 font-montserrat text-[15px] leading-[26px] text-white/90">{slide.description}</p>
+                  <p className={`mt-5 font-montserrat text-[15px] leading-[26px] ${index === 1 ? 'text-black/90' : 'text-white/90'}`}>{slide.description}</p>
                   <div className="pt-7">
-                    <PillButton label={slide.ctaLabel} theme="light" />
+                    <PillButton label={slide.ctaLabel} theme={index === 0 ? "dark" : "light"} />
                   </div>
                 </div>
 
-                <div className="absolute left-[920px] top-[640px] w-[280px] text-center text-white">
+                <div className={`absolute left-[920px] top-[640px] w-[280px] text-center ${index === 1 ? 'text-black' : 'text-white'}`}>
                   <p className="font-montserrat text-[22px] italic tracking-[0.25em]">
                     &ldquo;{slide.highlightTitle}&rdquo;
                   </p>
@@ -1860,94 +2058,119 @@ function Projects() {
   );
 }
 
-function CatalogueCta() {
+function CatalogueCtaAndFooter() {
   return (
-    <section className="fullpage-section relative flex min-h-screen items-center justify-center overflow-hidden text-white">
-      <Image
-        src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
-        alt="Đăng ký nhận catalogue"
-        fill
-        className="object-cover"
-        sizes="100vw"
-        priority
-      />
-      <div className="absolute inset-0 bg-black/45" />
-      <div className="relative z-10 flex w-full max-w-[660px] flex-col items-center justify-center gap-6 px-6 text-center">
-        <h2 className="font-heading text-[26px] uppercase leading-tight tracking-[0.08em] text-white lg:text-[48px]">
-          ĐĂNG KÝ NHẬN
-          <br />
-          CATALOGUE
-        </h2>
-        <div className="flex justify-center">
-          <PillButton label="Liên hệ ngay" theme="dark" />
+    <>
+      {/* Desktop: Combined vertical layout */}
+      <section id="contact" data-header-light="true" className="fullpage-section hidden lg:flex flex-col w-full" style={{ backgroundColor: 'transparent' }}>
+        {/* Catalogue CTA - Top section, compact */}
+        <div className="relative flex-shrink-0 h-[250px] overflow-hidden">
+          <Image
+            src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
+            alt="Đăng ký nhận catalogue"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="relative z-10 flex w-full h-full items-center justify-center">
+            <div className="flex flex-col items-center justify-center gap-4 px-6 text-center">
+              <h2 className="font-heading text-[36px] uppercase leading-tight tracking-[0.08em] text-white">
+                NHẬN CATALOGUE
+              </h2>
+              <div className="flex justify-center">
+                <PillButton label="Xem ngay" theme="dark" />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-  );
-}
 
-function Footer() {
-  return (
-    <footer id="contact" data-header-light="true" className="fullpage-section mx-auto text-[#000]" style={{ backgroundColor: 'transparent' }}>
-      <div className="section-inner">
-        <div className="hidden w-full max-w-[1440px] px-[104px] lg:block">
-          <div className="flex flex-col gap-[48px] border-b border-[#d0d0d0] pb-[48px]">
-            <div className="flex items-start justify-between gap-[32px]">
-              <div className="flex flex-col gap-6">
-                <Image
-                  src="/LOGO/STILE Logo HEADER-12.svg"
-                  alt="Stile"
-                  width={200}
-                  height={80}
-                  className="h-auto w-[200px]"
-                />
-                <div>
-                  <h3 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
-                    CÔNG TY TNHH STILE
-                  </h3>
-                  <div className="mt-6 space-y-4 font-montserrat text-[14px] leading-6">
+        {/* Footer - Bottom section */}
+        <div className="flex-1 bg-[#E3DCD1] px-[104px] py-12">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <div className="flex flex-col gap-6 mb-8">
+              {/* Logo + Social Icons - Top row with border below */}
+              <div className="border-b border-black pb-6">
+                <div className="flex items-center justify-between">
+                  <Image
+                    src="/FOOTER/logoSTile.png"
+                    alt="Stile"
+                    width={180}
+                    height={72}
+                    className="h-auto w-[75px]"
+                  />
+                  
+                  {/* Social Media Icons */}
+                  <div className="flex items-center gap-3">
+                    {footerSocials.map((item) => (
+                      <Image
+                        key={item.alt}
+                        src={item.src}
+                        alt={item.alt}
+                        width={32}
+                        height={32}
+                        className="h-8 w-8"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Name - Below border line */}
+              <h3 className="font-manrope text-[16px] font-bold uppercase tracking-[0.05em] text-[#111111]">
+                CÔNG TY TNHH STILE
+              </h3>
+
+              {/* Row: Contact Info + Navigation + Contact Form */}
+              <div className="flex items-start justify-between gap-8">
+                {/* Left: Contact Info */}
+                <div className="flex flex-col gap-4">
+                  <div className="space-y-2 font-montserrat text-[14px] leading-6 text-[#111111]">
                     <p>098 165 0042</p>
                     <p>infor@stile.com.vn</p>
                     <p>155 - 157 Nguyễn Cơ Thạch, P. An Khánh, TP. HCM</p>
                   </div>
+                  
+                  {/* Certification Badge */}
+                  <Image
+                    src="/bocongthuong.png"
+                    alt="Đã thông báo bộ công thương"
+                    width={140}
+                    height={42}
+                    className="h-auto w-[140px]"
+                  />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-x-[60px] gap-y-[16px] font-montserrat text-[14px] leading-6">
-                {footerLinks.map((link) => (
-                  <Link key={link} href="#" className="transition hover:text-[#555]">
-                    {link}
-                  </Link>
-                ))}
-              </div>
-              <div className="flex flex-col gap-6">
-                <h4 className="font-manrope text-[20px] font-bold uppercase tracking-[0.05em]">
-                  Liên hệ ngay
-                </h4>
-                <form className="grid grid-cols-2 gap-x-[16px] gap-y-3 font-manrope text-[12px]">
-                  <InputField placeholder="Họ và Tên" />
-                  <InputField placeholder="Số Điện Thoại" />
-                  <InputField placeholder="Email" full />
-                  <TextareaField placeholder="Nội dung tin nhắn..." />
-                </form>
-                <div className="flex justify-end">
-                  <PillButton label="Gửi" />
+
+                {/* Middle: Navigation Links - 1 column */}
+                <div className="flex flex-col gap-y-2 font-montserrat text-[14px] leading-6 text-[#111111]">
+                  <Link href="#" className="transition hover:text-[#555]">Về STile</Link>
+                  <Link href="#" className="transition hover:text-[#555]">Artile Gallery</Link>
+                  <Link href="#" className="transition hover:text-[#555]">Sản Phẩm</Link>
+                  <Link href="#" className="transition hover:text-[#555]">Công Trình & Xu Hướng</Link>
+                  <Link href="#" className="transition hover:text-[#555]">Dịch Vụ</Link>
+                </div>
+
+                {/* Right: Contact Form */}
+                <div className="flex flex-col gap-4">
+                  <form className="grid grid-cols-2 gap-x-[12px] gap-y-3 font-manrope text-[12px]">
+                    <InputField placeholder="Họ và Tên" />
+                    <InputField placeholder="Số Điện Thoại" />
+                    <InputField placeholder="Email" full />
+                    <TextareaField placeholder="Nội dung tin nhắn..." />
+                    <div className="col-span-2 w-full">
+                      <div className="w-full">
+                        <PillButton label="Gửi" fullWidth={true} noRounded={true} />
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {footerSocials.map((item) => (
-                  <Image
-                    key={item.alt}
-                    src={item.src}
-                    alt={item.alt}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9"
-                  />
-                ))}
-              </div>
-              <div className="flex gap-6 font-manrope text-[12px]">
+
+            {/* Legal Links and Copyright */}
+            <div className="flex items-center justify-between pt-6 border-t border-[#d0d0d0] font-manrope text-[12px] text-[#111111]">
+              <div className="flex gap-6">
                 <Link href="#" className="transition hover:text-[#555]">
                   Chính sách bảo mật
                 </Link>
@@ -1955,23 +2178,41 @@ function Footer() {
                   Điều khoản sử dụng
                 </Link>
               </div>
+              <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-6 font-manrope text-[12px]">
-            <Image
-              src="/FOOTER/da-thong-bao.png"
-              alt="Đã thông báo bộ công thương"
-              width={160}
-              height={48}
-              className="h-auto w-[160px]"
-            />
-            <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
+        </div>
+      </section>
+
+      {/* Mobile: Separate sections */}
+      <section className="fullpage-section relative flex min-h-screen items-center justify-center overflow-hidden text-white lg:hidden">
+        <Image
+          src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
+          alt="Đăng ký nhận catalogue"
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="relative z-10 flex w-full max-w-[660px] flex-col items-center justify-center gap-6 px-6 text-center">
+          <h2 className="font-heading text-[26px] uppercase leading-tight tracking-[0.08em] text-white">
+            ĐĂNG KÝ NHẬN
+            <br />
+            CATALOGUE
+          </h2>
+          <div className="flex justify-center">
+            <PillButton label="Liên hệ ngay" theme="dark" />
           </div>
         </div>
-        <div className="w-full px-6 py-10 lg:hidden">
+      </section>
+
+      <footer id="contact" data-header-light="true" className="fullpage-section mx-auto text-[#000] lg:hidden" style={{ backgroundColor: 'transparent' }}>
+        <div className="section-inner">
+          <div className="w-full px-6 py-10">
           <div className="flex flex-col gap-6 border-b border-[#d0d0d0]/70 pb-8">
             <Image
-              src="/LOGO/STILE Logo HEADER-12.svg"
+              src="/FOOTER/logoSTile.png"
               alt="Stile"
               width={120}
               height={60}
@@ -2029,7 +2270,7 @@ function Footer() {
           <div className="space-y-4 pt-8 font-manrope text-[12px]">
             <div className="flex justify-center">
               <Image
-                src="/FOOTER/da-thong-bao.png"
+                src="/bocongthuong.png"
                 alt="Đã thông báo bộ công thương"
                 width={140}
                 height={42}
@@ -2045,33 +2286,52 @@ function Footer() {
                   Điều khoản sử dụng
                 </Link>
               </div>
-              <p>Bản quyền thuộc về Công Ty TNHH STILE</p>
+              <p>Bản quyền thuộc về Công Ty TNHH STile</p>
             </div>
           </div>
         </div>
       </div>
     </footer>
+    </>
   );
 }
 
 function PillButton({
   label,
   theme = "light",
+  fullWidth = false,
+  noRounded = false,
 }: {
   label: string;
   theme?: "dark" | "light";
+  fullWidth?: boolean;
+  noRounded?: boolean;
 }) {
   const isLight = theme === "light";
   const themeClass = isLight ? "btn--light" : "btn--dark";
   return (
-    <div data-magnet-btn>
-      <div className="cta__item">
+    <div 
+      data-magnet-btn 
+      className={fullWidth ? "w-full" : ""}
+      style={noRounded ? { borderRadius: 0 } : undefined}
+    >
+      <div 
+        className={`cta__item ${fullWidth ? "w-full" : ""}`}
+        style={noRounded ? { borderRadius: 0 } : undefined}
+      >
         <button
           type="button"
-          className={`btn ${themeClass}`}
+          className={`btn ${themeClass} ${fullWidth ? "w-full" : ""}`}
+          style={noRounded ? { borderRadius: 0 } : undefined}
         >
-          <span className="btn__outline" />
-          <span className="btn__hover" />
+          <span 
+            className="btn__outline" 
+            style={noRounded ? { borderRadius: 0 } : undefined}
+          />
+          <span 
+            className="btn__hover" 
+            style={noRounded ? { borderRadius: 0 } : undefined}
+          />
           <span className="btn__text">{label}</span>
         </button>
       </div>
@@ -2084,7 +2344,7 @@ function InputField({ placeholder, full }: { placeholder: string; full?: boolean
     <input
       type="text"
       placeholder={placeholder}
-      className={`h-10 rounded border border-[#a4a4a4] px-3 text-[#222] placeholder:text-[#a4a4a4] focus:border-[#282828] focus:outline-none ${
+      className={`h-10 border border-black px-3 text-[#222] placeholder:text-[#a4a4a4] focus:border-black focus:outline-none ${
         full ? "col-span-2" : "col-span-1"
       }`}
     />
@@ -2096,7 +2356,7 @@ function TextareaField({ placeholder }: { placeholder: string }) {
     <textarea
       placeholder={placeholder}
       rows={3}
-      className="col-span-2 rounded border border-[#a4a4a4] px-3 py-2 text-[#222] placeholder:text-[#a4a4a4] focus:border-[#282828] focus:outline-none"
+      className="col-span-2 border border-black px-3 py-2 text-[#222] placeholder:text-[#a4a4a4] focus:border-black focus:outline-none"
     />
   );
 }
