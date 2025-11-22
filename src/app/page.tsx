@@ -1720,6 +1720,7 @@ function Gallery() {
 function FeaturedProducts() {
   const [activeVariant, setActiveVariant] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [animatingVariant, setAnimatingVariant] = useState<number | null>(null);
   const variant = featuredVariants[activeVariant];
 
   // DEBUG: Điều chỉnh vị trí header fixed trên desktop
@@ -1753,18 +1754,26 @@ function FeaturedProducts() {
       style={isMobile ? { height: '100vh', minHeight: '100vh' } : { minHeight: '100vh' }}
     >
       <div className="absolute inset-0 overflow-hidden">
-        <Image
-          key={variant.id}
-          src={imageSrc}
-          alt={variant.title}
-          fill
-          priority
-          className="object-cover"
-          style={{
-            objectPosition: isMobile ? "calc(50% - 60px) center" : "center",
-            transform: isMobile ? "scale(1.6)" : undefined,
-          }}
-        />
+        {featuredVariants.map((v) => {
+          const vImageSrc = isMobile && v.mobileImage ? v.mobileImage : v.image;
+          const isActive = v.id === variant.id;
+          return (
+            <Image
+              key={v.id}
+              src={vImageSrc}
+              alt={v.title}
+              fill
+              priority={v.id === featuredVariants[0].id}
+              className="object-cover transition-opacity duration-700 ease-in-out"
+              style={{
+                objectPosition: isMobile ? "calc(50% - 60px) center" : "center",
+                transform: isMobile ? "scale(1.6)" : undefined,
+                opacity: isActive ? 1 : 0,
+                pointerEvents: isActive ? 'auto' : 'none',
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Desktop: Fixed Header */}
@@ -1812,17 +1821,42 @@ function FeaturedProducts() {
               <div className="flex items-center justify-center gap-4">
                 {featuredVariants.map((item, index) => {
                   const isActive = index === activeVariant;
+                  const isAnimating = animatingVariant === index;
                   return (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setActiveVariant(index)}
+                      onClick={() => {
+                        setAnimatingVariant(index);
+                        setActiveVariant(index);
+                        setTimeout(() => setAnimatingVariant(null), 600);
+                      }}
                       aria-label={item.title}
-                      className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
-                        isActive ? "border-black" : "border-transparent hover:border-black/40"
-                      }`}
+                      className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
                       style={{ background: item.swatch }}
-                    />
+                    >
+                      <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
+                      <svg
+                        className="absolute inset-0 h-full w-full pointer-events-none"
+                        viewBox="0 0 26 26"
+                        style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
+                      >
+                        <circle
+                          cx="13"
+                          cy="13"
+                          r="12"
+                          fill="none"
+                          stroke="black"
+                          strokeWidth="1"
+                          strokeDasharray="75.4"
+                          strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
+                          className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
+                          style={{
+                            animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
+                          }}
+                        />
+                      </svg>
+                    </button>
                   );
                 })}
               </div>
@@ -1845,17 +1879,42 @@ function FeaturedProducts() {
               <div className="flex items-center justify-center gap-4">
                 {featuredVariants.map((item, index) => {
                   const isActive = index === activeVariant;
+                  const isAnimating = animatingVariant === index;
                   return (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setActiveVariant(index)}
+                      onClick={() => {
+                        setAnimatingVariant(index);
+                        setActiveVariant(index);
+                        setTimeout(() => setAnimatingVariant(null), 600);
+                      }}
                       aria-label={item.title}
-                      className={`h-[26px] w-[26px] rounded-full border transition-all duration-200 ${
-                        isActive ? "border-black" : "border-transparent hover:border-black/40"
-                      }`}
+                      className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
                       style={{ background: item.swatch }}
-                    />
+                    >
+                      <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
+                      <svg
+                        className="absolute inset-0 h-full w-full pointer-events-none"
+                        viewBox="0 0 26 26"
+                        style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
+                      >
+                        <circle
+                          cx="13"
+                          cy="13"
+                          r="12"
+                          fill="none"
+                          stroke="black"
+                          strokeWidth="1"
+                          strokeDasharray="75.4"
+                          strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
+                          className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
+                          style={{
+                            animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
+                          }}
+                        />
+                      </svg>
+                    </button>
                   );
                 })}
               </div>
