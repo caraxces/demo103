@@ -1313,9 +1313,9 @@ function Header() {
     ? "text-[#111111] hover:text-[#555555]"
     : "text-white hover:text-[#f2f2f2]";
 
-  const logoSrc = pastHero
-    ? "/LOGO/STILE Logo HEADER-14.svg"
-    : "/LOGO/STILE Logo HEADER-14.svg";
+  // Logo đen chính - hiển thị cùng logic với text
+  // Text đen → Logo đen, Text trắng → Logo trắng (invert)
+  const logoSrc = "/New STILE Logo Vector 1-16.png";
 
   const baseHeight = pastHero ? 58 : 80;
   const headerHeight = isHeaderHovered ? baseHeight + 12 : baseHeight;
@@ -1342,7 +1342,12 @@ function Header() {
             width={90}
             height={34}
             priority
-            className="h-auto w-[90px] lg:w-[110px]"
+            className="h-auto w-[90px] lg:w-[110px] transition-all duration-300 lg:mt-[10px]"
+            style={{
+              // Logo đen khi text đen (onLightSection = true) - invert từ trắng sang đen
+              // Logo trắng khi text trắng (onLightSection = false) - giữ nguyên trắng
+              filter: onLightSection ? 'brightness(0)' : 'none',
+            }}
           />
         </Link>
         <nav className="hidden items-center gap-10 text-[15px] font-normal tracking-[0.06em] lg:flex">
@@ -1675,7 +1680,7 @@ function Gallery() {
             transform: 'translateY(-50%) rotate(12deg)',
           }}
         >
-          <div className="relative w-full h-full overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden shadow-2xl" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' }}>
             <Image
               src={imagePairs[activePair][0].src}
               alt={imagePairs[activePair][0].alt}
@@ -1697,7 +1702,7 @@ function Gallery() {
             transform: 'translateY(-50%) rotate(0deg)',
           }}
         >
-          <div className="relative w-full h-full overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden shadow-2xl" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' }}>
             <Image
               src={imagePairs[activePair][1].src}
               alt={imagePairs[activePair][1].alt}
@@ -1806,9 +1811,16 @@ function FeaturedProducts() {
         })}
       </div>
 
+      {/* Title - Center Top */}
+      <div className="absolute top-0 left-0 right-0 z-20 flex justify-center pt-8 lg:pt-12">
+        <h2 className="font-heading text-[30px] lg:text-[48px] tracking-[0.05em] uppercase text-[#151515]">
+          SẢN PHẨM NỔI BẬT
+        </h2>
+      </div>
+
       {/* Desktop: Fixed Header */}
       <div 
-        className="hidden lg:block fixed z-10"
+        className="fixed"
         style={{
           top: DEBUG_HEADER_TOP,
           left: DEBUG_HEADER_LEFT,
@@ -1818,10 +1830,10 @@ function FeaturedProducts() {
           key={variant.id}
           className="animate-text-fade max-w-[520px] space-y-3"
         >
-          <span className="font-montserrat text-[15px] tracking-[0.3em] text-[#151515]">
+          <span className="font-montserrat text-[15px] tracking-[0.3em] text-[#151515] leading-[1]">
             {variant.collection}
           </span>
-          <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
+          <h3 className="font-montserrat text-[48px] font-semibold text-[#151515] leading-[1]">
             {variant.title}
           </h3>
         </div>
@@ -1838,10 +1850,10 @@ function FeaturedProducts() {
                 key={variant.id}
                 className="animate-text-fade max-w-[520px] w-full space-y-3 text-left"
               >
-                <span className="font-montserrat text-[15px] text-[#151515]">
+                <span className="font-montserrat text-[15px] text-[#151515] leading-[1]">
                   {variant.collection}
                 </span>
-                <h3 className="font-montserrat text-[48px] font-semibold text-[#151515]">
+                <h3 className="font-montserrat text-[48px] font-semibold text-[#151515] leading-[1]">
                   {variant.title}
                 </h3>
               </div>
@@ -2022,10 +2034,16 @@ function Collections() {
                 <div className="absolute inset-0 bg-black/5" />
 
                 <div className="absolute left-[180px] top-[92px]">
-                  <h2 className={`font-montserrat text-[48px] tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
+                  <h2 className={`font-heading text-[48px] tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
                 </div>
 
-                <div className={`absolute left-[670px] top-[290px] w-[400px] text-left ${index === 1 ? 'text-black' : 'text-white'}`}>
+                <div 
+                  className={`absolute w-[400px] text-left ${index === 1 ? 'text-black' : 'text-white'}`}
+                  style={{
+                    left: 'calc(670px * (100vw / 1470px))',
+                    top: '290px',
+                  }}
+                >
                   <div className="mb-10 flex items-baseline gap-10px font-montserrat text-[32px] tracking-[0.1em]">
                     <span className="normal-case">{slide.title}</span>
                     <span className={`text-[18px] normal-case tracking-normal ${index === 1 ? 'text-black' : 'text-white/75'}`}>{slide.subtitle}</span>
@@ -2219,7 +2237,7 @@ function Applications() {
   return (
     <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible">
       <div className="section-inner overflow-visible">
-        <div className="hidden w-full max-w-[1440px] flex-col px-[104px] lg:flex overflow-visible">
+        <div className="hidden w-full max-w-[1200px] flex-col px-[80px] lg:flex overflow-visible">
           <div className="relative mb-[38px]">
             <h2 className="text-center font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-[68px]">
               ỨNG DỤNG
@@ -2263,8 +2281,8 @@ function Applications() {
               })}
             </div>
           </div>
-          <div className="px-[15px] -mx-[104px] overflow-visible">
-            <div className="relative" style={{ height: hoveredImageIndex !== null ? '600px' : '514px', transition: 'height 0.5s ease-in-out' }}>
+          <div className="px-[15px] -mx-[80px] overflow-visible">
+            <div className="relative" style={{ height: hoveredImageIndex !== null ? '520px' : '450px', transition: 'height 0.5s ease-in-out' }}>
               {(() => {
                 const mainItem = activeSection.items.find(i => i.isMain);
                 const mainIndex = mainItem ? activeSection.items.findIndex(i => i.isMain) : 0;
@@ -2286,7 +2304,7 @@ function Applications() {
                     style={{
                       width: '100%',
                       height: '100%',
-                      gap: hoveredImageIndex !== null ? '30px' : '15px',
+                      gap: hoveredImageIndex !== null ? '24px' : '12px',
                     }}
                   >
                     {displayItems.map((item, index) => {
@@ -2296,7 +2314,7 @@ function Applications() {
                           key={`${activeSection.label}-${item.title}-${index}`} 
                           className="group relative flex-1 overflow-visible cursor-none transition-all duration-500 ease-in-out"
                           style={{  
-                            height: isHovered ? '600px' : '514px',
+                            height: isHovered ? '520px' : '450px',
                             transform: isHovered ? 'scale(1.1)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
                           }}
@@ -2440,9 +2458,12 @@ function Projects() {
         <div className="section-inner">
           <div className="mx-auto w-full max-w-[1440px] px-[82px]">
             <div className="mb-[76px]">
-              <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-4">
-                CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000]">
+                  CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
+                </h2>
+                <PillButton label="Xem tất cả" />
+              </div>
               <div className="h-[1px] bg-black" />
             </div>
             <div className="relative overflow-hidden">
@@ -2605,7 +2626,7 @@ function CatalogueCtaAndFooter() {
       {/* Desktop: Combined vertical layout */}
       <section id="contact" data-header-light="true" className="fullpage-section hidden lg:flex flex-col w-full" style={{ backgroundColor: 'transparent' }}>
         {/* Catalogue CTA - Top section, compact */}
-        <div className="relative flex-shrink-0 h-[250px] overflow-hidden">
+        <div className="relative flex-shrink-0 h-[280px] overflow-hidden">
           <Image
             src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
             alt="Đăng ký nhận catalogue"
