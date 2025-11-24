@@ -1673,14 +1673,20 @@ function Gallery() {
         <div
           className="absolute z-20 transition-opacity duration-700"
           style={{
-            left: '330px',
+            left: 'calc(330px * (100vw / 1470px))',
             top: '42%',
-            width: '400px',
-            height: '400px',
+            width: 'calc(400px * (100vw / 1470px))',
+            height: 'calc(400px * (100vw / 1470px))',
             transform: 'translateY(-50%) rotate(12deg)',
           }}
         >
-          <div className="relative w-full h-full overflow-hidden shadow-2xl" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' }}>
+          <div 
+            className="relative w-full h-full overflow-hidden shadow-2xl border border-white" 
+            style={{ 
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              borderWidth: 'calc(10px * (100vw / 1470px))',
+            }}
+          >
             <Image
               src={imagePairs[activePair][0].src}
               alt={imagePairs[activePair][0].alt}
@@ -1695,14 +1701,20 @@ function Gallery() {
         <div
           className="absolute z-[5] transition-opacity duration-700"
           style={{
-            left: '80px',
+            left: 'calc(80px * (100vw / 1470px))',
             top: '70%',
-            width: '400px',
-            height: '400px',
+            width: 'calc(400px * (100vw / 1470px))',
+            height: 'calc(400px * (100vw / 1470px))',
             transform: 'translateY(-50%) rotate(0deg)',
           }}
         >
-          <div className="relative w-full h-full overflow-hidden shadow-2xl" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' }}>
+          <div 
+            className="relative w-full h-full overflow-hidden shadow-2xl border border-white" 
+            style={{ 
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              borderWidth: 'calc(10px * (100vw / 1470px))',
+            }}
+          >
             <Image
               src={imagePairs[activePair][1].src}
               alt={imagePairs[activePair][1].alt}
@@ -1714,15 +1726,40 @@ function Gallery() {
         </div>
 
         {/* Content - Right Side */}
-        <div className="absolute right-[100px] top-1/2 z-30 max-w-[500px] pr-8 lg:pr-16">
-          <div className="space-y-6">
-            <h2 className="font-heading text-[64px] leading-[64px] tracking-[0.05em] uppercase text-white">
+        <div 
+          className="absolute top-1/2 z-30"
+          style={{
+            right: 'calc(100px * (100vw / 1470px))',
+            maxWidth: 'calc(500px * (100vw / 1470px))',
+            paddingRight: 'calc(32px * (100vw / 1470px))',
+          }}
+        >
+          <div 
+            style={{
+              gap: 'calc(24px * (100vw / 1470px))',
+            }}
+            className="flex flex-col"
+          >
+            <h2 
+              className="font-heading uppercase text-white"
+              style={{
+                fontSize: 'calc(64px * (100vw / 1470px))',
+                lineHeight: 'calc(64px * (100vw / 1470px))',
+                letterSpacing: '0.05em',
+              }}
+            >
               ARTILE<br />GALLERY
             </h2>
-            <p className="font-montserrat text-[16px] leading-[28px] text-gray-300">
+            <p 
+              className="font-montserrat text-gray-300"
+              style={{
+                fontSize: 'calc(16px * (100vw / 1470px))',
+                lineHeight: 'calc(28px * (100vw / 1470px))',
+              }}
+            >
               Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
             </p>
-            <div className="pt-2">
+            <div style={{ paddingTop: 'calc(8px * (100vw / 1470px))' }}>
               <PillButton label="Khám phá ngay" theme="dark" />
             </div>
           </div>
@@ -1812,8 +1849,18 @@ function FeaturedProducts() {
       </div>
 
       {/* Title - Center Top */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex justify-center pt-8 lg:pt-12">
-        <h2 className="font-heading text-[30px] lg:text-[48px] tracking-[0.05em] uppercase text-[#151515]">
+      <div 
+        className="absolute top-0 left-0 right-0 z-20 flex justify-center"
+        style={{
+          paddingTop: 'calc(48px * (100vw / 1470px))',
+        }}
+      >
+        <h2 
+          className="font-heading tracking-[0.05em] uppercase text-[#151515]"
+          style={{
+            fontSize: 'calc(48px * (100vw / 1470px))',
+          }}
+        >
           SẢN PHẨM NỔI BẬT
         </h2>
       </div>
@@ -1828,12 +1875,26 @@ function FeaturedProducts() {
       >
         <div
           key={variant.id}
-          className="animate-text-fade max-w-[520px] space-y-3"
+          className="animate-text-fade"
+          style={{
+            maxWidth: 'calc(520px * (100vw / 1470px))',
+            gap: 'calc(12px * (100vw / 1470px))',
+          }}
         >
-          <span className="font-montserrat text-[15px] tracking-[0.3em] text-[#151515] leading-[1]">
+          <span 
+            className="font-montserrat tracking-[0.3em] text-[#151515] leading-[1]"
+            style={{
+              fontSize: 'calc(15px * (100vw / 1470px))',
+            }}
+          >
             {variant.collection}
           </span>
-          <h3 className="font-montserrat text-[48px] font-semibold text-[#151515] leading-[1]">
+          <h3 
+            className="font-montserrat font-semibold text-[#151515] leading-[1]"
+            style={{
+              fontSize: 'calc(48px * (100vw / 1470px))',
+            }}
+          >
             {variant.title}
           </h3>
         </div>
@@ -1907,13 +1968,25 @@ function FeaturedProducts() {
         ) : (
           <>
             {/* Desktop: Content below fixed header */}
-            <div className="max-w-[520px] space-y-6">
-              <p className="font-montserrat text-[15px] leading-[26px] text-[#3a3a3a]">
+            <div 
+              style={{
+                maxWidth: 'calc(520px * (100vw / 1470px))',
+                gap: 'calc(24px * (100vw / 1470px))',
+              }}
+              className="flex flex-col"
+            >
+              <p 
+                className="font-montserrat text-[#3a3a3a]"
+                style={{
+                  fontSize: 'calc(15px * (100vw / 1470px))',
+                  lineHeight: 'calc(26px * (100vw / 1470px))',
+                }}
+              >
                 The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.
                 <br /><br />
                 In the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.
               </p>
-              <div className="pt-2">
+              <div style={{ paddingTop: 'calc(8px * (100vw / 1470px))' }}>
                 <PillButton label="Khám phá ngay" />
               </div>
             </div>
@@ -2296,22 +2369,61 @@ function Applications() {
   return (
     <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible">
       <div className="section-inner overflow-visible">
-        <div className="hidden w-full max-w-[1200px] flex-col px-[80px] lg:flex overflow-visible">
-          <div className="relative mb-[38px]">
-            <h2 className="text-center font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000] mb-[68px]">
+        <div 
+          className="hidden w-full flex-col lg:flex overflow-visible"
+          style={{
+            maxWidth: 'calc(1200px * (100vw / 1470px))',
+            paddingLeft: 'calc(80px * (100vw / 1470px))',
+            paddingRight: 'calc(80px * (100vw / 1470px))',
+          }}
+        >
+          <div 
+            className="relative"
+            style={{
+              marginBottom: 'calc(38px * (100vw / 1470px))',
+            }}
+          >
+            <h2 
+              className="text-center font-heading text-[#000]"
+              style={{
+                fontSize: 'calc(48px * (100vw / 1470px))',
+                lineHeight: 'calc(48px * (100vw / 1470px))',
+                letterSpacing: '2.4px',
+                marginBottom: 'calc(68px * (100vw / 1470px))',
+              }}
+            >
               ỨNG DỤNG
             </h2>
-            <div className="absolute left-0 right-0 top-[68px] h-[0.5px] bg-black" />
+            <div 
+              className="absolute left-0 right-0 bg-black"
+              style={{
+                top: 'calc(68px * (100vw / 1470px))',
+                height: 'calc(0.5px * (100vw / 1470px))',
+              }}
+            />
           </div>
-          <div className="mb-[38px] flex justify-center">
-            <div ref={tabsRef} className="relative inline-flex h-[53px] items-center gap-[32px]">
+          <div 
+            className="mb-[38px] flex justify-center"
+            style={{
+              marginBottom: 'calc(38px * (100vw / 1470px))',
+            }}
+          >
+            <div 
+              ref={tabsRef} 
+              className="relative inline-flex items-center"
+              style={{
+                height: 'calc(53px * (100vw / 1470px))',
+                gap: 'calc(32px * (100vw / 1470px))',
+              }}
+            >
               <span
                 className="pointer-events-none absolute rounded-[11px] bg-[#282828] transition-all duration-300"
                 style={{
                   left: highlightStyle.left,
                   top: 0,
                   width: highlightStyle.width,
-                  height: '53px',
+                  height: 'calc(53px * (100vw / 1470px))',
+                  borderRadius: 'calc(11px * (100vw / 1470px))',
                   opacity: highlightStyle.width ? 1 : 0,
                 }}
               />
@@ -2325,12 +2437,15 @@ function Applications() {
                     ref={(node) => {
                       tabRefs.current[index] = node;
                     }}
-                    className={`relative z-10 flex h-[48px] items-center justify-center font-montserrat text-[20px] font-normal uppercase tracking-[1px] transition-colors duration-300 whitespace-nowrap ${
+                    className={`relative z-10 flex items-center justify-center font-montserrat font-normal uppercase transition-colors duration-300 whitespace-nowrap ${
                       active ? 'text-white' : 'text-[#000]'
                     }`}
                     style={{
-                      marginTop: '3px',
-                      padding: '10px 20px',
+                      height: 'calc(48px * (100vw / 1470px))',
+                      marginTop: 'calc(3px * (100vw / 1470px))',
+                      padding: `calc(10px * (100vw / 1470px)) calc(20px * (100vw / 1470px))`,
+                      fontSize: 'calc(20px * (100vw / 1470px))',
+                      letterSpacing: 'calc(1px * (100vw / 1470px))',
                       color: active ? '#ffffff' : '#000000',
                     }}
                   >
@@ -2340,8 +2455,24 @@ function Applications() {
               })}
             </div>
           </div>
-          <div className="px-[15px] -mx-[80px] overflow-visible">
-            <div className="relative" style={{ height: hoveredImageIndex !== null ? '520px' : '450px', transition: 'height 0.5s ease-in-out' }}>
+          <div 
+            className="overflow-visible"
+            style={{
+              paddingLeft: 'calc(15px * (100vw / 1470px))',
+              paddingRight: 'calc(15px * (100vw / 1470px))',
+              marginLeft: 'calc(-80px * (100vw / 1470px))',
+              marginRight: 'calc(-80px * (100vw / 1470px))',
+            }}
+          >
+            <div 
+              className="relative" 
+              style={{ 
+                height: hoveredImageIndex !== null 
+                  ? 'calc(520px * (100vw / 1470px))' 
+                  : 'calc(450px * (100vw / 1470px))', 
+                transition: 'height 0.5s ease-in-out' 
+              }}
+            >
               {(() => {
                 const mainItem = activeSection.items.find(i => i.isMain);
                 const mainIndex = mainItem ? activeSection.items.findIndex(i => i.isMain) : 0;
@@ -2363,7 +2494,9 @@ function Applications() {
                     style={{
                       width: '100%',
                       height: '100%',
-                      gap: hoveredImageIndex !== null ? '24px' : '12px',
+                      gap: hoveredImageIndex !== null 
+                        ? 'calc(24px * (100vw / 1470px))' 
+                        : 'calc(12px * (100vw / 1470px))',
                     }}
                   >
                     {displayItems.map((item, index) => {
@@ -2373,7 +2506,9 @@ function Applications() {
                           key={`${activeSection.label}-${item.title}-${index}`} 
                           className="group relative flex-1 overflow-visible cursor-none transition-all duration-500 ease-in-out"
                           style={{  
-                            height: isHovered ? '520px' : '450px',
+                            height: isHovered 
+                              ? 'calc(520px * (100vw / 1470px))' 
+                              : 'calc(450px * (100vw / 1470px))',
                             transform: isHovered ? 'scale(1.1)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
                           }}
@@ -2515,15 +2650,43 @@ function Projects() {
     <section id="projects" data-header-light="true" className="fullpage-section flex w-full items-center justify-center" style={{ backgroundColor: 'transparent' }}>
       <div className="hidden w-full lg:block">
         <div className="section-inner">
-          <div className="mx-auto w-full max-w-[1440px] px-[82px]">
-            <div className="mb-[76px]">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-heading text-[48px] leading-[48px] tracking-[2.4px] text-[#000]">
+          <div 
+            className="mx-auto w-full"
+            style={{
+              maxWidth: 'calc(1440px * (100vw / 1470px))',
+              paddingLeft: 'calc(82px * (100vw / 1470px))',
+              paddingRight: 'calc(82px * (100vw / 1470px))',
+            }}
+          >
+            <div 
+              style={{
+                marginBottom: 'calc(76px * (100vw / 1470px))',
+              }}
+            >
+              <div 
+                className="flex items-center justify-between"
+                style={{
+                  marginBottom: 'calc(16px * (100vw / 1470px))',
+                }}
+              >
+                <h2 
+                  className="font-heading text-[#000]"
+                  style={{
+                    fontSize: 'calc(48px * (100vw / 1470px))',
+                    lineHeight: 'calc(48px * (100vw / 1470px))',
+                    letterSpacing: 'calc(2.4px * (100vw / 1470px))',
+                  }}
+                >
                   CÔNG TRÌNH &amp;&nbsp;XU HƯỚNG
                 </h2>
                 <PillButton label="Xem tất cả" />
               </div>
-              <div className="h-[1px] bg-black" />
+              <div 
+                className="bg-black"
+                style={{
+                  height: 'calc(1px * (100vw / 1470px))',
+                }}
+              />
             </div>
             <div className="relative overflow-hidden">
               <div 
@@ -2535,8 +2698,11 @@ function Projects() {
                 {Array.from({ length: Math.ceil(trendArticles.length / 2) }).map((_, pairIndex) => (
                   <div 
                     key={pairIndex}
-                    className="grid grid-cols-2 gap-[60px] flex-shrink-0"
-                    style={{ width: '100%' }}
+                    className="grid grid-cols-2 flex-shrink-0"
+                    style={{ 
+                      width: '100%',
+                      gap: 'calc(60px * (100vw / 1470px))',
+                    }}
                   >
                     {[0, 1].map((offset) => {
                       const articleIndex = pairIndex * 2 + offset;
@@ -2551,7 +2717,13 @@ function Projects() {
                           onMouseEnter={() => setHoveredCardIndex(articleIndex)}
                           onMouseLeave={() => setHoveredCardIndex(null)}
                         >
-                          <div className="relative w-full overflow-hidden rounded-[7px]" style={{ aspectRatio: '601/355' }}>
+                          <div 
+                            className="relative w-full overflow-hidden rounded-[7px]" 
+                            style={{ 
+                              aspectRatio: '601/355',
+                              borderRadius: 'calc(7px * (100vw / 1470px))',
+                            }}
+                          >
                             <Image 
                               src={article.image} 
                               alt={article.title} 
@@ -2564,15 +2736,33 @@ function Projects() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                              <p className="font-montserrat text-[20px] font-normal text-white text-center tracking-[1px] whitespace-pre">
+                              <p 
+                                className="font-montserrat font-normal text-white text-center whitespace-pre"
+                                style={{
+                                  fontSize: 'calc(20px * (100vw / 1470px))',
+                                  letterSpacing: 'calc(1px * (100vw / 1470px))',
+                                }}
+                              >
                                 Khám phá thêm
                               </p>
                             </div>
                           </div>
-                          <h3 className="font-montserrat text-[32px] font-medium leading-[24px] text-[#000]">
+                          <h3 
+                            className="font-montserrat font-medium text-[#000]"
+                            style={{
+                              fontSize: 'calc(32px * (100vw / 1470px))',
+                              lineHeight: 'calc(24px * (100vw / 1470px))',
+                            }}
+                          >
                             {article.title}
                           </h3>
-                          <p className="font-montserrat text-[14px] font-normal leading-[19px] text-[#000]">
+                          <p 
+                            className="font-montserrat font-normal text-[#000]"
+                            style={{
+                              fontSize: 'calc(14px * (100vw / 1470px))',
+                              lineHeight: 'calc(19px * (100vw / 1470px))',
+                            }}
+                          >
                             {article.description}
                           </p>
                         </Link>
@@ -2685,7 +2875,12 @@ function CatalogueCtaAndFooter() {
       {/* Desktop: Combined vertical layout */}
       <section id="contact" data-header-light="true" className="fullpage-section hidden lg:flex flex-col w-full" style={{ backgroundColor: 'transparent' }}>
         {/* Catalogue CTA - Top section, compact */}
-        <div className="relative flex-shrink-0 h-[280px] overflow-hidden">
+        <div 
+          className="relative flex-shrink-0 overflow-hidden"
+          style={{
+            height: 'calc(280px * (100vw / 1470px))',
+          }}
+        >
           <Image
             src="/NHẬN ĐĂNG KÝ CATALOGUE/catalogue.png"
             alt="Đăng ký nhận catalogue"
@@ -2696,8 +2891,20 @@ function CatalogueCtaAndFooter() {
           />
           <div className="absolute inset-0 bg-black/45" />
           <div className="relative z-10 flex w-full h-full items-center justify-center">
-            <div className="flex flex-col items-center justify-center gap-4 px-6 text-center">
-              <h2 className="font-heading text-[36px] uppercase leading-tight tracking-[0.08em] text-white">
+            <div 
+              className="flex flex-col items-center justify-center text-center"
+              style={{
+                gap: 'calc(16px * (100vw / 1470px))',
+                paddingLeft: 'calc(24px * (100vw / 1470px))',
+                paddingRight: 'calc(24px * (100vw / 1470px))',
+              }}
+            >
+              <h2 
+                className="font-heading uppercase leading-tight tracking-[0.08em] text-white"
+                style={{
+                  fontSize: 'calc(36px * (100vw / 1470px))',
+                }}
+              >
                 NHẬN CATALOGUE
               </h2>
               <div className="flex justify-center">
@@ -2708,22 +2915,54 @@ function CatalogueCtaAndFooter() {
         </div>
 
         {/* Footer - Bottom section */}
-        <div className="flex-1 bg-[#E3DCD1] px-[104px] py-12">
-          <div className="mx-auto w-full max-w-[1440px]">
-            <div className="flex flex-col gap-6 mb-8">
+        <div 
+          className="flex-1 bg-[#E3DCD1]"
+          style={{
+            paddingLeft: 'calc(104px * (100vw / 1470px))',
+            paddingRight: 'calc(104px * (100vw / 1470px))',
+            paddingTop: 'calc(48px * (100vw / 1470px))',
+            paddingBottom: 'calc(48px * (100vw / 1470px))',
+          }}
+        >
+          <div 
+            className="mx-auto w-full"
+            style={{
+              maxWidth: 'calc(1440px * (100vw / 1470px))',
+            }}
+          >
+            <div 
+              className="flex flex-col mb-8"
+              style={{
+                gap: 'calc(24px * (100vw / 1470px))',
+                marginBottom: 'calc(32px * (100vw / 1470px))',
+              }}
+            >
               {/* Logo + Social Icons - Top row with border below */}
-              <div className="border-b border-black pb-6">
+              <div 
+                className="border-b border-black"
+                style={{
+                  paddingBottom: 'calc(24px * (100vw / 1470px))',
+                }}
+              >
                 <div className="flex items-center justify-between">
                   <Image
                     src="/FOOTER/logoSTile.png"
                     alt="Stile"
                     width={180}
                     height={72}
-                    className="h-auto w-[75px]"
+                    className="h-auto"
+                    style={{
+                      width: 'calc(75px * (100vw / 1470px))',
+                    }}
                   />
                   
                   {/* Social Media Icons */}
-                  <div className="flex items-center gap-3">
+                  <div 
+                    className="flex items-center"
+                    style={{
+                      gap: 'calc(12px * (100vw / 1470px))',
+                    }}
+                  >
                     {footerSocials.map((item) => (
                       <Image
                         key={item.alt}
@@ -2731,7 +2970,11 @@ function CatalogueCtaAndFooter() {
                         alt={item.alt}
                         width={32}
                         height={32}
-                        className="h-8 w-8"
+                        className="h-auto"
+                        style={{
+                          width: 'calc(32px * (100vw / 1470px))',
+                          height: 'calc(32px * (100vw / 1470px))',
+                        }}
                       />
                     ))}
                   </div>
@@ -2739,15 +2982,36 @@ function CatalogueCtaAndFooter() {
               </div>
 
               {/* Company Name - Below border line */}
-              <h3 className="font-manrope text-[16px] font-bold uppercase tracking-[0.05em] text-[#111111]">
+              <h3 
+                className="font-manrope font-bold uppercase tracking-[0.05em] text-[#111111]"
+                style={{
+                  fontSize: 'calc(16px * (100vw / 1470px))',
+                }}
+              >
                 CÔNG TY TNHH STILE
               </h3>
 
               {/* Row: Contact Info + Navigation + Contact Form */}
-              <div className="flex items-start justify-between gap-8">
+              <div 
+                className="flex items-start justify-between"
+                style={{
+                  gap: 'calc(32px * (100vw / 1470px))',
+                }}
+              >
                 {/* Left: Contact Info */}
-                <div className="flex flex-col gap-4">
-                  <div className="space-y-2 font-montserrat text-[14px] leading-6 text-[#111111]">
+                <div 
+                  className="flex flex-col"
+                  style={{
+                    gap: 'calc(16px * (100vw / 1470px))',
+                  }}
+                >
+                  <div 
+                    className="space-y-2 font-montserrat text-[#111111]"
+                    style={{
+                      fontSize: 'calc(14px * (100vw / 1470px))',
+                      lineHeight: 'calc(24px * (100vw / 1470px))',
+                    }}
+                  >
                     <p>098 165 0042</p>
                     <p>infor@stile.com.vn</p>
                     <p>155 - 157 Nguyễn Cơ Thạch, P. An Khánh, TP. HCM</p>
@@ -2759,12 +3023,22 @@ function CatalogueCtaAndFooter() {
                     alt="Đã thông báo bộ công thương"
                     width={140}
                     height={42}
-                    className="h-auto w-[140px]"
+                    className="h-auto"
+                    style={{
+                      width: 'calc(140px * (100vw / 1470px))',
+                    }}
                   />
                 </div>
 
                 {/* Middle: Navigation Links - 1 column */}
-                <div className="flex flex-col gap-y-2 font-montserrat text-[14px] leading-6 text-[#111111]">
+                <div 
+                  className="flex flex-col font-montserrat text-[#111111]"
+                  style={{
+                    gap: 'calc(8px * (100vw / 1470px))',
+                    fontSize: 'calc(14px * (100vw / 1470px))',
+                    lineHeight: 'calc(24px * (100vw / 1470px))',
+                  }}
+                >
                   <Link href="#" className="transition hover:text-[#555]">Về STile</Link>
                   <Link href="#" className="transition hover:text-[#555]">Artile Gallery</Link>
                   <Link href="#" className="transition hover:text-[#555]">Sản Phẩm</Link>
@@ -2773,8 +3047,20 @@ function CatalogueCtaAndFooter() {
                 </div>
 
                 {/* Right: Contact Form */}
-                <div className="flex flex-col gap-4">
-                  <form className="grid grid-cols-2 gap-x-[12px] gap-y-3 font-manrope text-[12px]">
+                <div 
+                  className="flex flex-col"
+                  style={{
+                    gap: 'calc(16px * (100vw / 1470px))',
+                  }}
+                >
+                  <form 
+                    className="grid grid-cols-2 font-manrope"
+                    style={{
+                      columnGap: 'calc(12px * (100vw / 1470px))',
+                      rowGap: 'calc(12px * (100vw / 1470px))',
+                      fontSize: 'calc(12px * (100vw / 1470px))',
+                    }}
+                  >
                     <InputField placeholder="Họ và Tên" />
                     <InputField placeholder="Số Điện Thoại" />
                     <InputField placeholder="Email" full />
@@ -2790,8 +3076,19 @@ function CatalogueCtaAndFooter() {
             </div>
 
             {/* Legal Links and Copyright */}
-            <div className="flex items-center justify-between pt-6 border-t border-[#d0d0d0] font-manrope text-[12px] text-[#111111]">
-              <div className="flex gap-6">
+            <div 
+              className="flex items-center justify-between border-t border-[#d0d0d0] font-manrope text-[#111111]"
+              style={{
+                paddingTop: 'calc(24px * (100vw / 1470px))',
+                fontSize: 'calc(12px * (100vw / 1470px))',
+              }}
+            >
+              <div 
+                className="flex"
+                style={{
+                  gap: 'calc(24px * (100vw / 1470px))',
+                }}
+              >
                 <Link href="#" className="transition hover:text-[#555]">
                   Chính sách bảo mật
                 </Link>
@@ -2965,9 +3262,15 @@ function InputField({ placeholder, full }: { placeholder: string; full?: boolean
     <input
       type="text"
       placeholder={placeholder}
-      className={`h-10 border border-black px-3 text-[#222] placeholder:text-[#a4a4a4] focus:border-black focus:outline-none ${
+      className={`border border-black text-[#222] placeholder:text-[#a4a4a4] focus:border-black focus:outline-none ${
         full ? "col-span-2" : "col-span-1"
       }`}
+      style={{
+        height: 'calc(40px * (100vw / 1470px))',
+        paddingLeft: 'calc(12px * (100vw / 1470px))',
+        paddingRight: 'calc(12px * (100vw / 1470px))',
+        fontSize: 'calc(12px * (100vw / 1470px))',
+      }}
     />
   );
 }
@@ -2977,7 +3280,14 @@ function TextareaField({ placeholder }: { placeholder: string }) {
     <textarea
       placeholder={placeholder}
       rows={3}
-      className="col-span-2 border border-black px-3 py-2 text-[#222] placeholder:text-[#a4a4a4] focus:border-black focus:outline-none"
+      className="col-span-2 border border-black text-[#222] placeholder:text-[#a4a4a4] focus:border-black focus:outline-none"
+      style={{
+        paddingLeft: 'calc(12px * (100vw / 1470px))',
+        paddingRight: 'calc(12px * (100vw / 1470px))',
+        paddingTop: 'calc(8px * (100vw / 1470px))',
+        paddingBottom: 'calc(8px * (100vw / 1470px))',
+        fontSize: 'calc(12px * (100vw / 1470px))',
+      }}
     />
   );
 }
