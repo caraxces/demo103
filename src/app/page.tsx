@@ -959,7 +959,7 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
       </Link>
       {isHovered && (
         <div
-          className="fixed left-0 right-0 bg-[#E3DCD1] z-50 border-t border-b border-black"
+          className="fixed left-0 right-0 bg-[#EEEBE6] z-50 border-t border-b border-black"
           style={{ 
             top: '80px',
             width: '100%',
@@ -1126,7 +1126,7 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
       </Link>
       {isHovered && (
         <div
-          className="fixed left-0 right-0 bg-[#E3DCD1] z-50 border-t border-b border-black"
+          className="fixed left-0 right-0 bg-[#EEEBE6] z-50 border-t border-b border-black"
           style={{ 
             top: '80px',
             width: '100%',
