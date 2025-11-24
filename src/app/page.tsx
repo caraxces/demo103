@@ -2628,7 +2628,7 @@ function CatalogueCtaAndFooter() {
         {/* Catalogue CTA - Top section, compact */}
         <div className="relative flex-shrink-0 h-[280px] overflow-hidden">
           <Image
-            src="/NHẬN ĐĂNG KÝ CATALOGUE/JUNGLE CHIC (7).jpg"
+            src="/NHẬN ĐĂNG KÝ CATALOGUE/catalogue.png"
             alt="Đăng ký nhận catalogue"
             fill
             className="object-cover"
