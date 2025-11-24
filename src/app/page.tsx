@@ -2037,37 +2037,84 @@ function Collections() {
                   className="absolute"
                   style={{
                     left: 'calc(180px * (100vw / 1470px))',
-                    top: '92px',
+                    top: 'calc(92px * (100vw / 1470px))',
                   }}
                 >
-                  <h2 className={`font-heading text-[48px] tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
+                  <h2 
+                    className={`font-heading tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}
+                    style={{
+                      fontSize: 'calc(48px * (100vw / 1470px))',
+                    }}
+                  >
+                    {slide.heading}
+                  </h2>
                 </div>
 
                 <div 
-                  className={`absolute w-[400px] text-left ${index === 1 ? 'text-black' : 'text-white'}`}
+                  className={`absolute text-left ${index === 1 ? 'text-black' : 'text-white'}`}
                   style={{
                     left: 'calc(670px * (100vw / 1470px))',
-                    top: '290px',
+                    top: 'calc(290px * (100vw / 1470px))',
+                    width: 'calc(400px * (100vw / 1470px))',
                   }}
                 >
-                  <div className="mb-10 flex items-baseline gap-10px font-montserrat text-[32px] tracking-[0.1em]">
-                    <span className="normal-case">{slide.title}</span>
-                    <span className={`text-[18px] normal-case tracking-normal ${index === 1 ? 'text-black' : 'text-white/75'}`}>{slide.subtitle}</span>
+                  <div 
+                    className="mb-10 flex items-baseline gap-10px font-montserrat tracking-[0.1em]"
+                    style={{
+                      marginBottom: 'calc(40px * (100vw / 1470px))',
+                      gap: 'calc(10px * (100vw / 1470px))',
+                    }}
+                  >
+                    <span 
+                      className="normal-case"
+                      style={{
+                        fontSize: 'calc(32px * (100vw / 1470px))',
+                      }}
+                    >
+                      {slide.title}
+                    </span>
+                    <span 
+                      className={`normal-case tracking-normal ${index === 1 ? 'text-black' : 'text-white/75'}`}
+                      style={{
+                        fontSize: 'calc(18px * (100vw / 1470px))',
+                      }}
+                    >
+                      {slide.subtitle}
+                    </span>
                   </div>
-                  <p className={`mt-5 font-montserrat text-[15px] leading-[26px] ${index === 1 ? 'text-black/90' : 'text-white/90'}`}>{slide.description}</p>
-                  <div className="pt-7">
+                  <p 
+                    className={`mt-5 font-montserrat ${index === 1 ? 'text-black/90' : 'text-white/90'}`}
+                    style={{
+                      marginTop: 'calc(20px * (100vw / 1470px))',
+                      fontSize: 'calc(15px * (100vw / 1470px))',
+                      lineHeight: 'calc(26px * (100vw / 1470px))',
+                    }}
+                  >
+                    {slide.description}
+                  </p>
+                  <div 
+                    style={{
+                      paddingTop: 'calc(28px * (100vw / 1470px))',
+                    }}
+                  >
                     <PillButton label={slide.ctaLabel} theme={index === 0 ? "dark" : "light"} />
                   </div>
                 </div>
 
                 <div 
-                  className={`absolute w-[280px] text-center ${index === 1 ? 'text-black' : 'text-white'}`}
+                  className={`absolute text-center ${index === 1 ? 'text-black' : 'text-white'}`}
                   style={{
                     left: 'calc(920px * (100vw / 1470px))',
-                    top: '640px',
+                    top: 'calc(640px * (100vw / 1470px))',
+                    width: 'calc(280px * (100vw / 1470px))',
                   }}
                 >
-                  <p className="font-montserrat text-[22px] italic tracking-[0.25em]">
+                  <p 
+                    className="font-montserrat italic tracking-[0.25em]"
+                    style={{
+                      fontSize: 'calc(22px * (100vw / 1470px))',
+                    }}
+                  >
                     &ldquo;{slide.highlightTitle}&rdquo;
                   </p>
                 </div>
