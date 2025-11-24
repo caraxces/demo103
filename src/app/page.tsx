@@ -379,7 +379,7 @@ const trendArticles = [
     title: "CÔNG TRÌNH TIÊU BIỂU",
     description:
       "Chiêm ngưỡng những công trình tiêu biểu được thiết kế và thi công bởi đội ngũ chuyên nghiệp của chúng tôi.",
-    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/BÀI POST TRANG 2.jpg",
+    image: "/CÔNG TRÌNH VÀ XU HƯỚNG/CÔNG TRÌNH/image2.jpg",
     href: "#",
   },
 ] as const;
@@ -2033,7 +2033,13 @@ function Collections() {
                 />
                 <div className="absolute inset-0 bg-black/5" />
 
-                <div className="absolute left-[180px] top-[92px]">
+                <div 
+                  className="absolute"
+                  style={{
+                    left: 'calc(180px * (100vw / 1470px))',
+                    top: '92px',
+                  }}
+                >
                   <h2 className={`font-heading text-[48px] tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}>{slide.heading}</h2>
                 </div>
 
@@ -2054,7 +2060,13 @@ function Collections() {
                   </div>
                 </div>
 
-                <div className={`absolute left-[920px] top-[640px] w-[280px] text-center ${index === 1 ? 'text-black' : 'text-white'}`}>
+                <div 
+                  className={`absolute w-[280px] text-center ${index === 1 ? 'text-black' : 'text-white'}`}
+                  style={{
+                    left: 'calc(920px * (100vw / 1470px))',
+                    top: '640px',
+                  }}
+                >
                   <p className="font-montserrat text-[22px] italic tracking-[0.25em]">
                     &ldquo;{slide.highlightTitle}&rdquo;
                   </p>
