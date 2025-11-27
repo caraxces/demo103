@@ -61,19 +61,19 @@ const productDropdownItems = [
 
 const galleryImages = [
   {
-    src: "/ARTILE GALLERY/1 ARTILE GALLERY.JPG",
+    src: "/ARTILE GALLERY/image1.png",
     alt: "Artile Gallery 1",
   },
   {
-    src: "/ARTILE GALLERY/2 ARTILE GALLERY.JPG",
+    src: "/ARTILE GALLERY/image2.png",
     alt: "Artile Gallery 2",
   },
   {
-    src: "/ARTILE GALLERY/3 ARTILE GALLERY.JPG",
+    src: "/ARTILE GALLERY/image3.png",
     alt: "Artile Gallery 3",
   },
   {
-    src: "/ARTILE GALLERY/4 ARTILE GALLERY.JPG",
+    src: "/ARTILE GALLERY/image4.png",
     alt: "Artile Gallery 4",
   },
 ] as const;
@@ -1545,6 +1545,20 @@ function About() {
   const stickyRef = useRef<HTMLDivElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
   const [imageVisible, setImageVisible] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      if (typeof window !== 'undefined') {
+        // Tablet: 960px - 1023px (giữa mobile và desktop)
+        setIsTablet(window.innerWidth >= 960 && window.innerWidth < 1024);
+      }
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     const node = stickyRef.current;
@@ -1579,39 +1593,93 @@ function About() {
       className="fullpage-section flex items-center"
     >
       <div className="section-inner">
-        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] items-center gap-20 px-[104px] max-lg:flex max-lg:flex-col max-lg:gap-10 max-lg:px-0 max-lg:pt-16">
+        <div 
+          className={`mx-auto grid w-full items-center max-w-[1440px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] gap-20 px-[104px] ${!isTablet ? 'max-lg:flex max-lg:flex-col max-lg:gap-10 max-lg:px-0 max-lg:pt-16' : ''}`}
+          style={isTablet ? {
+            display: 'grid',
+            maxWidth: 'calc(1440px * (100vw / 1470px))',
+            gridTemplateColumns: 'minmax(0, calc(640px * (100vw / 1470px))) minmax(0, 1fr)',
+            gap: 'calc(80px * (100vw / 1470px))',
+            paddingLeft: 'calc(104px * (100vw / 1470px))',
+            paddingRight: 'calc(104px * (100vw / 1470px))',
+            paddingTop: 0,
+          } : undefined}
+        >
           <div
             ref={textRef}
-            className="flex flex-col gap-6 transition-transform duration-300 ease-out will-change-transform text-left max-lg:text-center max-lg:px-6"
+            className={`flex flex-col transition-transform duration-300 ease-out will-change-transform text-left gap-6 ${!isTablet ? 'max-lg:text-center max-lg:px-6' : ''}`}
+            style={isTablet ? {
+              gap: 'calc(24px * (100vw / 1470px))',
+              textAlign: 'left',
+              paddingLeft: 0,
+              paddingRight: 0,
+            } : undefined}
           >
-            <span className="font-alt text-[20px] font-medium tracking-[0.05em] max-lg:mt-6 max-lg:text-[14px]">VỀ CHÚNG TÔI</span>
-            <h2 className="font-heading text-[48px] leading-[60px] tracking-[0.02em] uppercase text-[#000000] max-lg:text-[42px] max-lg:leading-[52px]">
+            <span 
+              className={`font-alt font-medium tracking-[0.05em] text-[20px] ${!isTablet ? 'max-lg:mt-6 max-lg:text-[14px]' : ''}`}
+              style={isTablet ? {
+                fontSize: 'calc(20px * (100vw / 1470px))',
+                letterSpacing: 'calc(0.05em * (100vw / 1470px))',
+                marginTop: 0,
+              } : undefined}
+            >
+              VỀ CHÚNG TÔI
+            </span>
+            <h2 
+              className={`font-heading tracking-[0.02em] uppercase text-[#000000] text-[48px] leading-[60px] ${!isTablet ? 'max-lg:text-[42px] max-lg:leading-[52px]' : ''}`}
+              style={isTablet ? {
+                fontSize: 'calc(48px * (100vw / 1470px))',
+                lineHeight: 'calc(60px * (100vw / 1470px))',
+                letterSpacing: 'calc(0.02em * (100vw / 1470px))',
+              } : undefined}
+            >
               ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
             </h2>
-            <p className="font-manrope text-[14px] leading-[25px] text-justify text-[#1a1a1a] max-lg:text-center max-lg:text-[16px] max-lg:leading-[28px]">
+            <p 
+              className={`font-manrope text-justify text-[#1a1a1a] text-[14px] leading-[25px] ${!isTablet ? 'max-lg:text-center max-lg:text-[16px] max-lg:leading-[28px]' : ''}`}
+              style={isTablet ? {
+                fontSize: 'calc(14px * (100vw / 1470px))',
+                lineHeight: 'calc(25px * (100vw / 1470px))',
+                textAlign: 'justify',
+              } : undefined}
+            >
               STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
               triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
               dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
               nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
               thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
             </p>
-            <div className="pt-2 flex justify-start max-lg:justify-center">
+            <div 
+              className={`pt-2 flex justify-start ${!isTablet ? 'max-lg:justify-center' : ''}`}
+              style={isTablet ? {
+                paddingTop: 'calc(8px * (100vw / 1470px))',
+                justifyContent: 'flex-start',
+              } : undefined}
+            >
               <PillButton label="Khám phá ngay" />
             </div>
           </div>
           <div className="relative flex justify-center xl:justify-end w-full">
-            <div className="hidden lg:block lg:sticky lg:top-[140px] w-full flex justify-end">
+            <div 
+              className="hidden lg:block lg:sticky lg:top-[140px] w-full flex justify-end"
+              style={isTablet ? {
+                top: 'calc(140px * (100vw / 1470px))',
+              } : undefined}
+            >
               <div
                 ref={stickyRef}
-                className={`relative w-[534px] aspect-[534/601] overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out ${
+                className={`relative overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out aspect-[534/601] w-[534px] ${
                   imageVisible ? "opacity-100" : "opacity-0"
                 }`}
+                style={isTablet ? {
+                  width: 'calc(534px * (100vw / 1470px))',
+                } : undefined}
               >
                 <Image
                   src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
                   alt="Logo Stile trên mặt đá"
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   sizes="534px"
                 />
               </div>
