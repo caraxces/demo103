@@ -775,6 +775,12 @@ export default function Home() {
         <main id={FULLPAGE_CONTAINER_ID} className="fullpage-container">
           <Hero />
           <About />
+          {/* Mobile Quote Section */}
+          <div className="lg:hidden w-full py-12 px-6" style={{ backgroundColor: '#B9B0A1' }}>
+            <p className="text-center italic text-white" style={{ fontSize: '24px', fontStyle: 'italic' }}>
+              "Your Style, Our Pride"
+            </p>
+          </div>
           <Gallery />
           <FeaturedProducts />
           <Collections />
@@ -845,21 +851,43 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
             onClick={() => setIsOpen(false)}
           />
           <div
-            className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#E3DCD1] shadow-lg z-50 min-w-[600px]`}
-            style={{ marginTop: '16px' }}
+            className={`absolute top-full left-1/2 -translate-x-1/2 bg-[#E3DCD1] shadow-lg z-50`}
+            style={{ 
+              marginTop: 'calc(16px * (100vw / 1440px))',
+              minWidth: 'calc(600px * (100vw / 1440px))',
+            }}
           >
-            <div className="grid grid-cols-3 gap-0 p-8">
+            <div 
+              className="grid grid-cols-3 gap-0"
+              style={{
+                padding: 'calc(32px * (100vw / 1440px))',
+              }}
+            >
               {/* Column 1: STILE STUDIO */}
               <div className="flex flex-col">
-                <h3 className="font-heading text-[18px] font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]">
+                <h3 
+                  className="font-heading font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]"
+                  style={{
+                    fontSize: 'calc(18px * (100vw / 1440px))',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.studio.title}
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.studio.items.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        style={{
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                         onClick={() => setIsOpen(false)}
                       >
                         {item.label}
@@ -870,16 +898,35 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
               </div>
 
               {/* Column 2: CHÍNH SÁCH */}
-              <div className="flex flex-col border-l border-gray-300 pl-8">
-                <h3 className="font-heading text-[18px] font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]">
+              <div 
+                className="flex flex-col border-l border-gray-300"
+                style={{
+                  paddingLeft: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
+                <h3 
+                  className="font-heading font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]"
+                  style={{
+                    fontSize: 'calc(18px * (100vw / 1440px))',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.policy.title}
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.policy.items.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        style={{
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                         onClick={() => setIsOpen(false)}
                       >
                         {item.label}
@@ -890,16 +937,35 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
               </div>
 
               {/* Column 3: DOWNLOAD */}
-              <div className="flex flex-col border-l border-gray-300 pl-8">
-                <h3 className="font-heading text-[18px] font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]">
+              <div 
+                className="flex flex-col border-l border-gray-300"
+                style={{
+                  paddingLeft: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
+                <h3 
+                  className="font-heading font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]"
+                  style={{
+                    fontSize: 'calc(18px * (100vw / 1440px))',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.download.title}
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.download.items.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                        style={{
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                         onClick={() => setIsOpen(false)}
                       >
                         {item.label}
@@ -920,6 +986,7 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navLinkClass = "text-[#111111] hover:text-[#555555]";
 
@@ -931,11 +998,21 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
     setIsHovered(true);
   };
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setIsHovered(false);
-      setHoveredItemIndex(null);
-    }, 200); // 200ms delay before closing
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    // Kiểm tra nếu chuột rời khỏi toàn bộ vùng dropdown (menu trigger + dropdown panel)
+    const relatedTarget = e.relatedTarget as Node | null;
+    if (
+      menuRef.current &&
+      dropdownRef.current &&
+      relatedTarget &&
+      !menuRef.current.contains(relatedTarget) &&
+      !dropdownRef.current.contains(relatedTarget)
+    ) {
+      timeoutRef.current = setTimeout(() => {
+        setIsHovered(false);
+        setHoveredItemIndex(null);
+      }, 150); // 150ms delay before closing
+    }
   };
 
   useEffect(() => {
@@ -957,28 +1034,58 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
       <Link href="#featured" className={`transition ${navLinkClass} inline-block`}>
         Sản Phẩm
       </Link>
-      {isHovered && (
-        <div
-          className="fixed left-0 right-0 bg-[#EEEBE6] z-50 border-t border-b border-black"
-          style={{ 
-            top: '80px',
-            width: '100%',
-            minHeight: '200px'
-          }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="max-w-[1440px] mx-auto px-[104px]">
-            <div className="grid grid-cols-2 gap-0 py-8">
+      <div
+        ref={dropdownRef}
+        className={`fixed left-0 right-0 bg-[#EEEBE6] border-t border-b border-black transition-all duration-300 ease-out ${
+          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+        }`}
+        style={{ 
+          top: 'calc(80px * (100vw / 1440px))',
+          width: '100%',
+          minHeight: '200px',
+          zIndex: 40,
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={(e) => handleMouseLeave(e)}
+      >
+          <div 
+            className="mx-auto"
+            style={{
+              maxWidth: 'calc(1440px * (100vw / 1440px))',
+              paddingLeft: 'calc(104px * (100vw / 1440px))',
+              paddingRight: 'calc(104px * (100vw / 1440px))',
+            }}
+          >
+            <div 
+              className="grid grid-cols-2 gap-0"
+              style={{
+                paddingTop: 'calc(32px * (100vw / 1440px))',
+                paddingBottom: 'calc(32px * (100vw / 1440px))',
+              }}
+            >
               {/* Left Column - GẠCH ỐP LÁT */}
-              <div className="flex flex-col border-r border-black pr-8">
+              <div 
+                className="flex flex-col border-r border-black"
+                style={{
+                  paddingRight: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
                 <h3 
-                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
-                  style={{ letterSpacing: '6%' }}
+                  className="font-heading uppercase text-[#111111]"
+                  style={{ 
+                    fontSize: 'calc(32px * (100vw / 1440px))',
+                    letterSpacing: '6%',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
                 >
                   GẠCH ỐP LÁT
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {productDropdownItems.map((item, index) => (
                     <li 
                       key={item.label}
@@ -997,8 +1104,11 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
                     >
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
-                        style={{ color: '#111111' }}
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ 
+                          color: '#111111',
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                       >
                         {item.label}
                       </Link>
@@ -1008,61 +1118,119 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
               </div>
 
               {/* Right Column - Sub-dropdown Content */}
-              <div className="flex flex-col pl-8">
+              <div 
+                className="flex flex-col"
+                style={{
+                  paddingLeft: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
                 {hoveredItem && hoveredItem.submenu && (
-                  <>
+                  <div
+                    className="transition-all duration-300 ease-out"
+                    style={{
+                      opacity: hoveredItem ? 1 : 0,
+                      transform: hoveredItem ? 'translateX(0)' : 'translateX(-10px)',
+                    }}
+                  >
                     <h4 
-                      className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
-                      style={{ letterSpacing: '6%' }}
+                      className="font-heading uppercase text-[#111111]"
+                      style={{ 
+                        fontSize: 'calc(32px * (100vw / 1440px))',
+                        letterSpacing: '6%',
+                        marginBottom: 'calc(24px * (100vw / 1440px))',
+                      }}
                     >
                       {hoveredItem.submenu.title}
                     </h4>
                     {hoveredItem.submenu.type === "dimensions" && (
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="flex flex-col space-y-2">
+                      <div 
+                        className="grid grid-cols-3"
+                        style={{
+                          gap: 'calc(16px * (100vw / 1440px))',
+                        }}
+                      >
+                        <div 
+                          className="flex flex-col"
+                          style={{
+                            gap: 'calc(8px * (100vw / 1440px))',
+                          }}
+                        >
                           {hoveredItem.submenu.leftColumn.map((dim, i) => (
-                            <span key={i} className="font-montserrat text-[14px] text-[#111111]">
+                            <span 
+                              key={i} 
+                              className="font-montserrat text-[#111111]"
+                              style={{
+                                fontSize: 'calc(14px * (100vw / 1440px))',
+                              }}
+                            >
                               {dim}
                             </span>
                           ))}
                         </div>
-                        <div className="flex flex-col space-y-2">
+                        <div 
+                          className="flex flex-col"
+                          style={{
+                            gap: 'calc(8px * (100vw / 1440px))',
+                          }}
+                        >
                           {hoveredItem.submenu.rightColumn.map((dim, i) => (
-                            <span key={i} className="font-montserrat text-[14px] text-[#111111]">
+                            <span 
+                              key={i} 
+                              className="font-montserrat text-[#111111]"
+                              style={{
+                                fontSize: 'calc(14px * (100vw / 1440px))',
+                              }}
+                            >
                               {dim}
                             </span>
                           ))}
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-montserrat text-[14px] text-[#111111]">
+                          <span 
+                            className="font-montserrat text-[#111111]"
+                            style={{
+                              fontSize: 'calc(14px * (100vw / 1440px))',
+                            }}
+                          >
                             {hoveredItem.submenu.other}
                           </span>
                         </div>
                       </div>
                     )}
                     {hoveredItem.submenu.type === "products" && (
-                      <div className="flex flex-col space-y-3">
+                      <div 
+                        className="flex flex-col"
+                        style={{
+                          gap: 'calc(12px * (100vw / 1440px))',
+                        }}
+                      >
                         {hoveredItem.submenu.items.map((product, i) => (
-                          <span key={i} className="font-montserrat text-[14px] text-[#111111]">
+                          <span 
+                            key={i} 
+                            className="font-montserrat text-[#111111]"
+                            style={{
+                              fontSize: 'calc(14px * (100vw / 1440px))',
+                            }}
+                          >
                             {product}
                           </span>
                         ))}
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
   );
 }
 
 function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navLinkClass = "text-[#111111] hover:text-[#555555]";
 
@@ -1101,10 +1269,20 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
     setIsHovered(true);
   };
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setIsHovered(false);
-    }, 200);
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    // Kiểm tra nếu chuột rời khỏi toàn bộ vùng dropdown (menu trigger + dropdown panel)
+    const relatedTarget = e.relatedTarget as Node | null;
+    if (
+      menuRef.current &&
+      dropdownRef.current &&
+      relatedTarget &&
+      !menuRef.current.contains(relatedTarget) &&
+      !dropdownRef.current.contains(relatedTarget)
+    ) {
+      timeoutRef.current = setTimeout(() => {
+        setIsHovered(false);
+      }, 150); // 150ms delay before closing
+    }
   };
 
   useEffect(() => {
@@ -1118,40 +1296,73 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
   return (
     <div 
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={(e) => handleMouseLeave(e)}
       ref={menuRef}
     >
       <Link href="#contact" className={`transition ${navLinkClass} inline-block`}>
         Dịch Vụ & Thi Công
       </Link>
-      {isHovered && (
-        <div
-          className="fixed left-0 right-0 bg-[#EEEBE6] z-50 border-t border-b border-black"
-          style={{ 
-            top: '80px',
-            width: '100%',
-            minHeight: '200px'
+      <div
+        ref={dropdownRef}
+        className={`fixed left-0 right-0 bg-[#EEEBE6] border-t border-b border-black transition-all duration-300 ease-out ${
+          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+        }`}
+        style={{ 
+          top: 'calc(80px * (100vw / 1440px))',
+          width: '100%',
+          minHeight: '200px',
+          zIndex: 40,
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={(e) => handleMouseLeave(e)}
+      >
+        <div 
+          className="mx-auto"
+          style={{
+            maxWidth: 'calc(1440px * (100vw / 1440px))',
+            paddingLeft: 'calc(104px * (100vw / 1440px))',
+            paddingRight: 'calc(104px * (100vw / 1440px))',
           }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
         >
-          <div className="max-w-[1440px] mx-auto px-[104px]">
-            <div className="grid grid-cols-3 gap-0 py-8">
-              {/* Column 1: STILE STUDIO */}
-              <div className="flex flex-col border-r border-black pr-8">
+          <div 
+            className="grid grid-cols-3 gap-0"
+            style={{
+              paddingTop: 'calc(32px * (100vw / 1440px))',
+              paddingBottom: 'calc(32px * (100vw / 1440px))',
+            }}
+          >
+            {/* Column 1: STILE STUDIO */}
+              <div 
+                className="flex flex-col border-r border-black"
+                style={{
+                  paddingRight: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
                 <h3 
-                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
-                  style={{ letterSpacing: '6%' }}
+                  className="font-heading uppercase text-[#111111]"
+                  style={{ 
+                    fontSize: 'calc(32px * (100vw / 1440px))',
+                    letterSpacing: '6%',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
                 >
                   {menuItems.studio.title}
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.studio.items.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
-                        style={{ color: '#111111' }}
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ 
+                          color: '#111111',
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                       >
                         {item.label}
                       </Link>
@@ -1161,20 +1372,38 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
               </div>
 
               {/* Column 2: CHÍNH SÁCH */}
-              <div className="flex flex-col border-r border-black pl-8 pr-8">
+              <div 
+                className="flex flex-col border-r border-black"
+                style={{
+                  paddingLeft: 'calc(32px * (100vw / 1440px))',
+                  paddingRight: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
                 <h3 
-                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
-                  style={{ letterSpacing: '6%' }}
+                  className="font-heading uppercase text-[#111111]"
+                  style={{ 
+                    fontSize: 'calc(32px * (100vw / 1440px))',
+                    letterSpacing: '6%',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
                 >
                   {menuItems.policy.title}
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.policy.items.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
-                        style={{ color: '#111111' }}
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ 
+                          color: '#111111',
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                       >
                         {item.label}
                       </Link>
@@ -1184,20 +1413,37 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
               </div>
 
               {/* Column 3: DOWNLOAD */}
-              <div className="flex flex-col pl-8">
+              <div 
+                className="flex flex-col"
+                style={{
+                  paddingLeft: 'calc(32px * (100vw / 1440px))',
+                }}
+              >
                 <h3 
-                  className="font-heading text-[32px] uppercase mb-6 text-[#111111]"
-                  style={{ letterSpacing: '6%' }}
+                  className="font-heading uppercase text-[#111111]"
+                  style={{ 
+                    fontSize: 'calc(32px * (100vw / 1440px))',
+                    letterSpacing: '6%',
+                    marginBottom: 'calc(24px * (100vw / 1440px))',
+                  }}
                 >
                   {menuItems.download.title}
                 </h3>
-                <ul className="space-y-3">
+                <ul 
+                  className="space-y-3"
+                  style={{
+                    gap: 'calc(12px * (100vw / 1440px))',
+                  }}
+                >
                   {menuItems.download.items.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}
-                        className="font-montserrat text-[14px] font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
-                        style={{ color: '#111111' }}
+                        className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                        style={{ 
+                          color: '#111111',
+                          fontSize: 'calc(14px * (100vw / 1440px))',
+                        }}
                       >
                         {item.label}
                       </Link>
@@ -1208,8 +1454,7 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
   );
 }
 
@@ -1219,7 +1464,19 @@ function Header() {
   const [onLightSection, setOnLightSection] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 980);
+      }
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     const heroEl = document.getElementById("hero");
@@ -1334,7 +1591,14 @@ function Header() {
         pointerEvents: isHeaderVisible ? 'auto' : 'none',
       }}
     >
-      <div className="mx-auto flex h-full w-full items-center justify-between px-6 lg:px-[57px]">
+      <div 
+        className="mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6"
+        style={{
+          paddingLeft: 'calc(24px * (100vw / 1440px))',
+          paddingRight: 'calc(57px * (100vw / 1440px))',
+          paddingTop: !isMobile ? 'calc(40px * (100vw / 1440px))' : '0',
+        }}
+      >
         <Link href="#hero" className="flex items-center">
           <Image
             src={logoSrc}
@@ -1342,15 +1606,24 @@ function Header() {
             width={90}
             height={34}
             priority
-            className="h-auto w-[90px] lg:w-[110px] transition-all duration-300 lg:mt-[10px]"
+            className="h-auto transition-all duration-300 max-lg:w-[90px]"
             style={{
+              width: 'calc(110px * (100vw / 1440px))',
+              marginTop: 'calc(10px * (100vw / 1440px))',
               // Logo đen khi text đen (onLightSection = true) - invert từ trắng sang đen
               // Logo trắng khi text trắng (onLightSection = false) - giữ nguyên trắng
               filter: onLightSection ? 'brightness(0)' : 'none',
             }}
           />
         </Link>
-        <nav className="hidden items-center gap-10 text-[15px] font-normal tracking-[0.06em] lg:flex">
+        <nav 
+          className="hidden items-center lg:flex"
+          style={{
+            gap: 'calc(40px * (100vw / 1440px))',
+            fontSize: 'calc(15px * (100vw / 1440px))',
+            letterSpacing: 'calc(0.06em * (100vw / 1440px))',
+          }}
+        >
           {navItems.map((item) => (
             <div key={item.label} className="group">
               {item.hasDropdown ? (
@@ -1368,25 +1641,38 @@ function Header() {
           ))}
           <HeaderDropdownMenu onLightSection={onLightSection} />
         </nav>
-        <div className="hidden items-center gap-6 text-[15px] font-normal tracking-[0.06em] lg:flex">
+        <div 
+          className="hidden items-center lg:flex"
+          style={{
+            gap: 'calc(24px * (100vw / 1440px))',
+            fontSize: 'calc(15px * (100vw / 1440px))',
+            letterSpacing: 'calc(0.06em * (100vw / 1440px))',
+          }}
+        >
           <button
             type="button"
             aria-label="Tìm kiếm"
-            className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
+            className={`flex items-center justify-center rounded-full border transition ${
               onLightSection
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                 : "border-white text-white hover:bg-white/20"
             }`}
+            style={{
+              width: 'calc(40px * (100vw / 1440px))',
+              height: 'calc(40px * (100vw / 1440px))',
+            }}
           >
             <svg
-              width="18"
-              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
+              style={{
+                width: 'calc(18px * (100vw / 1440px))',
+                height: 'calc(18px * (100vw / 1440px))',
+              }}
             >
               <circle cx="11" cy="11" r="7" />
               <line x1="16.5" y1="16.5" x2="21" y2="21" />
@@ -1397,11 +1683,19 @@ function Header() {
           </Link>
           <button
             type="button"
-            className={`rounded-full border px-4 py-1 text-[13px] tracking-[0.12em] transition ${
+            className={`rounded-full border transition ${
               onLightSection
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                 : "border-white text-white hover:bg-white/20"
             }`}
+            style={{
+              paddingLeft: 'calc(16px * (100vw / 1440px))',
+              paddingRight: 'calc(16px * (100vw / 1440px))',
+              paddingTop: 'calc(4px * (100vw / 1440px))',
+              paddingBottom: 'calc(4px * (100vw / 1440px))',
+              fontSize: 'calc(13px * (100vw / 1440px))',
+              letterSpacing: 'calc(0.12em * (100vw / 1440px))',
+            }}
           >
             VN / EN
           </button>
@@ -1477,12 +1771,22 @@ function Header() {
 
 function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 6000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
@@ -1517,8 +1821,24 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent lg:hidden" />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[28px] px-6 text-center">
-        <h1 className="max-w-[685px] font-heading uppercase text-[46px] leading-[56px] tracking-[0.02em] lg:text-[58px] lg:leading-[73px] lg:tracking-[1.16px]">
+      <div 
+        className="relative z-10 mx-auto flex w-full flex-col items-center text-center max-lg:max-w-[1440px] max-lg:gap-[28px] max-lg:px-6"
+        style={{
+          maxWidth: 'calc(1440px * (100vw / 1440px))',
+          gap: 'calc(28px * (100vw / 1440px))',
+          paddingLeft: 'calc(24px * (100vw / 1440px))',
+          paddingRight: 'calc(24px * (100vw / 1440px))',
+        }}
+      >
+        <h1 
+          className="font-heading uppercase max-lg:max-w-[685px] max-lg:leading-[56px] max-lg:tracking-[0.02em]"
+          style={{
+            maxWidth: !isMobile ? 'calc(685px * (100vw / 1440px))' : '100%',
+            fontSize: !isMobile ? 'calc(58px * (100vw / 1440px))' : '40px',
+            lineHeight: !isMobile ? 'calc(73px * (100vw / 1440px))' : '56px',
+            letterSpacing: !isMobile ? 'calc(1.16px * (100vw / 1440px))' : '0.02em',
+          }}
+        >
           <span className="hidden lg:inline whitespace-pre">
             <span className="block">BỀ MẶT LẤY CẢM HỨNG</span>
             <span className="block">TỪ THIÊN NHIÊN</span>
@@ -1528,9 +1848,16 @@ function Hero() {
             <span className="block">TỪ THIÊN NHIÊN</span>
           </span>
         </h1>
-        <p className="max-w-[593px] font-alt text-[18px] font-normal leading-6 lg:leading-[24px]">
+        <p 
+          className="font-alt font-normal max-lg:max-w-[593px]"
+          style={{
+            maxWidth: !isMobile ? 'calc(593px * (100vw / 1440px))' : '100%',
+            fontSize: !isMobile ? 'calc(18px * (100vw / 1440px))' : '18px',
+            lineHeight: !isMobile ? 'calc(24px * (100vw / 1440px))' : '24px',
+          }}
+        >
           <span className="hidden lg:inline">Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.</span>
-          <span className="block lg:hidden text-[18px] leading-[24px]">
+          <span className="block lg:hidden">
             Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.
           </span>
         </p>
@@ -1546,12 +1873,16 @@ function About() {
   const textRef = useRef<HTMLDivElement | null>(null);
   const [imageVisible, setImageVisible] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
       if (typeof window !== 'undefined') {
-        // Tablet: 960px - 1023px (giữa mobile và desktop)
-        setIsTablet(window.innerWidth >= 960 && window.innerWidth < 1024);
+        const width = window.innerWidth;
+        // Mobile: < 980px (layout dọc)
+        setIsMobile(width < 980);
+        // Tablet: 980px - 1439px (layout riêng, scale từ 1440px)
+        setIsTablet(width >= 980 && width < 1440);
       }
     };
     
@@ -1563,13 +1894,18 @@ function About() {
   useEffect(() => {
     const node = stickyRef.current;
     if (!node) return;
+    // Trên tablet, hiển thị ảnh ngay lập tức
+    if (isTablet) {
+      setImageVisible(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => setImageVisible(entry.isIntersecting),
       { threshold: 0.25 }
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [isTablet]);
 
   useEffect(() => {
     const imageNode = stickyRef.current;
@@ -1593,55 +1929,54 @@ function About() {
       className="fullpage-section flex items-center"
     >
       <div className="section-inner">
+        {/* Desktop: >= 1440px - Scale theo màn hình lớn */}
+        {/* Mobile: < 980px - Layout dọc */}
         <div 
-          className={`mx-auto grid w-full items-center max-w-[1440px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] gap-20 px-[104px] ${!isTablet ? 'max-lg:flex max-lg:flex-col max-lg:gap-10 max-lg:px-0 max-lg:pt-16' : ''}`}
-          style={isTablet ? {
-            display: 'grid',
-            maxWidth: 'calc(1440px * (100vw / 1470px))',
-            gridTemplateColumns: 'minmax(0, calc(640px * (100vw / 1470px))) minmax(0, 1fr)',
-            gap: 'calc(80px * (100vw / 1470px))',
-            paddingLeft: 'calc(104px * (100vw / 1470px))',
-            paddingRight: 'calc(104px * (100vw / 1470px))',
-            paddingTop: 0,
-          } : undefined}
+          className={`mx-auto w-full items-center ${isTablet ? 'hidden' : ''} ${isMobile ? 'flex flex-col gap-10 px-0 pt-16' : 'grid'}`}
+          style={{
+            display: isMobile ? 'flex' : (isTablet ? 'none' : 'grid'),
+            flexDirection: isMobile ? 'column' : 'unset',
+            maxWidth: !isMobile && !isTablet ? 'calc(1440px * (100vw / 1440px))' : '100%',
+            gridTemplateColumns: !isMobile && !isTablet ? `minmax(0, calc(640px * (100vw / 1440px))) minmax(0, 1fr)` : 'unset',
+            gap: isMobile ? '40px' : (!isTablet ? 'calc(80px * (100vw / 1440px))' : 'unset'),
+            paddingLeft: isMobile ? '0' : (!isTablet ? 'calc(104px * (100vw / 1440px))' : 'unset'),
+            paddingRight: isMobile ? '0' : (!isTablet ? 'calc(104px * (100vw / 1440px))' : 'unset'),
+            width: '100%',
+            boxSizing: 'border-box',
+          }}
         >
           <div
             ref={textRef}
-            className={`flex flex-col transition-transform duration-300 ease-out will-change-transform text-left gap-6 ${!isTablet ? 'max-lg:text-center max-lg:px-6' : ''}`}
-            style={isTablet ? {
-              gap: 'calc(24px * (100vw / 1470px))',
-              textAlign: 'left',
-              paddingLeft: 0,
-              paddingRight: 0,
-            } : undefined}
+            className="flex flex-col transition-transform duration-300 ease-out will-change-transform text-left max-lg:text-center max-lg:px-6"
+            style={{
+              gap: 'calc(24px * (100vw / 1440px))',
+            }}
           >
             <span 
-              className={`font-alt font-medium tracking-[0.05em] text-[20px] ${!isTablet ? 'max-lg:mt-6 max-lg:text-[14px]' : ''}`}
-              style={isTablet ? {
-                fontSize: 'calc(20px * (100vw / 1470px))',
-                letterSpacing: 'calc(0.05em * (100vw / 1470px))',
-                marginTop: 0,
-              } : undefined}
+              className="font-alt font-medium tracking-[0.05em] max-lg:mt-6 max-lg:text-[14px]"
+              style={{
+                fontSize: 'calc(20px * (100vw / 1440px))',
+                letterSpacing: '0.05em',
+              }}
             >
               VỀ CHÚNG TÔI
             </span>
             <h2 
-              className={`font-heading tracking-[0.02em] uppercase text-[#000000] text-[48px] leading-[60px] ${!isTablet ? 'max-lg:text-[42px] max-lg:leading-[52px]' : ''}`}
-              style={isTablet ? {
-                fontSize: 'calc(48px * (100vw / 1470px))',
-                lineHeight: 'calc(60px * (100vw / 1470px))',
-                letterSpacing: 'calc(0.02em * (100vw / 1470px))',
-              } : undefined}
+              className="font-heading tracking-[0.02em] uppercase text-[#000000] max-lg:text-[42px] max-lg:leading-[52px]"
+              style={{
+                fontSize: 'calc(48px * (100vw / 1440px))',
+                lineHeight: 'calc(60px * (100vw / 1440px))',
+                letterSpacing: '0.02em',
+              }}
             >
               ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
             </h2>
             <p 
-              className={`font-manrope text-justify text-[#1a1a1a] text-[14px] leading-[25px] ${!isTablet ? 'max-lg:text-center max-lg:text-[16px] max-lg:leading-[28px]' : ''}`}
-              style={isTablet ? {
-                fontSize: 'calc(14px * (100vw / 1470px))',
-                lineHeight: 'calc(25px * (100vw / 1470px))',
-                textAlign: 'justify',
-              } : undefined}
+              className="font-manrope text-justify text-[#1a1a1a] max-lg:text-center max-lg:text-[16px] max-lg:leading-[28px]"
+              style={{
+                fontSize: 'calc(14px * (100vw / 1440px))',
+                lineHeight: 'calc(25px * (100vw / 1440px))',
+              }}
             >
               STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
               triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
@@ -1650,30 +1985,38 @@ function About() {
               thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
             </p>
             <div 
-              className={`pt-2 flex justify-start ${!isTablet ? 'max-lg:justify-center' : ''}`}
-              style={isTablet ? {
-                paddingTop: 'calc(8px * (100vw / 1470px))',
-                justifyContent: 'flex-start',
-              } : undefined}
+              className="pt-2 flex justify-start max-lg:justify-center"
+              style={{
+                paddingTop: 'calc(8px * (100vw / 1440px))',
+              }}
             >
               <PillButton label="Khám phá ngay" />
             </div>
           </div>
-          <div className="relative flex justify-center xl:justify-end w-full">
+          <div 
+            className="relative flex justify-end"
+            style={{
+              width: '100%',
+              justifyContent: 'flex-end',
+            }}
+          >
             <div 
-              className="hidden lg:block lg:sticky lg:top-[140px] w-full flex justify-end"
-              style={isTablet ? {
-                top: 'calc(140px * (100vw / 1470px))',
-              } : undefined}
+              className="hidden lg:block lg:sticky"
+              style={{
+                top: 'calc(140px * (100vw / 1440px))',
+                width: 'calc(534px * (100vw / 1440px))',
+                maxWidth: 'calc(534px * (100vw / 1440px))',
+                flexShrink: 0,
+              }}
             >
               <div
                 ref={stickyRef}
-                className={`relative overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out aspect-[534/601] w-[534px] ${
+                className={`relative overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out aspect-[534/601] ${
                   imageVisible ? "opacity-100" : "opacity-0"
                 }`}
-                style={isTablet ? {
-                  width: 'calc(534px * (100vw / 1470px))',
-                } : undefined}
+                style={{
+                  width: '100%',
+                }}
               >
                 <Image
                   src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
@@ -1697,6 +2040,110 @@ function About() {
             </div>
           </div>
         </div>
+
+        {/* Tablet: 980px - 1439px - Scale từ desktop 1440px */}
+        {isTablet && (
+          <div 
+            className="mx-auto grid w-full items-center"
+            style={{
+              display: 'grid',
+              width: '100%',
+              maxWidth: '100%',
+              gridTemplateColumns: `minmax(0, ${(640 / 1440) * 100}%) minmax(0, 1fr)`,
+              gap: `${(80 / 1440) * 100}vw`,
+              paddingLeft: `${(104 / 1440) * 100}vw`,
+              paddingRight: `${(104 / 1440) * 100}vw`,
+              boxSizing: 'border-box',
+            }}
+          >
+            <div
+              ref={textRef}
+              className="flex flex-col transition-transform duration-300 ease-out will-change-transform text-left"
+              style={{
+                gap: `${(24 / 1440) * 100}vw`,
+                width: '100%',
+                maxWidth: '100%',
+              }}
+            >
+              <span 
+                className="font-alt font-medium tracking-[0.05em]"
+                style={{
+                  fontSize: `${(20 / 1440) * 100}vw`,
+                  letterSpacing: '0.05em',
+                }}
+              >
+                VỀ CHÚNG TÔI
+              </span>
+              <h2 
+                className="font-heading tracking-[0.02em] uppercase text-[#000000]"
+                style={{
+                  fontSize: `${(48 / 1440) * 100}vw`,
+                  lineHeight: `${(60 / 1440) * 100}vw`,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
+              </h2>
+              <p 
+                className="font-manrope text-justify text-[#1a1a1a]"
+                style={{
+                  fontSize: `${(14 / 1440) * 100}vw`,
+                  lineHeight: `${(25 / 1440) * 100}vw`,
+                }}
+              >
+                STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
+                triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
+                dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
+                nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
+                thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
+              </p>
+              <div 
+                className="pt-2 flex justify-start"
+                style={{
+                  paddingTop: `${(8 / 1440) * 100}vw`,
+                }}
+              >
+                <PillButton label="Khám phá ngay" />
+              </div>
+            </div>
+            <div 
+              className="relative flex justify-end"
+              style={{
+                width: '100%',
+                maxWidth: '100%',
+              }}
+            >
+              <div 
+                className="sticky"
+                style={{
+                  top: `${(140 / 1440) * 100}vw`,
+                  width: `${(534 / 1440) * 100}vw`,
+                  maxWidth: `${(534 / 1440) * 100}vw`,
+                  minWidth: `${(534 / 1440) * 100}vw`,
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  ref={stickyRef}
+                  className="relative overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out"
+                  style={{
+                    width: '100%',
+                    aspectRatio: '534 / 601',
+                    opacity: imageVisible ? 1 : 0,
+                  }}
+                >
+                  <Image
+                    src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
+                    alt="Logo Stile trên mặt đá"
+                    fill
+                    className="object-contain"
+                    sizes="534px"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1806,7 +2253,7 @@ function Gallery() {
             style={{
               gap: 'calc(24px * (100vw / 1470px))',
             }}
-            className="flex flex-col"
+            className="flex flex-col text-left"
           >
             <h2 
               className="font-heading uppercase text-white"
@@ -1819,7 +2266,7 @@ function Gallery() {
               ARTILE<br />GALLERY
             </h2>
             <p 
-              className="font-montserrat text-gray-300"
+              className="font-montserrat text-gray-300 text-justify"
               style={{
                 fontSize: 'calc(16px * (100vw / 1470px))',
                 lineHeight: 'calc(28px * (100vw / 1470px))',
@@ -1834,23 +2281,39 @@ function Gallery() {
         </div>
       </div>
 
-      {/* Mobile Version - Keep existing mobile layout */}
-      <div className="flex w-full flex-col gap-8 px-0 pt-10 pb-6 lg:hidden">
-        <div className="space-y-4 px-6 text-center">
-          <h2 className="font-heading text-[48px] leading-[48px] tracking-[0.05em] uppercase">ARTILE GALLERY</h2>
-          <p className="font-montserrat text-[14px] leading-[24px]">
-            Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
-          </p>
-          <div className="pt-2 flex justify-center">
-            <PillButton label="Khám phá ngay" theme="dark" />
-          </div>
+      {/* Mobile Version - Simple background layout */}
+      <div className="relative w-full lg:hidden min-h-screen">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/ARTILE GALLERY/image copy.png"
+            alt="Artile Gallery Background"
+            fill
+            priority
+            className="object-cover"
+          />
         </div>
-        <div className="flex w-full gap-4 overflow-x-auto pb-6 px-0">
-          {galleryImages.map((image) => (
-            <div key={image.alt} className="relative h-[320px] w-[260px] flex-shrink-0 overflow-hidden">
-              <Image src={image.src} alt={image.alt} fill className="object-cover" sizes="240px" />
+        
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-center min-h-screen px-6 py-20">
+          <div className="space-y-6 text-left max-w-[500px]">
+            <h2 
+              className="font-heading uppercase text-white"
+              style={{
+                fontSize: '96px',
+                lineHeight: '77px',
+                letterSpacing: '4.8px',
+              }}
+            >
+              ARTILE<br />GALLERY
+            </h2>
+            <p className="font-montserrat text-white text-[14px] leading-[24px] text-justify">
+              Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
+            </p>
+            <div className="pt-2 flex justify-start">
+              <PillButton label="Khám phá ngay" theme="dark" />
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
@@ -1920,191 +2383,190 @@ function FeaturedProducts() {
       <div 
         className="absolute top-0 left-0 right-0 z-20 flex justify-center"
         style={{
-          paddingTop: 'calc(48px * (100vw / 1470px))',
+          paddingTop: isMobile ? '40px' : 'calc(48px * (100vw / 1470px))',
         }}
       >
         <h2 
           className="font-heading tracking-[0.05em] uppercase text-[#151515]"
           style={{
-            fontSize: 'calc(48px * (100vw / 1470px))',
+            fontSize: isMobile ? '24px' : 'calc(48px * (100vw / 1470px))',
           }}
         >
           SẢN PHẨM NỔI BẬT
         </h2>
       </div>
 
-      {/* Desktop: Fixed Header */}
-      <div 
-        className="fixed"
-        style={{
-          top: DEBUG_HEADER_TOP,
-          left: DEBUG_HEADER_LEFT,
-        }}
-      >
-        <div
-          key={variant.id}
-          className="animate-text-fade"
+      {/* Desktop: Content từ giữa màn hình, bên trái, text justify */}
+      {!isMobile && (
+        <div 
+          className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-20"
           style={{
-            maxWidth: 'calc(520px * (100vw / 1470px))',
-            gap: 'calc(12px * (100vw / 1470px))',
+            paddingLeft: 'calc(104px * (100vw / 1440px))',
+            maxWidth: 'calc(520px * (100vw / 1440px))',
           }}
         >
-          <span 
-            className="font-montserrat tracking-[0.3em] text-[#151515] leading-[1]"
+          <div
+            key={variant.id}
+            className="animate-text-fade space-y-3"
             style={{
-              fontSize: 'calc(15px * (100vw / 1470px))',
+              gap: 'calc(12px * (100vw / 1440px))',
             }}
           >
-            {variant.collection}
-          </span>
-          <h3 
-            className="font-montserrat font-semibold text-[#151515] leading-[1]"
-            style={{
-              fontSize: 'calc(48px * (100vw / 1470px))',
-            }}
-          >
-            {variant.title}
-          </h3>
-        </div>
-      </div>
-
-      <div 
-        className="relative flex w-full flex-col px-8 lg:px-[6vw]"
-        style={isMobile ? { height: '100vh' } : { height: '100%', paddingTop: DEBUG_CONTENT_PADDING_TOP }}
-      >
-        {isMobile ? (
-          <>
-            <div className="flex flex-1 items-center justify-center">
-              <div
-                key={variant.id}
-                className="animate-text-fade max-w-[520px] w-full space-y-3 text-left"
-              >
-                <span className="font-montserrat text-[15px] text-[#151515] leading-[1]">
-                  {variant.collection}
-                </span>
-                <h3 className="font-montserrat text-[48px] font-semibold text-[#151515] leading-[1]">
-                  {variant.title}
-                </h3>
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 mb-6 flex flex-col items-center gap-6 pb-6 px-8">
-              <PillButton label="Khám phá ngay" />
-              <div className="flex items-center justify-center gap-4">
-                {featuredVariants.map((item, index) => {
-                  const isActive = index === activeVariant;
-                  const isAnimating = animatingVariant === index;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        setAnimatingVariant(index);
-                        setActiveVariant(index);
-                        setTimeout(() => setAnimatingVariant(null), 600);
-                      }}
-                      aria-label={item.title}
-                      className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
-                      style={{ background: item.swatch }}
-                    >
-                      <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
-                      <svg
-                        className="absolute inset-0 h-full w-full pointer-events-none"
-                        viewBox="0 0 26 26"
-                        style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
-                      >
-                        <circle
-                          cx="13"
-                          cy="13"
-                          r="12"
-                          fill="none"
-                          stroke="black"
-                          strokeWidth="1"
-                          strokeDasharray="75.4"
-                          strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
-                          className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
-                          style={{
-                            animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
-                          }}
-                        />
-                      </svg>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Desktop: Content below fixed header */}
-            <div 
+            <span 
+              className="font-montserrat tracking-[0.3em] text-[#151515] leading-[1] block"
               style={{
-                maxWidth: 'calc(520px * (100vw / 1470px))',
-                gap: 'calc(24px * (100vw / 1470px))',
+                fontSize: 'calc(15px * (100vw / 1440px))',
               }}
-              className="flex flex-col"
             >
-              <p 
-                className="font-montserrat text-[#3a3a3a]"
-                style={{
-                  fontSize: 'calc(15px * (100vw / 1470px))',
-                  lineHeight: 'calc(26px * (100vw / 1470px))',
-                }}
-              >
-                The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.
-                <br /><br />
-                In the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.
-              </p>
-              <div style={{ paddingTop: 'calc(8px * (100vw / 1470px))' }}>
-                <PillButton label="Khám phá ngay" />
-              </div>
+              {variant.collection}
+            </span>
+            <h3 
+              className="font-montserrat font-semibold text-[#151515] leading-[1]"
+              style={{
+                fontSize: 'calc(48px * (100vw / 1440px))',
+              }}
+            >
+              {variant.title}
+            </h3>
+            <p 
+              className="font-montserrat text-[#151515] text-justify"
+              style={{
+                fontSize: 'calc(16px * (100vw / 1440px))',
+                lineHeight: 'calc(25px * (100vw / 1440px))',
+                marginTop: 'calc(24px * (100vw / 1440px))',
+              }}
+            >
+              The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.
+              <br /><br />
+              In the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.
+            </p>
+            <div 
+              className="pt-2"
+              style={{
+                paddingTop: 'calc(16px * (100vw / 1440px))',
+              }}
+            >
+              <PillButton label="Khám phá ngay" />
             </div>
-            <div className="absolute bottom-0 left-0 right-0 mb-6 flex flex-col items-center justify-end gap-6 pb-6 lg:mb-10">
-              <div className="flex items-center justify-center gap-4">
-                {featuredVariants.map((item, index) => {
-                  const isActive = index === activeVariant;
-                  const isAnimating = animatingVariant === index;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        setAnimatingVariant(index);
-                        setActiveVariant(index);
-                        setTimeout(() => setAnimatingVariant(null), 600);
-                      }}
-                      aria-label={item.title}
-                      className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
-                      style={{ background: item.swatch }}
+          </div>
+        </div>
+      )}
+
+      {/* Mobile: Content */}
+      {isMobile && (
+        <div 
+          className="relative flex w-full flex-col px-8"
+          style={{ height: '100vh' }}
+        >
+          <div className="flex justify-start" style={{ paddingTop: '120px' }}>
+            <div
+              key={variant.id}
+              className="animate-text-fade max-w-[520px] w-full space-y-3 text-left"
+            >
+              <span className="font-montserrat text-[15px] text-[#151515] leading-[1]">
+                {variant.collection}
+              </span>
+              <h3 className="font-montserrat text-[48px] font-semibold text-[#151515] leading-[1]">
+                {variant.title}
+              </h3>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 mb-6 flex flex-col items-center gap-6 pb-6 px-8">
+            <p className="text-center font-montserrat text-[#151515] text-[14px] leading-[22px] max-w-[520px]">
+              {variant.description}
+            </p>
+            <PillButton label="Khám phá ngay" />
+            <div className="flex items-center justify-center gap-4">
+              {featuredVariants.map((item, index) => {
+                const isActive = index === activeVariant;
+                const isAnimating = animatingVariant === index;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setAnimatingVariant(index);
+                      setActiveVariant(index);
+                      setTimeout(() => setAnimatingVariant(null), 600);
+                    }}
+                    aria-label={item.title}
+                    className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
+                    style={{ background: item.swatch }}
+                  >
+                    <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
+                    <svg
+                      className="absolute inset-0 h-full w-full pointer-events-none"
+                      viewBox="0 0 26 26"
+                      style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
                     >
-                      <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
-                      <svg
-                        className="absolute inset-0 h-full w-full pointer-events-none"
-                        viewBox="0 0 26 26"
-                        style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
-                      >
-                        <circle
-                          cx="13"
-                          cy="13"
-                          r="12"
-                          fill="none"
-                          stroke="black"
-                          strokeWidth="1"
-                          strokeDasharray="75.4"
-                          strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
-                          className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
-                          style={{
-                            animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
-                          }}
-                        />
-                      </svg>
-                    </button>
-                  );
-                })}
-              </div>
+                      <circle
+                        cx="13"
+                        cy="13"
+                        r="12"
+                        fill="none"
+                        stroke="black"
+                        strokeWidth="1"
+                        strokeDasharray="75.4"
+                        strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
+                        className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
+                        style={{
+                          animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
+                        }}
+                      />
+                    </svg>
+                  </button>
+                );
+              })}
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop: Navigation dots */}
+      {!isMobile && (
+        <div className="absolute bottom-0 left-0 right-0 mb-6 flex items-center justify-center gap-4 z-20 lg:mb-10">
+          {featuredVariants.map((item, index) => {
+            const isActive = index === activeVariant;
+            const isAnimating = animatingVariant === index;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setAnimatingVariant(index);
+                  setActiveVariant(index);
+                  setTimeout(() => setAnimatingVariant(null), 600);
+                }}
+                aria-label={item.title}
+                className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
+                style={{ background: item.swatch }}
+              >
+                <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
+                <svg
+                  className="absolute inset-0 h-full w-full pointer-events-none"
+                  viewBox="0 0 26 26"
+                  style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
+                >
+                  <circle
+                    cx="13"
+                    cy="13"
+                    r="12"
+                    fill="none"
+                    stroke="black"
+                    strokeWidth="1"
+                    strokeDasharray="75.4"
+                    strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
+                    className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
+                    style={{
+                      animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
+                    }}
+                  />
+                </svg>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
@@ -2627,7 +3089,7 @@ function Applications() {
           </div>
         </div>
       </div>
-      <div className="px-6 py-10 lg:hidden">
+      <div className="pl-6 pr-0 py-10 lg:hidden">
         <h2 className="mb-6 text-center font-heading text-[36px] tracking-[0.05em] relative pb-4 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[0.5px] after:bg-black after:content-['']">ỨNG DỤNG</h2>
         <div
           className="relative overflow-x-auto scroll-smooth snap-x snap-mandatory"
@@ -2644,7 +3106,7 @@ function Applications() {
                   key={slide.key} 
                   className="relative flex-shrink-0 snap-center" 
                   style={{ 
-                    width: 'calc(100vw - 48px - 16px)',
+                    width: '300px',
                     aspectRatio: '314 / 587'
                   }}
                 >
