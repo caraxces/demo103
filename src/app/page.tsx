@@ -1573,7 +1573,7 @@ function Header() {
             className="h-auto transition-all duration-300"
             style={{
               width: isMobile ? '120px' : 'calc(110px * (100vw / 1440px))',
-              marginTop: isMobile ? '0' : 'calc(10px * (100vw / 1440px))',
+              marginTop: isMobile ? '20px' : 'calc(10px * (100vw / 1440px))',
               // Logo đen khi text đen (onLightSection = true) - invert từ trắng sang đen
               // Logo trắng khi text trắng (onLightSection = false) - giữ nguyên trắng
               filter: onLightSection ? 'brightness(0)' : 'none',
@@ -1675,10 +1675,10 @@ function Header() {
                 : "border-white text-white hover:bg-white/20"
             }`}
           >
-            <span className="flex flex-col items-center justify-center gap-[6px]">
-              <span className={`block h-[2px] w-5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-[8px]' : ''}`} />
-              <span className={`block h-[2px] w-5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-[2px] w-5 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-[8px]' : ''}`} />
+            <span className="flex flex-col items-center justify-center gap-[8px]">
+              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-[10px]' : ''}`} />
+              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-[10px]' : ''}`} />
             </span>
           </button>
           {isMobileMenuOpen && (
@@ -1818,8 +1818,8 @@ function Hero() {
           className="font-alt font-normal max-lg:max-w-[593px]"
           style={{
             maxWidth: !isMobile ? 'calc(593px * (100vw / 1440px))' : '100%',
-            fontSize: !isMobile ? 'calc(18px * (100vw / 1440px))' : '18px',
-            lineHeight: !isMobile ? 'calc(24px * (100vw / 1440px))' : '24px',
+            fontSize: !isMobile ? 'calc(18px * (100vw / 1440px))' : 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+            lineHeight: !isMobile ? 'calc(24px * (100vw / 1440px))' : 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
           }}
         >
           <span className="hidden lg:inline">Thiết kế độc đáo phối hòa đường nét thanh lịch, tinh tế.</span>
@@ -1960,8 +1960,8 @@ function About() {
             <p 
               className="font-manrope text-justify text-[#1a1a1a]"
               style={{
-                fontSize: isMobile ? 'clamp(14px, 3.5vw, 16px)' : 'calc(14px * (100vw / 1440px))',
-                lineHeight: isMobile ? 'clamp(22px, 5.5vw, 28px)' : 'calc(25px * (100vw / 1440px))',
+                fontSize: isMobile ? 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)' : 'calc(14px * (100vw / 1440px))',
+                lineHeight: isMobile ? 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)' : 'calc(25px * (100vw / 1440px))',
               }}
             >
               STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
@@ -2293,7 +2293,13 @@ function Gallery() {
             >
               ARTILE<br />GALLERY
             </h2>
-            <p className="font-montserrat text-white text-[14px] leading-[24px] text-justify">
+            <p 
+              className="font-montserrat text-white text-justify"
+              style={{
+                fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
+              }}
+            >
               Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
             </p>
             <div className="pt-2 flex justify-start">
@@ -2458,7 +2464,13 @@ function FeaturedProducts() {
             </div>
           </div>
           <div className="absolute bottom-0 left-0 right-0 mb-6 flex flex-col items-center gap-6 pb-6 px-8">
-            <p className="text-center font-montserrat text-[#151515] text-[14px] leading-[22px] max-w-[520px]">
+            <p 
+              className="text-center font-montserrat text-[#151515] max-w-[520px]"
+              style={{
+                fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
+              }}
+            >
               {variant.description}
             </p>
             <PillButton label="Khám phá ngay" />
@@ -2736,7 +2748,13 @@ function Collections() {
                   {collectionMobileSlides[mobileCollectionIndex].subtitle}
                 </span>
               </div>
-              <p className="font-montserrat text-[14px] leading-[22px]">
+              <p 
+                className="font-montserrat"
+                style={{
+                  fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                  lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
+                }}
+              >
                 {collectionMobileSlides[mobileCollectionIndex].description}
               </p>
             </div>
@@ -3327,7 +3345,13 @@ function Projects() {
                     )}
                   </h3>
                 </div>
-                <p className="absolute left-[15px] top-[340px] w-[calc(100%-30px)] max-w-[328px] font-montserrat font-normal text-[14px] leading-[19px] text-black">
+                <p 
+                  className="absolute left-[15px] top-[340px] w-[calc(100%-30px)] max-w-[328px] font-montserrat font-normal text-black"
+                  style={{
+                    fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                    lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
+                  }}
+                >
                   {article.description}
                 </p>
               </div>
@@ -3619,7 +3643,13 @@ function CatalogueCtaAndFooter() {
             />
             <div>
               <h3 className="font-heading text-[18px] uppercase tracking-[0.08em]">CÔNG TY TNHH STILE</h3>
-              <div className="mt-4 space-y-3 font-montserrat text-[14px] leading-6">
+              <div 
+                className="mt-4 space-y-3 font-montserrat"
+                style={{
+                  fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                  lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
+                }}
+              >
                 <p>098 165 0042</p>
                 <p>infor@stile.com.vn</p>
                 <p>155 - 157 Nguyễn Cơ Thạch, P. An Khánh, TP. HCM</p>
@@ -3630,7 +3660,12 @@ function CatalogueCtaAndFooter() {
                 <Image key={item.alt} src={item.src} alt={item.alt} width={32} height={32} className="h-8 w-8" />
               ))}
             </div>
-            <form className="space-y-3 font-manrope text-[13px]">
+            <form 
+              className="space-y-3 font-manrope"
+              style={{
+                fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+              }}
+            >
               <input
                 type="text"
                 placeholder="Họ và Tên"
@@ -3658,7 +3693,13 @@ function CatalogueCtaAndFooter() {
                 Gửi
               </button>
             </form>
-            <div className="grid grid-cols-2 gap-4 font-montserrat text-[14px] leading-6">
+            <div 
+              className="grid grid-cols-2 gap-4 font-montserrat"
+              style={{
+                fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
+              }}
+            >
               {footerLinks.map((link) => (
                 <Link key={link} href="#" className="transition hover:text-[#555]">
                   {link}
