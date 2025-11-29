@@ -91,6 +91,15 @@ button {
   --btn-hover-fill: #ffffff;
 }
 
+/* Contact form submit button (id=\"contact\" - nút \"Gửi\"): nền đen mặc định, hover nền trắng, giữ nguyên hiệu ứng circle */
+.contact-submit-btn .btn.btn--light {
+  --btn-bg: #111111;       /* nền mặc định: đen */
+  --btn-border: #111111;
+  --btn-text: #ffffff;     /* chữ trắng */
+  --btn-hover-text: #111111;  /* hover: chữ đen */
+  --btn-hover-fill: #ffffff;  /* hover: circle & nền trắng, cùng hiệu ứng như các nút khác */
+}
+
 .btn__outline {
   position: absolute;
   inset: 0;

@@ -530,8 +530,6 @@ function SectionVisibilityManager() {
       }
     });
 
-    let scrolling = false;
-
     const checkVisibleSections = () => {
       const containerRect = container.getBoundingClientRect();
       const viewportHeight = container.clientHeight;
@@ -551,48 +549,14 @@ function SectionVisibilityManager() {
       });
     };
 
-    const onWheel = (event: WheelEvent) => {
-      if (scrolling) return;
-      const direction = event.deltaY > 0 ? 1 : -1;
-      triggerAnimation(direction);
-    };
-
-    const onKey = (event: KeyboardEvent) => {
-      if (scrolling) return;
-      if (event.key === "ArrowDown" || event.key === "PageDown") {
-        triggerAnimation(1);
-      } else if (event.key === "ArrowUp" || event.key === "PageUp") {
-        triggerAnimation(-1);
-      }
-    };
-
-    const triggerAnimation = (direction: 1 | -1) => {
-      const currentIndex = Math.round(container.scrollTop / container.clientHeight);
-      const targetIndex = Math.max(0, Math.min(sections.length - 1, currentIndex + direction));
-      const targetSection = sections[targetIndex];
-
-      scrolling = true;
-      targetSection.classList.add("is-visible");
-
-      setTimeout(() => {
-        scrolling = false;
-        checkVisibleSections();
-      }, 600);
-    };
-
-    // Check visible sections on scroll
+    // Check visible sections on scroll - chỉ để animation fade in/out
     container.addEventListener("scroll", checkVisibleSections, { passive: true });
-    
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("keydown", onKey);
 
     // Initial check
     checkVisibleSections();
 
     return () => {
       container.removeEventListener("scroll", checkVisibleSections);
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKey);
     };
   }, []);
 
@@ -1594,9 +1558,9 @@ function Header() {
       <div 
         className="mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6"
         style={{
-          paddingLeft: 'calc(24px * (100vw / 1440px))',
-          paddingRight: 'calc(57px * (100vw / 1440px))',
-          paddingTop: !isMobile ? 'calc(40px * (100vw / 1440px))' : '0',
+          paddingLeft: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
+          paddingRight: isMobile ? '24px' : 'calc(57px * (100vw / 1440px))',
+          paddingTop: isMobile ? '30px' : 'calc(40px * (100vw / 1440px))',
         }}
       >
         <Link href="#hero" className="flex items-center">
@@ -2498,48 +2462,6 @@ function FeaturedProducts() {
               {variant.description}
             </p>
             <PillButton label="Khám phá ngay" />
-            <div className="flex items-center justify-center gap-4">
-              {featuredVariants.map((item, index) => {
-                const isActive = index === activeVariant;
-                const isAnimating = animatingVariant === index;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => {
-                      setAnimatingVariant(index);
-                      setActiveVariant(index);
-                      setTimeout(() => setAnimatingVariant(null), 600);
-                    }}
-                    aria-label={item.title}
-                    className="relative h-[20px] w-[20px] rounded-full border-0 p-[1px]"
-                    style={{ background: item.swatch }}
-                  >
-                    <div className="h-full w-full rounded-full" style={{ background: item.swatch }} />
-                    <svg
-                      className="absolute inset-0 h-full w-full pointer-events-none"
-                      viewBox="0 0 26 26"
-                      style={{ width: '26px', height: '26px', left: '-3px', top: '-3px' }}
-                    >
-                      <circle
-                        cx="13"
-                        cy="13"
-                        r="12"
-                        fill="none"
-                        stroke="black"
-                        strokeWidth="1"
-                        strokeDasharray="75.4"
-                        strokeDashoffset={isAnimating ? "75.4" : isActive ? "0" : "75.4"}
-                        className={isActive || isAnimating ? "opacity-100" : "opacity-0"}
-                        style={{
-                          animation: isAnimating ? "drawCircle 0.6s ease-out forwards" : undefined,
-                        }}
-                      />
-                    </svg>
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </div>
       )}
@@ -3425,11 +3347,12 @@ function CatalogueCtaAndFooter() {
     <>
       {/* Desktop: Combined vertical layout */}
       <section id="contact" data-header-light="true" className="fullpage-section hidden lg:flex flex-col w-full" style={{ backgroundColor: 'transparent' }}>
-        {/* Catalogue CTA - Top section, compact */}
+        {/* Catalogue CTA - Top section, lớn hơn để đẩy footer xuống sát đáy */}
         <div 
-          className="relative flex-shrink-0 overflow-hidden"
+          className="relative overflow-hidden"
           style={{
-            height: 'calc(280px * (100vw / 1470px))',
+            // Banner lớn hơn: base 320px ở màn 1470 và scale theo màn hình
+            height: 'calc(320px * (100vw / 1470px))',
           }}
         >
           <Image
@@ -3467,25 +3390,31 @@ function CatalogueCtaAndFooter() {
 
         {/* Footer - Bottom section */}
         <div 
-          className="flex-1 bg-[#E3DCD1]"
+          className="flex-1 bg-[#E3DCD1] flex flex-col"
           style={{
             paddingLeft: 'calc(104px * (100vw / 1470px))',
             paddingRight: 'calc(104px * (100vw / 1470px))',
             paddingTop: 'calc(48px * (100vw / 1470px))',
-            paddingBottom: 'calc(48px * (100vw / 1470px))',
+            // Cách lề dưới 20px tại màn 1440px, sau đó scale theo tỉ lệ cho màn lớn hơn
+            paddingBottom: 'calc(20px * (100vw / 1440px))',
           }}
         >
           <div 
             className="mx-auto w-full"
             style={{
               maxWidth: 'calc(1440px * (100vw / 1470px))',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <div 
               className="flex flex-col mb-8"
               style={{
                 gap: 'calc(24px * (100vw / 1470px))',
-                marginBottom: 'calc(32px * (100vw / 1470px))',
+                // Giảm khoảng trống giữa khối nội dung và phần legal phía dưới
+                marginBottom: 'calc(16px * (100vw / 1470px))',
+                flex: 1,
               }}
             >
               {/* Logo + Social Icons - Top row with border below */}
@@ -3617,7 +3546,8 @@ function CatalogueCtaAndFooter() {
                     <InputField placeholder="Email" full />
                     <TextareaField placeholder="Nội dung tin nhắn..." />
                     <div className="col-span-2 w-full">
-                      <div className="w-full">
+                      <div className="w-full contact-submit-btn">
+                        {/* Nút gửi: layout chữ nhật (noRounded), hiệu ứng hover vẫn là vòng tròn */}
                         <PillButton label="Gửi" fullWidth={true} noRounded={true} />
                       </div>
                     </div>
