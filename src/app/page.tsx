@@ -2170,29 +2170,37 @@ function Gallery() {
           />
         </div>
 
+        {/* Gradient Overlay - từ phải sang trái (chéo) */}
+        <div 
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to left, rgba(0, 0, 0, 3) 0%, rgba(0, 0, 0, 0) 100%)',
+          }}
+        />
+
         {/* Image 1 - Top/Left */}
         <div
           className="absolute z-20 transition-opacity duration-700"
           style={{
             left: 'calc(330px * (100vw / 1470px))',
             top: '42%',
-            width: 'calc(400px * (100vw / 1470px))',
             height: 'calc(400px * (100vw / 1470px))',
             transform: 'translateY(-50%) rotate(12deg)',
           }}
         >
           <div 
-            className="relative w-full h-full overflow-hidden shadow-2xl border border-white" 
+            className="relative h-full overflow-hidden shadow-2xl" 
             style={{ 
               boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-              borderWidth: 'calc(10px * (100vw / 1470px))',
+              width: 'auto',
             }}
           >
             <Image
               src={imagePairs[activePair][0].src}
               alt={imagePairs[activePair][0].alt}
-              fill
-              className="object-cover"
+              width={400}
+              height={400}
+              className="h-full w-auto object-contain"
               sizes="400px"
             />
           </div>
@@ -2204,23 +2212,23 @@ function Gallery() {
           style={{
             left: 'calc(80px * (100vw / 1470px))',
             top: '70%',
-            width: 'calc(400px * (100vw / 1470px))',
             height: 'calc(400px * (100vw / 1470px))',
             transform: 'translateY(-50%) rotate(0deg)',
           }}
         >
           <div 
-            className="relative w-full h-full overflow-hidden shadow-2xl border border-white" 
+            className="relative h-full overflow-hidden shadow-2xl" 
             style={{ 
               boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-              borderWidth: 'calc(10px * (100vw / 1470px))',
+              width: 'auto',
             }}
           >
             <Image
               src={imagePairs[activePair][1].src}
               alt={imagePairs[activePair][1].alt}
-              fill
-              className="object-cover"
+              width={400}
+              height={400}
+              className="h-full w-auto object-contain"
               sizes="400px"
             />
           </div>
