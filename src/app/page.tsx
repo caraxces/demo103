@@ -1606,10 +1606,10 @@ function Header() {
             width={90}
             height={34}
             priority
-            className="h-auto transition-all duration-300 max-lg:w-[90px]"
+            className="h-auto transition-all duration-300"
             style={{
-              width: 'calc(110px * (100vw / 1440px))',
-              marginTop: 'calc(10px * (100vw / 1440px))',
+              width: isMobile ? '120px' : 'calc(110px * (100vw / 1440px))',
+              marginTop: isMobile ? '0' : 'calc(10px * (100vw / 1440px))',
               // Logo đen khi text đen (onLightSection = true) - invert từ trắng sang đen
               // Logo trắng khi text trắng (onLightSection = false) - giữ nguyên trắng
               filter: onLightSection ? 'brightness(0)' : 'none',
@@ -1824,10 +1824,12 @@ function Hero() {
       <div 
         className="relative z-10 mx-auto flex w-full flex-col items-center text-center max-lg:max-w-[1440px] max-lg:gap-[28px] max-lg:px-6"
         style={{
-          maxWidth: 'calc(1440px * (100vw / 1440px))',
-          gap: 'calc(28px * (100vw / 1440px))',
-          paddingLeft: 'calc(24px * (100vw / 1440px))',
-          paddingRight: 'calc(24px * (100vw / 1440px))',
+          maxWidth: isMobile ? '100%' : 'calc(1440px * (100vw / 1440px))',
+          gap: isMobile ? '28px' : 'calc(28px * (100vw / 1440px))',
+          paddingLeft: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
+          paddingRight: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
+          width: '100%',
+          boxSizing: 'border-box',
         }}
       >
         <h1 
@@ -1947,35 +1949,55 @@ function About() {
         >
           <div
             ref={textRef}
-            className="flex flex-col transition-transform duration-300 ease-out will-change-transform text-left max-lg:text-center max-lg:px-6"
+            className="flex flex-col transition-transform duration-300 ease-out will-change-transform text-left"
             style={{
-              gap: 'calc(24px * (100vw / 1440px))',
+              gap: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
+              paddingLeft: isMobile ? '24px' : '0',
+              paddingRight: isMobile ? '24px' : '0',
             }}
           >
             <span 
-              className="font-alt font-medium tracking-[0.05em] max-lg:mt-6 max-lg:text-[14px]"
+              className="font-alt font-medium tracking-[0.05em]"
               style={{
-                fontSize: 'calc(20px * (100vw / 1440px))',
+                fontSize: isMobile ? '14px' : 'calc(20px * (100vw / 1440px))',
                 letterSpacing: '0.05em',
               }}
             >
               VỀ CHÚNG TÔI
             </span>
-            <h2 
-              className="font-heading tracking-[0.02em] uppercase text-[#000000] max-lg:text-[42px] max-lg:leading-[52px]"
-              style={{
-                fontSize: 'calc(48px * (100vw / 1440px))',
-                lineHeight: 'calc(60px * (100vw / 1440px))',
-                letterSpacing: '0.02em',
-              }}
-            >
-              ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
+            <h2 className="font-heading tracking-[0.02em] uppercase text-[#000000]">
+              {isMobile ? (
+                <>
+                  <span style={{ 
+                    fontSize: '18px', 
+                    lineHeight: '1.2', 
+                    display: 'block',
+                  }}>
+                    ĐỊNH HÌNH CHUẨN MỰC MỚI CHO
+                  </span>
+                  <span style={{ 
+                    fontSize: 'clamp(36px, calc(36px + (100vw - 480px) * 0.0375), 42px)', 
+                    lineHeight: '1.2', 
+                    display: 'block',
+                  }}>
+                    BỀ MẶT ỐP LÁT
+                  </span>
+                </>
+              ) : (
+                <span style={{ 
+                  fontSize: 'calc(48px * (100vw / 1440px))',
+                  lineHeight: 'calc(60px * (100vw / 1440px))',
+                  display: 'block',
+                }}>
+                  ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
+                </span>
+              )}
             </h2>
             <p 
-              className="font-manrope text-justify text-[#1a1a1a] max-lg:text-center max-lg:text-[16px] max-lg:leading-[28px]"
+              className="font-manrope text-justify text-[#1a1a1a]"
               style={{
-                fontSize: 'calc(14px * (100vw / 1440px))',
-                lineHeight: 'calc(25px * (100vw / 1440px))',
+                fontSize: isMobile ? 'clamp(14px, 3.5vw, 16px)' : 'calc(14px * (100vw / 1440px))',
+                lineHeight: isMobile ? 'clamp(22px, 5.5vw, 28px)' : 'calc(25px * (100vw / 1440px))',
               }}
             >
               STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
@@ -1985,9 +2007,9 @@ function About() {
               thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
             </p>
             <div 
-              className="pt-2 flex justify-start max-lg:justify-center"
+              className="pt-2 flex justify-start"
               style={{
-                paddingTop: 'calc(8px * (100vw / 1440px))',
+                paddingTop: isMobile ? '8px' : 'calc(8px * (100vw / 1440px))',
               }}
             >
               <PillButton label="Khám phá ngay" />
@@ -3248,10 +3270,9 @@ function Projects() {
                           onMouseLeave={() => setHoveredCardIndex(null)}
                         >
                           <div 
-                            className="relative w-full overflow-hidden rounded-[7px]" 
+                            className="relative w-full overflow-hidden" 
                             style={{ 
                               aspectRatio: '601/355',
-                              borderRadius: 'calc(7px * (100vw / 1470px))',
                             }}
                           >
                             <Image 
@@ -3355,9 +3376,9 @@ function Projects() {
           <div className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth" style={{ height: '434px' }}>
             {trendArticles.map((article, index) => (
               <div key={article.title} className="relative w-screen flex-shrink-0 snap-center" style={{ height: '434px' }}>
-                <div className="absolute bg-[#d9d9d9] inset-0" />
-                <div className="absolute left-0 top-0 h-[248px] w-full px-6">
-                  <div className="relative h-full w-full overflow-hidden rounded-[7px]">
+                <div className="absolute bg-[#B9B0A1] inset-0" />
+                <div className="absolute left-0 top-0 h-[248px] w-full">
+                  <div className="relative h-full w-full overflow-hidden">
                     <Image 
                       src={article.image} 
                       alt={article.title} 
