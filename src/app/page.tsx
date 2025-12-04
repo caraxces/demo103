@@ -182,17 +182,31 @@ const collectionSlides = [
       "Hòa quyện thiên nhiên và công nghệ, tạo nên bề mặt tinh tế, bền vững và đậm chất đương đại.",
     highlightTitle: "Less is More",
     ctaLabel: "Khám phá ngay",
+    textColor: "white",
   },
   {
-    id: "gemini-02",
+    id: "civic-01",
+    image: "/BỘ SƯU TẬP/image copy 2.png",
+    heading: "BỘ SƯU TẬP",
+    title: "CIVIC",
+    subtitle: "Collection",
+    description:
+      "Bộ sưu tập này biến ý tưởng về vật liệu thành một ngôn ngữ sống động, ba chiều trong tay các nhà thiết kế.",
+    highlightTitle: "Less is More",
+    ctaLabel: "Khám phá ngay",
+    textColor: "black",
+  },
+  {
+    id: "infinito-01",
     image: "/BỘ SƯU TẬP/image.png",
     heading: "BỘ SƯU TẬP",
-    title: "Gemini",
-    subtitle: "Heritage",
+    title: "Infinito 2.0",
+    subtitle: "Collection",
     description:
-      "Từ nguồn cảm hứng nghệ thuật Ý, Gemini Heritage mở ra những bề mặt sang trọng nhưng vẫn phóng khoáng.",
-    highlightTitle: "Crafted Layers",
+      "Bộ sưu tập này biến ý tưởng về vật liệu thành một ngôn ngữ sống động, ba chiều trong tay các nhà thiết kế.",
+    highlightTitle: "Less is More",
     ctaLabel: "Khám phá ngay",
+    textColor: "white",
   },
 ] as const;
 
@@ -206,6 +220,29 @@ const collectionMobileSlides = [
     description:
       "Hòa quyện thiên nhiên và công nghệ, tạo nên bề mặt tinh tế, bền vững và đậm chất đương đại.",
     ctaLabel: "Khám phá ngay",
+    backgroundColor: "#5C493A",
+  },
+  {
+    id: "civic-mobile-01",
+    image: "/BỘ SƯU TẬP/image copy 2.png",
+    heading: "BỘ SƯU TẬP",
+    title: "CIVIC",
+    subtitle: "Collection",
+    description:
+      "Bộ sưu tập này biến ý tưởng về vật liệu thành một ngôn ngữ sống động, ba chiều trong tay các nhà thiết kế.",
+    ctaLabel: "Khám phá ngay",
+    backgroundColor: "#8B6F47",
+  },
+  {
+    id: "infinito-mobile-01",
+    image: "/BỘ SƯU TẬP/image.png",
+    heading: "BỘ SƯU TẬP",
+    title: "Infinito 2.0",
+    subtitle: "Collection",
+    description:
+      "Bộ sưu tập này biến ý tưởng về vật liệu thành một ngôn ngữ sống động, ba chiều trong tay các nhà thiết kế.",
+    ctaLabel: "Khám phá ngay",
+    backgroundColor: "#6B4E37",
   },
   {
     id: "gemini-mobile-02",
@@ -215,6 +252,7 @@ const collectionMobileSlides = [
     subtitle: "Collection",
     description: "Những mảng màu trung tính kết hợp ánh sáng tự nhiên mang đến chiều sâu thư thái cho không gian.",
     ctaLabel: "Khám phá ngay",
+    backgroundColor: "#5C493A",
   },
   {
     id: "gemini-mobile-03",
@@ -224,6 +262,7 @@ const collectionMobileSlides = [
     subtitle: "Collection",
     description: "Đường nét tinh giản và bề mặt mịn màng tạo nên phông nền hoàn hảo cho mọi phong cách nội thất.",
     ctaLabel: "Khám phá ngay",
+    backgroundColor: "#5C493A",
   },
   {
     id: "gemini-mobile-04",
@@ -233,6 +272,7 @@ const collectionMobileSlides = [
     subtitle: "Collection",
     description: "Gam màu ấm áp cùng điểm nhấn thiên nhiên đem lại nguồn cảm hứng mới cho những bộ sưu tập cao cấp.",
     ctaLabel: "Khám phá ngay",
+    backgroundColor: "#5C493A",
   },
 ] as const;
 
@@ -1534,31 +1574,45 @@ function Header() {
     return () => observer.disconnect();
   }, []);
 
-  const navLinkClass = onLightSection
-    ? "text-[#111111] hover:text-[#555555]"
-    : "text-white hover:text-[#f2f2f2]";
+  const navLinkClass = isMobile
+    ? (onLightSection
+        ? "text-[#111111] hover:text-[#555555]"
+        : "text-white hover:text-[#f2f2f2]")
+    : (pastHero ? "text-[#111111] hover:text-[#555555]" : "text-white hover:text-[#f2f2f2]");
 
   // Logo đen chính - hiển thị cùng logic với text
-  // Text đen → Logo đen, Text trắng → Logo trắng (invert)
+  // Desktop: đen khi pastHero, trắng khi ở hero. Mobile: đen khi onLightSection, trắng khi không
   const logoSrc = "/New STILE Logo Vector 1-16.png";
 
   const baseHeight = pastHero ? 58 : 80;
   const headerHeight = isHeaderHovered ? baseHeight + 12 : baseHeight;
+  const backgroundHeight = pastHero ? 116 : 160;
 
   return (
     <header
       onMouseEnter={() => setIsHeaderHovered(true)}
       onMouseLeave={() => setIsHeaderHovered(false)}
-      className={`fixed left-0 right-0 top-0 z-50 bg-transparent transition-all duration-500 ease-in-out ${
-        onLightSection ? "text-[#111111]" : "text-white"
+      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ease-in-out ${
+        isMobile && onLightSection ? "text-[#111111]" : isMobile ? "text-white" : (pastHero ? "text-[#111111]" : "text-white")
       }`}
       style={{ 
         height: `${headerHeight}px`,
+        width: '100%',
         transform: isHeaderVisible ? 'translateY(0)' : 'translateY(-100%)',
         opacity: isHeaderVisible ? 1 : 0,
         pointerEvents: isHeaderVisible ? 'auto' : 'none',
       }}
     >
+      {/* Background layer with double height */}
+      <div
+        className="absolute left-0 right-0 top-0 transition-all duration-500 ease-in-out"
+        style={{
+          height: `${backgroundHeight}px`,
+          width: '100%',
+          backgroundColor: pastHero ? '#EEEBE6' : 'transparent',
+          zIndex: -1,
+        }}
+      />
       <div 
         className="mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6"
         style={{
@@ -1578,9 +1632,9 @@ function Header() {
             style={{
               width: isMobile ? '120px' : 'calc(110px * (100vw / 1440px))',
               marginTop: isMobile ? '20px' : 'calc(10px * (100vw / 1440px))',
-              // Logo đen khi text đen (onLightSection = true) - invert từ trắng sang đen
-              // Logo trắng khi text trắng (onLightSection = false) - giữ nguyên trắng
-              filter: onLightSection ? 'brightness(0)' : 'none',
+              // Logo đen: desktop khi pastHero (invert), mobile khi onLightSection = true
+              // Logo trắng: desktop khi ở hero, mobile khi onLightSection = false
+              filter: isMobile ? (onLightSection ? 'brightness(0)' : 'none') : (pastHero ? 'brightness(0)' : 'none'),
             }}
           />
         </Link>
@@ -1596,9 +1650,9 @@ function Header() {
             <div key={item.label} className="group">
               {item.hasDropdown ? (
                 item.label === "Sản Phẩm" ? (
-                  <ProductDropdownMenu onLightSection={onLightSection} />
+                  <ProductDropdownMenu onLightSection={pastHero} />
                 ) : (
-                  <ServiceDropdownMenu onLightSection={onLightSection} />
+                  <ServiceDropdownMenu onLightSection={pastHero} />
                 )
               ) : (
                 <Link href={item.href} className={`transition ${navLinkClass}`}>
@@ -1607,7 +1661,7 @@ function Header() {
               )}
             </div>
           ))}
-          <HeaderDropdownMenu onLightSection={onLightSection} />
+          <HeaderDropdownMenu onLightSection={pastHero} />
         </nav>
         <div 
           className="hidden items-center lg:flex"
@@ -1621,7 +1675,7 @@ function Header() {
             type="button"
             aria-label="Tìm kiếm"
             className={`flex items-center justify-center rounded-full border transition ${
-              onLightSection
+              pastHero
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                 : "border-white text-white hover:bg-white/20"
             }`}
@@ -1652,7 +1706,7 @@ function Header() {
           <button
             type="button"
             className={`rounded-full border transition ${
-              onLightSection
+              pastHero
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                 : "border-white text-white hover:bg-white/20"
             }`}
@@ -2582,6 +2636,14 @@ function Collections() {
     touchDiffRef.current = 0;
   };
 
+  const handleDesktopPrev = () => {
+    setActiveSlide((prev) => (prev - 1 + collectionSlides.length) % collectionSlides.length);
+  };
+
+  const handleDesktopNext = () => {
+    setActiveSlide((prev) => (prev + 1) % collectionSlides.length);
+  };
+
   return (
     <section id="collections" className="fullpage-section relative w-full overflow-hidden bg-black text-white">
       <div className="section-inner !p-0 hidden lg:block">
@@ -2599,7 +2661,8 @@ function Collections() {
                   src={slide.image}
                   alt="Collection layout"
                   fill
-                  priority={index === 0}
+                  priority={index === 0 || index === 1 || index === 2}
+                  quality={95}
                   className="object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-black/5" />
@@ -2612,7 +2675,7 @@ function Collections() {
                   }}
                 >
                   <h2 
-                    className={`font-heading tracking-[0.05em] normal-case ${index === 1 ? 'text-black' : 'text-white'}`}
+                    className={`font-heading tracking-[0.05em] normal-case ${slide.textColor === 'black' ? 'text-black' : 'text-white'}`}
                     style={{
                       fontSize: 'calc(48px * (100vw / 1470px))',
                     }}
@@ -2622,7 +2685,7 @@ function Collections() {
                 </div>
 
                 <div 
-                  className={`absolute text-left ${index === 1 ? 'text-black' : 'text-white'}`}
+                  className={`absolute text-left ${slide.textColor === 'black' ? 'text-black' : 'text-white'}`}
                   style={{
                     left: 'calc(670px * (100vw / 1470px))',
                     top: 'calc(290px * (100vw / 1470px))',
@@ -2645,7 +2708,7 @@ function Collections() {
                       {slide.title}
                     </span>
                     <span 
-                      className={`normal-case tracking-normal ${index === 1 ? 'text-black' : 'text-white/75'}`}
+                      className={`normal-case tracking-normal ${slide.textColor === 'black' ? 'text-black' : 'text-white/75'}`}
                       style={{
                         fontSize: 'calc(18px * (100vw / 1470px))',
                       }}
@@ -2654,7 +2717,7 @@ function Collections() {
                     </span>
                   </div>
                   <p 
-                    className={`mt-5 font-montserrat ${index === 1 ? 'text-black/90' : 'text-white/90'}`}
+                    className={`mt-5 font-montserrat ${slide.textColor === 'black' ? 'text-black/90' : 'text-white/90'}`}
                     style={{
                       marginTop: 'calc(20px * (100vw / 1470px))',
                       fontSize: 'calc(15px * (100vw / 1470px))',
@@ -2668,12 +2731,12 @@ function Collections() {
                       paddingTop: 'calc(28px * (100vw / 1470px))',
                     }}
                   >
-                    <PillButton label={slide.ctaLabel} theme={index === 0 ? "dark" : "light"} />
+                    <PillButton label={slide.ctaLabel} theme={slide.textColor === 'black' ? "light" : "dark"} />
                   </div>
                 </div>
 
                 <div 
-                  className={`absolute text-center ${index === 1 ? 'text-black' : 'text-white'}`}
+                  className={`absolute text-center ${slide.textColor === 'black' ? 'text-black' : 'text-white'}`}
                   style={{
                     left: 'calc(920px * (100vw / 1470px))',
                     top: 'calc(640px * (100vw / 1470px))',
@@ -2709,6 +2772,28 @@ function Collections() {
               );
             })}
           </div>
+
+          {/* Navigation buttons */}
+          <button
+            type="button"
+            onClick={handleDesktopPrev}
+            aria-label="Slide trước"
+            className="absolute left-[60px] top-1/2 -translate-y-1/2 flex h-16 w-16 items-center justify-center transition hover:opacity-70 z-10"
+          >
+            <svg width="14" height="30" viewBox="0 0 7 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.61523 0.290649L0.615235 7.29065L5.61523 14.2906" stroke="white" strokeWidth="1.5"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleDesktopNext}
+            aria-label="Slide tiếp theo"
+            className="absolute right-[60px] top-1/2 -translate-y-1/2 flex h-16 w-16 items-center justify-center transition hover:opacity-70 z-10"
+          >
+            <svg width="14" height="30" viewBox="0 0 7 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.40625 14.2906L5.40625 7.29065L0.406252 0.290649" stroke="white" strokeWidth="1.5"/>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -2752,7 +2837,10 @@ function Collections() {
             ›
           </button>
           </div>
-          <div className="bg-[#5C493A] px-6 py-8 text-white">
+          <div 
+            className="px-6 py-8 text-white"
+            style={{ backgroundColor: collectionMobileSlides[mobileCollectionIndex].backgroundColor || '#5C493A' }}
+          >
             <div className="space-y-3">
               <div className="flex items-baseline gap-3 font-montserrat text-[32px] font-semibold leading-[36px]">
                 <span>{collectionMobileSlides[mobileCollectionIndex].title}</span>
