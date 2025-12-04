@@ -61,19 +61,19 @@ const productDropdownItems = [
 
 const galleryImages = [
   {
-    src: "/ARTILE GALLERY/image1.png",
+    src: "/ARTILE GALLERY/Rectangle 816.png",
     alt: "Artile Gallery 1",
   },
   {
-    src: "/ARTILE GALLERY/image2.png",
+    src: "/ARTILE GALLERY/Rectangle 817.png",
     alt: "Artile Gallery 2",
   },
   {
-    src: "/ARTILE GALLERY/image3.png",
+    src: "/ARTILE GALLERY/Rectangle 818.png",
     alt: "Artile Gallery 3",
   },
   {
-    src: "/ARTILE GALLERY/image4.png",
+    src: "/ARTILE GALLERY/Rectangle 819.png",
     alt: "Artile Gallery 4",
   },
 ] as const;
@@ -404,16 +404,20 @@ const footerSocials = [
 
 const heroSlides = [
   {
-    src: "/BANNER/image.png",
-    alt: "Bề mặt image",
+    src: "/BANNER/Rectangle 801.png",
+    alt: "Banner 801",
   },
   {
-    src: "/BANNER/image copy 2.png",
-    alt: "Bề mặt image copy 2",
+    src: "/BANNER/Rectangle 802.png",
+    alt: "Banner 802",
   },
   {
-    src: "/BANNER/image copy.png",
-    alt: "Bề mặt image copy",
+    src: "/BANNER/Rectangle 803.png",
+    alt: "Banner 803",
+  },
+  {
+    src: "/BANNER/Rectangle 804.png",
+    alt: "Banner 804",
   },
 ] as const;
 
