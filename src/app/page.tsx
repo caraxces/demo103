@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { TouchEvent as ReactTouchEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -795,13 +796,46 @@ export default function Home() {
   );
 }
 
-function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
+type DropdownType = 'product' | 'service' | 'menu';
+
+function HeaderDropdownMenu({ 
+  onLightSection, 
+  type = 'menu',
+  triggerLabel,
+  triggerHref,
+}: { 
+  onLightSection: boolean;
+  type?: DropdownType;
+  triggerLabel?: string;
+  triggerHref?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const linkRef = useRef<HTMLAnchorElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (type === 'menu') {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        const target = event.target as Node;
+        const clickedMenu = menuRef.current?.contains(target);
+        const clickedButton = buttonRef.current?.contains(target);
+        
+      if (
+        menuRef.current && 
+        !clickedMenu &&
+        buttonRef.current &&
+        !clickedButton
+      ) {
         setIsOpen(false);
       }
     };
@@ -813,7 +847,8 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+    }
+  }, [isOpen, type]);
 
   const menuItems = {
     studio: {
@@ -843,26 +878,391 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
   };
 
   const textColor = onLightSection ? "text-[#111111]" : "text-white";
+  const navLinkClass = onLightSection ? "text-[#111111] hover:text-[#555555]" : "text-white hover:text-gray-300";
 
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleMouseEnter = () => {
+    if (type === 'product' || type === 'service') {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setIsHovered(true);
+    } else {
+      handleToggle();
+    }
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    if (type === 'product' || type === 'service') {
+      const relatedTarget = e.relatedTarget as Node | null;
+      
+      // Clear timeout khi chuột rời
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      
+      // Chỉ tắt dropdown nếu chuột không ở trong trigger hoặc dropdown
+      const isLeavingToTrigger = menuRef.current?.contains(relatedTarget);
+      const isLeavingToDropdown = dropdownRef.current?.contains(relatedTarget);
+      
+      if (!isLeavingToTrigger && !isLeavingToDropdown) {
+        // Delay để cho phép chuột di chuyển từ trigger sang dropdown
+        timeoutRef.current = setTimeout(() => {
+          // Kiểm tra lại một lần nữa trước khi tắt
+          if (!menuRef.current?.contains(document.activeElement) && 
+              !dropdownRef.current?.contains(document.activeElement)) {
+            setIsHovered(false);
+            setHoveredItemIndex(null);
+          }
+        }, 200);
+      }
+    }
+  };
+
+  const handleDropdownMouseEnter = () => {
+    if (type === 'product' || type === 'service') {
+      // Clear timeout khi chuột vào dropdown để giữ dropdown mở
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setIsHovered(true);
+    }
+  };
+
+  const handleDropdownMouseLeave = (e: React.MouseEvent) => {
+    if (type === 'product' || type === 'service') {
+      const relatedTarget = e.relatedTarget as Node | null;
+      
+      // Clear timeout khi chuột rời
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      
+      // Chỉ tắt dropdown nếu chuột không ở trong trigger hoặc dropdown
+      const isLeavingToTrigger = menuRef.current?.contains(relatedTarget);
+      const isLeavingToDropdown = dropdownRef.current?.contains(relatedTarget);
+      
+      if (!isLeavingToTrigger && !isLeavingToDropdown) {
+        timeoutRef.current = setTimeout(() => {
+          setIsHovered(false);
+          setHoveredItemIndex(null);
+        }, 150);
+      }
+    }
+  };
+
+  const shouldShowDropdown = type === 'menu' ? (isOpen && mounted) : (isHovered && mounted);
+  const hoveredItem = hoveredItemIndex !== null ? productDropdownItems[hoveredItemIndex] : null;
+  
+  const renderDropdownContent = () => {
+    if (type === 'product') {
   return (
-    <div className="relative" ref={menuRef}>
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/20 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <div
-            className={`absolute top-full left-1/2 -translate-x-1/2 bg-[#E3DCD1] shadow-lg z-50`}
+        <div 
+          className="grid grid-cols-2 gap-0"
+          style={{
+            paddingTop: 'calc(32px * (100vw / 1440px))',
+            paddingBottom: 'calc(32px * (100vw / 1440px))',
+          }}
+        >
+          {/* Left Column - GẠCH ỐP LÁT */}
+          <div 
+            className="flex flex-col border-r border-black"
             style={{ 
-              marginTop: 'calc(16px * (100vw / 1440px))',
-              minWidth: 'calc(600px * (100vw / 1440px))',
+              paddingRight: 'calc(32px * (100vw / 1440px))',
             }}
           >
+            <h3 
+              className="font-heading uppercase text-[#111111]"
+              style={{ 
+                fontSize: 'calc(32px * (100vw / 1440px))',
+                letterSpacing: '6%',
+                marginBottom: 'calc(24px * (100vw / 1440px))',
+              }}
+            >
+              GẠCH ỐP LÁT
+            </h3>
+            <ul 
+              className="space-y-3"
+              style={{
+                gap: 'calc(12px * (100vw / 1440px))',
+              }}
+            >
+              {productDropdownItems.map((item, index) => (
+                <li 
+                  key={item.label}
+                  onMouseEnter={() => {
+                    if (timeoutRef.current) {
+                      clearTimeout(timeoutRef.current);
+                      timeoutRef.current = null;
+                    }
+                    setHoveredItemIndex(index);
+                  }}
+                  onMouseLeave={() => {
+                    timeoutRef.current = setTimeout(() => {
+                      setHoveredItemIndex(null);
+                    }, 200);
+                  }}
+                >
+                  <Link
+                    href={item.href}
+                    className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition block"
+                    style={{ 
+                      color: '#111111',
+                      fontSize: 'calc(14px * (100vw / 1440px))',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Right Column - Sub-dropdown Content */}
+          <div 
+            className="flex flex-col"
+            style={{
+              paddingLeft: 'calc(32px * (100vw / 1440px))',
+            }}
+          >
+            {hoveredItem && hoveredItem.submenu && (
+              <div
+                className="transition-all duration-300 ease-out"
+                style={{
+                  opacity: hoveredItem ? 1 : 0,
+                  transform: hoveredItem ? 'translateX(0)' : 'translateX(-10px)',
+                }}
+              >
+                <h4 
+                  className="font-heading uppercase text-[#111111]"
+                  style={{ 
+                    fontSize: 'calc(32px * 0.85 * (100vw / 1440px))',
+                    letterSpacing: '6%',
+                    marginBottom: 'calc(24px * 0.85 * (100vw / 1440px))',
+                  }}
+                >
+                  {hoveredItem.submenu.title}
+                </h4>
+                {hoveredItem.submenu.type === "dimensions" && (
+                  <div 
+                    className="grid grid-cols-3"
+                    style={{
+                      gap: 'calc(16px * 0.85 * (100vw / 1440px))',
+                    }}
+                  >
+                    <div 
+                      className="flex flex-col"
+                      style={{
+                        gap: 'calc(8px * 0.85 * (100vw / 1440px))',
+                      }}
+                    >
+                      {hoveredItem.submenu.leftColumn.map((dim, i) => (
+                        <span 
+                          key={i} 
+                          className="font-montserrat text-[#111111]"
+                          style={{
+                            fontSize: 'calc(14px * 0.85 * (100vw / 1440px))',
+                          }}
+                        >
+                          {dim}
+                        </span>
+                      ))}
+                    </div>
+                    <div 
+                      className="flex flex-col"
+                      style={{
+                        gap: 'calc(8px * 0.85 * (100vw / 1440px))',
+                      }}
+                    >
+                      {hoveredItem.submenu.rightColumn.map((dim, i) => (
+                        <span 
+                          key={i} 
+                          className="font-montserrat text-[#111111]"
+                          style={{
+                            fontSize: 'calc(14px * 0.85 * (100vw / 1440px))',
+                          }}
+                        >
+                          {dim}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex flex-col">
+                      <span 
+                        className="font-montserrat text-[#111111]"
+                        style={{
+                          fontSize: 'calc(14px * 0.85 * (100vw / 1440px))',
+                        }}
+                      >
+                        {hoveredItem.submenu.other}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {hoveredItem.submenu.type === "products" && (
+                  <div 
+                    className="flex flex-col"
+                    style={{
+                      gap: 'calc(12px * 0.85 * (100vw / 1440px))',
+                    }}
+                  >
+                    {hoveredItem.submenu.items.map((product, i) => (
+                      <span 
+                        key={i} 
+                        className="font-montserrat text-[#111111]"
+                        style={{
+                          fontSize: 'calc(14px * 0.85 * (100vw / 1440px))',
+                        }}
+                      >
+                        {product}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    } else if (type === 'service') {
+      return (
             <div 
               className="grid grid-cols-3 gap-0"
               style={{
-                padding: 'calc(32px * (100vw / 1440px))',
+            paddingTop: 'calc(32px * (100vw / 1440px))',
+            paddingBottom: 'calc(32px * (100vw / 1440px))',
+          }}
+        >
+          {/* Column 1: STILE STUDIO */}
+          <div className="flex flex-col">
+            <h3 
+              className="font-heading uppercase text-[#111111]"
+              style={{
+                fontSize: 'calc(32px * (100vw / 1440px))',
+                letterSpacing: '6%',
+                marginBottom: 'calc(24px * (100vw / 1440px))',
+              }}
+            >
+              {menuItems.studio.title}
+            </h3>
+            <ul 
+              className="space-y-3"
+              style={{
+                gap: 'calc(12px * (100vw / 1440px))',
+              }}
+            >
+              {menuItems.studio.items.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                    style={{
+                      fontSize: 'calc(14px * (100vw / 1440px))',
+                      color: '#111111',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 2: CHÍNH SÁCH */}
+          <div 
+            className="flex flex-col border-l border-gray-300"
+            style={{
+              paddingLeft: 'calc(32px * (100vw / 1440px))',
+            }}
+          >
+            <h3 
+              className="font-heading uppercase text-[#111111]"
+              style={{
+                fontSize: 'calc(32px * (100vw / 1440px))',
+                letterSpacing: '6%',
+                marginBottom: 'calc(24px * (100vw / 1440px))',
+              }}
+            >
+              {menuItems.policy.title}
+            </h3>
+            <ul 
+              className="space-y-3"
+              style={{
+                gap: 'calc(12px * (100vw / 1440px))',
+              }}
+            >
+              {menuItems.policy.items.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                    style={{
+                      fontSize: 'calc(14px * (100vw / 1440px))',
+                      color: '#111111',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: DOWNLOAD */}
+          <div 
+            className="flex flex-col border-l border-gray-300"
+            style={{
+              paddingLeft: 'calc(32px * (100vw / 1440px))',
+            }}
+          >
+            <h3 
+              className="font-heading uppercase text-[#111111]"
+              style={{
+                fontSize: 'calc(32px * (100vw / 1440px))',
+                letterSpacing: '6%',
+                marginBottom: 'calc(24px * (100vw / 1440px))',
+              }}
+            >
+              {menuItems.download.title}
+            </h3>
+            <ul 
+              className="space-y-3"
+              style={{
+                gap: 'calc(12px * (100vw / 1440px))',
+              }}
+            >
+              {menuItems.download.items.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
+                    style={{
+                      fontSize: 'calc(14px * (100vw / 1440px))',
+                      color: '#111111',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+    } else {
+      // Menu type
+      return (
+        <div 
+          className="grid grid-cols-3 gap-0"
+          style={{
+            paddingTop: 'calc(32px * (100vw / 1440px))',
+            paddingBottom: 'calc(32px * (100vw / 1440px))',
               }}
             >
               {/* Column 1: STILE STUDIO */}
@@ -889,6 +1289,7 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
                         className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
                         style={{
                           fontSize: 'calc(14px * (100vw / 1440px))',
+                      color: '#111111',
                         }}
                         onClick={() => setIsOpen(false)}
                       >
@@ -928,6 +1329,7 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
                         className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
                         style={{
                           fontSize: 'calc(14px * (100vw / 1440px))',
+                      color: '#111111',
                         }}
                         onClick={() => setIsOpen(false)}
                       >
@@ -967,6 +1369,7 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
                         className="font-montserrat font-normal tracking-[0.02em] text-[#111111] hover:opacity-70 transition"
                         style={{
                           fontSize: 'calc(14px * (100vw / 1440px))',
+                      color: '#111111',
                         }}
                         onClick={() => setIsOpen(false)}
                       >
@@ -977,9 +1380,88 @@ function HeaderDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
                 </ul>
               </div>
             </div>
+      );
+    }
+  };
+  
+  const dropdownContent = shouldShowDropdown ? (
+    <>
+      {type === 'menu' && (
+        <div
+          className="fixed inset-0 bg-black/20 z-40"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <div
+        className={`fixed left-0 right-0 border-t border-b border-black transition-all duration-300 ease-out z-50 ${
+          type === 'product' || type === 'service' 
+            ? 'bg-[#EEEBE6]' 
+            : 'bg-[#E3DCD1]'
+        } ${
+          type === 'product' || type === 'service'
+            ? (isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none')
+            : ''
+        }`}
+        style={{ 
+          top: `calc(54px * (100vw / 1440px) + 5px)`,
+          width: '100%',
+          minHeight: '200px',
+        }}
+        ref={type === 'product' || type === 'service' ? dropdownRef : menuRef}
+        onMouseEnter={type === 'product' || type === 'service' ? handleDropdownMouseEnter : undefined}
+        onMouseLeave={type === 'product' || type === 'service' ? (e: any) => handleDropdownMouseLeave(e) : undefined}
+      >
+        <div 
+          className="mx-auto"
+          style={{
+            maxWidth: 'calc(1440px * (100vw / 1440px))',
+            paddingLeft: 'calc(104px * (100vw / 1440px))',
+            paddingRight: 'calc(104px * (100vw / 1440px))',
+          }}
+        >
+          {renderDropdownContent()}
+            </div>
           </div>
         </>
-      )}
+  ) : null;
+
+  const triggerElement = type === 'menu' ? (
+    <button
+      type="button"
+      ref={buttonRef}
+      onClick={handleToggle}
+      className={`transition ${navLinkClass} inline-block`}
+      style={{
+        fontSize: 'calc(15px * (100vw / 1440px))',
+        letterSpacing: 'calc(0.06em * (100vw / 1440px))',
+      }}
+    >
+      {triggerLabel || 'Menu'}
+    </button>
+  ) : (
+    <Link 
+      href={triggerHref || '#'} 
+      ref={linkRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`transition ${navLinkClass} inline-block`}
+      style={{
+        fontSize: 'calc(15px * (100vw / 1440px))',
+        letterSpacing: 'calc(0.06em * (100vw / 1440px))',
+      }}
+    >
+      {triggerLabel}
+    </Link>
+  );
+
+  return (
+    <div 
+      ref={type === 'product' || type === 'service' ? menuRef : undefined}
+      onMouseEnter={type === 'product' || type === 'service' ? handleMouseEnter : undefined}
+      onMouseLeave={type === 'product' || type === 'service' ? handleMouseLeave : undefined}
+    >
+      {triggerElement}
+      {mounted && createPortal(dropdownContent, document.body)}
     </div>
   );
 }
@@ -1042,7 +1524,7 @@ function ProductDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         }`}
         style={{ 
-          top: 'calc(80px * (100vw / 1440px))',
+          top: `calc(54px * (100vw / 1440px) + 5px)`,
           width: '100%',
           minHeight: '200px',
           zIndex: 40,
@@ -1310,7 +1792,7 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         }`}
         style={{ 
-          top: 'calc(80px * (100vw / 1440px))',
+          top: `calc(54px * (100vw / 1440px) + 5px)`,
           width: '100%',
           minHeight: '200px',
           zIndex: 40,
@@ -1570,7 +2052,7 @@ function Header() {
 
   const navLinkClass = isMobile
     ? (onLightSection
-        ? "text-[#111111] hover:text-[#555555]"
+    ? "text-[#111111] hover:text-[#555555]"
         : "text-white hover:text-[#f2f2f2]")
     : (pastHero ? "text-[#111111] hover:text-[#555555]" : "text-white hover:text-[#f2f2f2]");
 
@@ -1580,7 +2062,9 @@ function Header() {
 
   const baseHeight = pastHero ? 29 : 40;
   const headerHeight = isHeaderHovered ? baseHeight + 6 : baseHeight;
-  const backgroundHeight = pastHero ? 58 : 80;
+  // Logo height calculation: logo width * (34/90) + 5px
+  // Desktop: calc(71.5px * (100vw / 1440px)) * (34/90) + 5px = calc(27px * (100vw / 1440px)) + 5px
+  // Mobile: 120px * (34/90) + 5px = 45.33px + 5px = 50.33px
 
   return (
     <header
@@ -1601,7 +2085,9 @@ function Header() {
       <div
         className="absolute left-0 right-0 top-0 transition-all duration-500 ease-in-out"
         style={{
-          height: `${backgroundHeight}px`,
+          height: isMobile 
+            ? `${120 * (34 / 90) + 5}px` 
+            : `calc(54px * (100vw / 1440px) + 5px)`,
           width: '100%',
           backgroundColor: pastHero ? '#EEEBE6' : 'transparent',
           zIndex: -1,
@@ -1646,9 +2132,19 @@ function Header() {
             <div key={item.label} className="group">
               {item.hasDropdown ? (
                 item.label === "Sản Phẩm" ? (
-                  <ProductDropdownMenu onLightSection={pastHero} />
+                  <HeaderDropdownMenu 
+                    onLightSection={pastHero} 
+                    type="product"
+                    triggerLabel="Sản Phẩm"
+                    triggerHref="#featured"
+                  />
                 ) : (
-                  <ServiceDropdownMenu onLightSection={pastHero} />
+                  <HeaderDropdownMenu 
+                    onLightSection={pastHero} 
+                    type="service"
+                    triggerLabel="Dịch Vụ & Thi Công"
+                    triggerHref="#contact"
+                  />
                 )
               ) : (
                 <Link href={item.href} className={`transition ${navLinkClass}`}>
@@ -1657,7 +2153,11 @@ function Header() {
               )}
             </div>
           ))}
-          <HeaderDropdownMenu onLightSection={pastHero} />
+          <HeaderDropdownMenu 
+            onLightSection={pastHero} 
+            type="menu"
+            triggerLabel="Menu"
+          />
         </nav>
         <div 
           className="hidden items-center lg:flex ml-auto z-10"
@@ -2687,20 +3187,20 @@ function Collections() {
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 2 ? 'auto' : 'none',
               }}
-            >
-              <Image
+              >
+                <Image
                 src={collectionSlides[2].largeImage}
                 alt={`${collectionSlides[2].title} ${collectionSlides[2].subtitle}`}
-                fill
+                  fill
                 priority={activeSlide === 2}
                 quality={95}
-                className="object-cover object-center"
-              />
+                  className="object-cover object-center"
+                />
             </div>
             {/* Image 2 - CiViC (index 1) */}
-            <div
-              className="absolute"
-              style={{
+                <div 
+                  className="absolute"
+                  style={{
                 width: 'calc(558px * (100vw / 1589px))',
                 height: 'calc(689px * (100vw / 1589px))',
                 opacity: activeSlide === 1 ? 1 : 0,
@@ -2725,7 +3225,7 @@ function Collections() {
             {/* Image 3 - Gemini (index 0) */}
             <div
               className="absolute"
-              style={{
+                    style={{
                 width: 'calc(558px * (100vw / 1589px))',
                 height: 'calc(689px * (100vw / 1589px))',
                 opacity: activeSlide === 0 ? 1 : 0,
@@ -2747,12 +3247,12 @@ function Collections() {
                 className="object-cover object-center"
               />
             </div>
-          </div>
+                </div>
 
           {/* Small Image Component - Right side with 3 images stacked */}
-          <div 
+                <div 
             className="absolute flex flex-col items-start overflow-hidden"
-            style={{
+                  style={{
               left: 'calc(800px * (100vw / 1589px))',
               top: 'calc(166px * (100vw / 1589px))',
               width: 'calc(655.2px * (100vw / 1589px))',
@@ -2763,7 +3263,7 @@ function Collections() {
             {/* Image 1 - Infinito (index 2) */}
             <div
               className="absolute"
-              style={{
+                    style={{
                 width: 'calc(631.2px * (100vw / 1589px))',
                 height: 'calc(384px * (100vw / 1589px))',
                 opacity: activeSlide === 2 ? 1 : 0,
@@ -2788,7 +3288,7 @@ function Collections() {
             {/* Image 2 - CiViC (index 1) */}
             <div
               className="absolute"
-              style={{
+                      style={{
                 width: 'calc(631.2px * (100vw / 1589px))',
                 height: 'calc(384px * (100vw / 1589px))',
                 opacity: activeSlide === 1 ? 1 : 0,
@@ -2813,7 +3313,7 @@ function Collections() {
             {/* Image 3 - Gemini (index 0) */}
             <div
               className="absolute"
-              style={{
+                      style={{
                 width: 'calc(631.2px * (100vw / 1589px))',
                 height: 'calc(384px * (100vw / 1589px))',
                 opacity: activeSlide === 0 ? 1 : 0,
@@ -2834,13 +3334,13 @@ function Collections() {
                 quality={95}
                 className="object-cover object-center"
               />
-            </div>
+                  </div>
           </div>
 
           {/* Content Container - Right side with overflow hidden */}
           <div 
             className="absolute overflow-hidden"
-            style={{
+                    style={{
               left: 'calc(810px * (100vw / 1589px))',
               top: 'calc(560px * (100vw / 1589px))',
               width: 'calc(631.2px * (100vw / 1589px))',
@@ -2851,7 +3351,7 @@ function Collections() {
               <div 
                 key={`content-${slide.id}`}
                 className="absolute bg-[#E3DCD1]"
-                style={{
+                    style={{
                   left: 0,
                   top: 0,
                   width: 'calc(631.2px * (100vw / 1589px))',
