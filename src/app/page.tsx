@@ -174,39 +174,33 @@ const featuredVariants = [
 const collectionSlides = [
   {
     id: "gemini-01",
-    image: "/BỘ SƯU TẬP/COLLECTION-01.png",
-    heading: "BỘ SƯU TẬP",
+    largeImage: "/BỘ SƯU TẬP/collection-img-3.png",
+    smallImage: "/BỘ SƯU TẬP/collection-img-4.png",
     title: "Gemini",
     subtitle: "Collection",
     description:
-      "Hòa quyện thiên nhiên và công nghệ, tạo nên bề mặt tinh tế, bền vững và đậm chất đương đại.",
-    highlightTitle: "Less is More",
+      "The profound dialog between humans and nature translates into an interplay of glimpsesand reflections, where humans and the earth, twin faces, reflect each other and collaboratein perfect synergy.\n\nIn the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.",
     ctaLabel: "Khám phá ngay",
-    textColor: "white",
   },
   {
     id: "civic-01",
-    image: "/BỘ SƯU TẬP/image copy 2.png",
-    heading: "BỘ SƯU TẬP",
-    title: "CIVIC",
+    largeImage: "/BỘ SƯU TẬP/collection-img-2.png",
+    smallImage: "/BỘ SƯU TẬP/collection-img-5.png",
+    title: "CiViC",
     subtitle: "Collection",
     description:
-      "Bộ sưu tập này biến ý tưởng về vật liệu thành một ngôn ngữ sống động, ba chiều trong tay các nhà thiết kế.",
-    highlightTitle: "Less is More",
+      "CiViC explores the concept of material through three variants that interpret the cement effect in different expressive declinations, responding to contemporary urban influences. Cross proposes a cloud-like, shaded effect, restoring the layered texture of cement artefacts. Vein develops dynamic directional veins that accentuate the perception of movement on the surface. Chips introduces material flakes, also available in the Multicolour version to broaden compositional possibilities.",
     ctaLabel: "Khám phá ngay",
-    textColor: "black",
   },
   {
     id: "infinito-01",
-    image: "/BỘ SƯU TẬP/image.png",
-    heading: "BỘ SƯU TẬP",
+    largeImage: "/BỘ SƯU TẬP/collection-img-1.png",
+    smallImage: "/BỘ SƯU TẬP/collection-img-6.png",
     title: "Infinito 2.0",
     subtitle: "Collection",
     description:
-      "Bộ sưu tập này biến ý tưởng về vật liệu thành một ngôn ngữ sống động, ba chiều trong tay các nhà thiết kế.",
-    highlightTitle: "Less is More",
+      "From \"total black\", through shades of grey and brown, to all the whites imaginable, the marble in the Infinito 2.0 collection offers different textures, run through with different sized veins that enhance their natural aesthetics and prestige.",
     ctaLabel: "Khám phá ngay",
-    textColor: "white",
   },
 ] as const;
 
@@ -1584,9 +1578,9 @@ function Header() {
   // Desktop: đen khi pastHero, trắng khi ở hero. Mobile: đen khi onLightSection, trắng khi không
   const logoSrc = "/New STILE Logo Vector 1-16.png";
 
-  const baseHeight = pastHero ? 58 : 80;
-  const headerHeight = isHeaderHovered ? baseHeight + 12 : baseHeight;
-  const backgroundHeight = pastHero ? 116 : 160;
+  const baseHeight = pastHero ? 29 : 40;
+  const headerHeight = isHeaderHovered ? baseHeight + 6 : baseHeight;
+  const backgroundHeight = pastHero ? 58 : 80;
 
   return (
     <header
@@ -1614,14 +1608,16 @@ function Header() {
         }}
       />
       <div 
-        className="mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6"
+        className="relative mx-auto flex h-full w-full items-center px-6 max-lg:px-6"
         style={{
           paddingLeft: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
           paddingRight: isMobile ? '24px' : 'calc(57px * (100vw / 1440px))',
-          paddingTop: isMobile ? '30px' : 'calc(40px * (100vw / 1440px))',
+          paddingTop: isMobile ? '30px' : 'calc(20px * (100vw / 1440px))',
         }}
       >
-        <Link href="#hero" className="flex items-center">
+        <Link href="#hero" className="flex items-center z-10" style={{
+          marginLeft: isMobile ? '0' : 'calc(60px * (100vw / 1440px))',
+        }}>
           <Image
             src={logoSrc}
             alt="Stile logo"
@@ -1630,8 +1626,8 @@ function Header() {
             priority
             className="h-auto transition-all duration-300"
             style={{
-              width: isMobile ? '120px' : 'calc(110px * (100vw / 1440px))',
-              marginTop: isMobile ? '20px' : 'calc(10px * (100vw / 1440px))',
+              width: isMobile ? '120px' : 'calc(71.5px * (100vw / 1440px))',
+              marginTop: isMobile ? '20px' : 'calc(5px * (100vw / 1440px))',
               // Logo đen: desktop khi pastHero (invert), mobile khi onLightSection = true
               // Logo trắng: desktop khi ở hero, mobile khi onLightSection = false
               filter: isMobile ? (onLightSection ? 'brightness(0)' : 'none') : (pastHero ? 'brightness(0)' : 'none'),
@@ -1639,7 +1635,7 @@ function Header() {
           />
         </Link>
         <nav 
-          className="hidden items-center lg:flex"
+          className="hidden items-center lg:flex absolute left-1/2 -translate-x-1/2"
           style={{
             gap: 'calc(40px * (100vw / 1440px))',
             fontSize: 'calc(15px * (100vw / 1440px))',
@@ -1664,7 +1660,7 @@ function Header() {
           <HeaderDropdownMenu onLightSection={pastHero} />
         </nav>
         <div 
-          className="hidden items-center lg:flex"
+          className="hidden items-center lg:flex ml-auto z-10"
           style={{
             gap: 'calc(24px * (100vw / 1440px))',
             fontSize: 'calc(15px * (100vw / 1440px))',
@@ -2016,7 +2012,7 @@ function About() {
               )}
             </h2>
             <p 
-              className="font-manrope text-justify text-[#1a1a1a]"
+              className="font-montserrat text-justify text-[#1a1a1a]"
               style={{
                 fontSize: isMobile ? 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)' : 'calc(14px * (100vw / 1440px))',
                 lineHeight: isMobile ? 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)' : 'calc(25px * (100vw / 1440px))',
@@ -2129,7 +2125,7 @@ function About() {
                 ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
               </h2>
               <p 
-                className="font-manrope text-justify text-[#1a1a1a]"
+                className="font-montserrat text-justify text-[#1a1a1a]"
                 style={{
                   fontSize: `${(14 / 1440) * 100}vw`,
                   lineHeight: `${(25 / 1440) * 100}vw`,
@@ -2645,155 +2641,267 @@ function Collections() {
   };
 
   return (
-    <section id="collections" className="fullpage-section relative w-full overflow-hidden bg-black text-white">
+    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1' }}>
       <div className="section-inner !p-0 hidden lg:block">
-        <div className="relative h-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory">
+        <div className="relative h-full overflow-hidden" style={{ width: '100%', height: '100%' }}>
+          {/* Heading "BỘ SƯU TẬP" - 40px above image container, centered on image */}
           <div 
-            className="flex h-full transition-transform duration-700 ease-out"
-            style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+            className="absolute z-10"
+            style={{
+              left: 'calc((-11px + 279px) * (100vw / 1589px))',
+              top: 'calc((166px - 40px - 53px) * (100vw / 1589px))',
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <h2 className="font-heading text-black text-center not-italic whitespace-pre" style={{ 
+              fontSize: 'calc(32px * (100vw / 1589px))',
+              lineHeight: '53px',
+            }}>
+              BỘ SƯU TẬP
+            </h2>
+          </div>
+
+          {/* Large Image Component - Left side with 3 images stacked */}
+          <div 
+            className="absolute flex items-center justify-end overflow-hidden"
+            style={{
+              left: 'calc(-11px * (100vw / 1589px))',
+              top: 'calc(166px * (100vw / 1589px))',
+              width: 'calc(558px * (100vw / 1589px))',
+              height: 'calc(689px * (100vw / 1589px))',
+              padding: 'calc(10px * (100vw / 1589px))',
+            }}
+          >
+            {/* Image 1 - Infinito (index 2) */}
+            <div
+              className="absolute"
+              style={{
+                width: 'calc(558px * (100vw / 1589px))',
+                height: 'calc(689px * (100vw / 1589px))',
+                opacity: activeSlide === 2 ? 1 : 0,
+                transform: activeSlide === 2 
+                  ? 'translateX(0)' 
+                  : activeSlide < 2 
+                    ? 'translateX(100%)' 
+                    : 'translateX(-100%)',
+                transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                pointerEvents: activeSlide === 2 ? 'auto' : 'none',
+              }}
+            >
+              <Image
+                src={collectionSlides[2].largeImage}
+                alt={`${collectionSlides[2].title} ${collectionSlides[2].subtitle}`}
+                fill
+                priority={activeSlide === 2}
+                quality={95}
+                className="object-cover object-center"
+              />
+            </div>
+            {/* Image 2 - CiViC (index 1) */}
+            <div
+              className="absolute"
+              style={{
+                width: 'calc(558px * (100vw / 1589px))',
+                height: 'calc(689px * (100vw / 1589px))',
+                opacity: activeSlide === 1 ? 1 : 0,
+                transform: activeSlide === 1 
+                  ? 'translateX(0)' 
+                  : activeSlide < 1 
+                    ? 'translateX(100%)' 
+                    : 'translateX(-100%)',
+                transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                pointerEvents: activeSlide === 1 ? 'auto' : 'none',
+              }}
+            >
+              <Image
+                src={collectionSlides[1].largeImage}
+                alt={`${collectionSlides[1].title} ${collectionSlides[1].subtitle}`}
+                fill
+                priority={activeSlide === 1}
+                quality={95}
+                className="object-cover object-center"
+              />
+            </div>
+            {/* Image 3 - Gemini (index 0) */}
+            <div
+              className="absolute"
+              style={{
+                width: 'calc(558px * (100vw / 1589px))',
+                height: 'calc(689px * (100vw / 1589px))',
+                opacity: activeSlide === 0 ? 1 : 0,
+                transform: activeSlide === 0 
+                  ? 'translateX(0)' 
+                  : activeSlide < 0 
+                    ? 'translateX(100%)' 
+                    : 'translateX(-100%)',
+                transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                pointerEvents: activeSlide === 0 ? 'auto' : 'none',
+              }}
+            >
+              <Image
+                src={collectionSlides[0].largeImage}
+                alt={`${collectionSlides[0].title} ${collectionSlides[0].subtitle}`}
+                fill
+                priority={activeSlide === 0}
+                quality={95}
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
+
+          {/* Small Image Component - Right side with 3 images stacked */}
+          <div 
+            className="absolute flex flex-col items-start overflow-hidden"
+            style={{
+              left: 'calc(800px * (100vw / 1589px))',
+              top: 'calc(166px * (100vw / 1589px))',
+              width: 'calc(655.2px * (100vw / 1589px))',
+              height: 'calc(384px * (100vw / 1589px))',
+              padding: 'calc(10px * (100vw / 1589px))',
+            }}
+          >
+            {/* Image 1 - Infinito (index 2) */}
+            <div
+              className="absolute"
+              style={{
+                width: 'calc(631.2px * (100vw / 1589px))',
+                height: 'calc(384px * (100vw / 1589px))',
+                opacity: activeSlide === 2 ? 1 : 0,
+                transform: activeSlide === 2 
+                  ? 'translateX(0)' 
+                  : activeSlide < 2 
+                    ? 'translateX(-100%)' 
+                    : 'translateX(100%)',
+                transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                pointerEvents: activeSlide === 2 ? 'auto' : 'none',
+              }}
+            >
+              <Image
+                src={collectionSlides[2].smallImage}
+                alt={`${collectionSlides[2].title} detail`}
+                fill
+                priority={activeSlide === 2}
+                quality={95}
+                className="object-cover object-center"
+              />
+            </div>
+            {/* Image 2 - CiViC (index 1) */}
+            <div
+              className="absolute"
+              style={{
+                width: 'calc(631.2px * (100vw / 1589px))',
+                height: 'calc(384px * (100vw / 1589px))',
+                opacity: activeSlide === 1 ? 1 : 0,
+                transform: activeSlide === 1 
+                  ? 'translateX(0)' 
+                  : activeSlide < 1 
+                    ? 'translateX(-100%)' 
+                    : 'translateX(100%)',
+                transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                pointerEvents: activeSlide === 1 ? 'auto' : 'none',
+              }}
+            >
+              <Image
+                src={collectionSlides[1].smallImage}
+                alt={`${collectionSlides[1].title} detail`}
+                fill
+                priority={activeSlide === 1}
+                quality={95}
+                className="object-cover object-center"
+              />
+            </div>
+            {/* Image 3 - Gemini (index 0) */}
+            <div
+              className="absolute"
+              style={{
+                width: 'calc(631.2px * (100vw / 1589px))',
+                height: 'calc(384px * (100vw / 1589px))',
+                opacity: activeSlide === 0 ? 1 : 0,
+                transform: activeSlide === 0 
+                  ? 'translateX(0)' 
+                  : activeSlide < 0 
+                    ? 'translateX(-100%)' 
+                    : 'translateX(100%)',
+                transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                pointerEvents: activeSlide === 0 ? 'auto' : 'none',
+              }}
+            >
+              <Image
+                src={collectionSlides[0].smallImage}
+                alt={`${collectionSlides[0].title} detail`}
+                fill
+                priority={activeSlide === 0}
+                quality={95}
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
+
+          {/* Content Container - Right side with overflow hidden */}
+          <div 
+            className="absolute overflow-hidden"
+            style={{
+              left: 'calc(810px * (100vw / 1589px))',
+              top: 'calc(560px * (100vw / 1589px))',
+              width: 'calc(631.2px * (100vw / 1589px))',
+              height: 'calc(303px * (100vw / 1589px))', // 773px - 500px + button height
+            }}
           >
             {collectionSlides.map((slide, index) => (
-              <div
-                key={slide.id}
-                className="relative h-full w-screen flex-shrink-0 snap-center"
+              <div 
+                key={`content-${slide.id}`}
+                className="absolute bg-[#E3DCD1]"
+                style={{
+                  left: 0,
+                  top: 0,
+                  width: 'calc(631.2px * (100vw / 1589px))',
+                  opacity: activeSlide === index ? 1 : 0,
+                  transform: activeSlide === index 
+                    ? 'translateY(0)' 
+                    : activeSlide < index 
+                      ? 'translateY(-100%)' 
+                      : 'translateY(100%)',
+                  transition: 'opacity 600ms ease-in, transform 600ms ease-in',
+                  pointerEvents: activeSlide === index ? 'auto' : 'none',
+                }}
               >
-                <Image
-                  src={slide.image}
-                  alt="Collection layout"
-                  fill
-                  priority={index === 0 || index === 1 || index === 2}
-                  quality={95}
-                  className="object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-black/5" />
-
-                <div 
-                  className="absolute"
-                  style={{
-                    left: 'calc(180px * (100vw / 1470px))',
-                    top: 'calc(92px * (100vw / 1470px))',
-                  }}
-                >
-                  <h2 
-                    className={`font-heading tracking-[0.05em] normal-case ${slide.textColor === 'black' ? 'text-black' : 'text-white'}`}
-                    style={{
-                      fontSize: 'calc(48px * (100vw / 1470px))',
-                    }}
-                  >
-                    {slide.heading}
-                  </h2>
-                </div>
-
-                <div 
-                  className={`absolute text-left ${slide.textColor === 'black' ? 'text-black' : 'text-white'}`}
-                  style={{
-                    left: 'calc(670px * (100vw / 1470px))',
-                    top: 'calc(290px * (100vw / 1470px))',
-                    width: 'calc(400px * (100vw / 1470px))',
-                  }}
-                >
-                  <div 
-                    className="mb-10 flex items-baseline gap-10px font-montserrat tracking-[0.1em]"
-                    style={{
-                      marginBottom: 'calc(40px * (100vw / 1470px))',
-                      gap: 'calc(10px * (100vw / 1470px))',
-                    }}
-                  >
-                    <span 
-                      className="normal-case"
-                      style={{
-                        fontSize: 'calc(32px * (100vw / 1470px))',
-                      }}
-                    >
-                      {slide.title}
-                    </span>
-                    <span 
-                      className={`normal-case tracking-normal ${slide.textColor === 'black' ? 'text-black' : 'text-white/75'}`}
-                      style={{
-                        fontSize: 'calc(18px * (100vw / 1470px))',
-                      }}
-                    >
-                      {slide.subtitle}
-                    </span>
-                  </div>
-                  <p 
-                    className={`mt-5 font-montserrat ${slide.textColor === 'black' ? 'text-black/90' : 'text-white/90'}`}
-                    style={{
-                      marginTop: 'calc(20px * (100vw / 1470px))',
-                      fontSize: 'calc(15px * (100vw / 1470px))',
-                      lineHeight: 'calc(26px * (100vw / 1470px))',
-                    }}
-                  >
-                    {slide.description}
-                  </p>
-                  <div 
-                    style={{
-                      paddingTop: 'calc(28px * (100vw / 1470px))',
-                    }}
-                  >
-                    <PillButton label={slide.ctaLabel} theme={slide.textColor === 'black' ? "light" : "dark"} />
+                {/* Title */}
+                <div className="bg-[#E3DCD1] px-0 py-[10px] pr-[10px]">
+                  <div className="flex items-center">
+                    <p className="font-montserrat font-medium text-black leading-[53px]" style={{ fontSize: 'calc(36px * (100vw / 1589px))' }}>
+                      {slide.title} <span className="font-normal" style={{ fontSize: 'calc(20px * (100vw / 1589px))' }}>{slide.subtitle}</span>
+                    </p>
                   </div>
                 </div>
 
+                {/* Description */}
                 <div 
-                  className={`absolute text-center ${slide.textColor === 'black' ? 'text-black' : 'text-white'}`}
+                  className="bg-[#E3DCD1] px-0 py-[10px] pr-[10px] flex items-center justify-center"
                   style={{
-                    left: 'calc(920px * (100vw / 1470px))',
-                    top: 'calc(640px * (100vw / 1470px))',
-                    width: 'calc(280px * (100vw / 1470px))',
+                    marginTop: 'calc((597px - 530px - 53px) * (100vw / 1589px))',
                   }}
                 >
-                  <p 
-                    className="font-montserrat italic tracking-[0.25em]"
-                    style={{
-                      fontSize: 'calc(22px * (100vw / 1470px))',
-                    }}
-                  >
-                    &ldquo;{slide.highlightTitle}&rdquo;
+                  <p className="font-montserrat font-normal text-black text-justify leading-[19px]" style={{ 
+                    fontSize: 'calc(14px * (100vw / 1589px))',
+                    width: 'calc(631.2px * (100vw / 1589px))',
+                  }}>
+                    {slide.description.split('\n').map((line, i) => (
+                      <span key={i}>
+                        {line}
+                        {i < slide.description.split('\n').length - 1 && <><br /><br /></>}
+                      </span>
+                    ))}
                   </p>
+                </div>
+
+                {/* Button */}
+                <div style={{ marginTop: 'calc((803px - 597px - 191px) * (100vw / 1589px))' }}>
+                  <PillButton label={slide.ctaLabel} theme="light" />
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="absolute bottom-[60px] left-[120px] flex gap-3 z-10">
-            {collectionSlides.map((slide, index) => {
-              const isActive = index === activeSlide;
-              return (
-                <button
-                  key={slide.id}
-                  type="button"
-                  onClick={() => setActiveSlide(index)}
-                  aria-label={`Go to ${slide.title} slide`}
-                  className={`h-[16px] w-[16px] rounded-full border border-white/50 transition-colors ${
-                    isActive ? "bg-white" : "bg-transparent hover:border-white"
-                  }`}
-                />
-              );
-            })}
-          </div>
-
-          {/* Navigation buttons */}
-          <button
-            type="button"
-            onClick={handleDesktopPrev}
-            aria-label="Slide trước"
-            className="absolute left-[60px] top-1/2 -translate-y-1/2 flex h-16 w-16 items-center justify-center transition hover:opacity-70 z-10"
-          >
-            <svg width="14" height="30" viewBox="0 0 7 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5.61523 0.290649L0.615235 7.29065L5.61523 14.2906" stroke="white" strokeWidth="1.5"/>
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={handleDesktopNext}
-            aria-label="Slide tiếp theo"
-            className="absolute right-[60px] top-1/2 -translate-y-1/2 flex h-16 w-16 items-center justify-center transition hover:opacity-70 z-10"
-          >
-            <svg width="14" height="30" viewBox="0 0 7 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0.40625 14.2906L5.40625 7.29065L0.406252 0.290649" stroke="white" strokeWidth="1.5"/>
-            </svg>
-          </button>
         </div>
       </div>
 
