@@ -3141,9 +3141,9 @@ function Collections() {
   };
 
   return (
-    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1', height: '85vh' }}>
-      <div className="section-inner !p-0 hidden lg:block">
-        <div className="relative h-full overflow-hidden" style={{ width: '100%', height: '100%' }}>
+    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1', minHeight: 'calc((560px + 303px + 15px + 50px + 150px) * (100vw / 1589px))' }}>
+      <div className="section-inner !p-0 hidden lg:block" style={{ paddingBottom: 'calc(150px * (100vw / 1589px))' }}>
+        <div className="relative overflow-hidden" style={{ width: '100%', minHeight: 'calc((560px + 303px + 15px + 50px) * (100vw / 1589px))' }}>
           {/* Heading "BỘ SƯU TẬP" - 40px above image container, centered on image */}
           <div 
             className="absolute z-10"
