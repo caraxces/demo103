@@ -3141,7 +3141,7 @@ function Collections() {
   };
 
   return (
-    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1' }}>
+    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1', height: '85vh' }}>
       <div className="section-inner !p-0 hidden lg:block">
         <div className="relative h-full overflow-hidden" style={{ width: '100%', height: '100%' }}>
           {/* Heading "BỘ SƯU TẬP" - 40px above image container, centered on image */}
@@ -3382,7 +3382,7 @@ function Collections() {
                   }}
                 >
                   <p className="font-montserrat font-normal text-black text-justify leading-[19px]" style={{ 
-                    fontSize: 'calc(14px * (100vw / 1589px))',
+                    fontSize: 'calc(11px * (100vw / 1589px))',
                     width: 'calc(631.2px * (100vw / 1589px))',
                   }}>
                     {slide.description.split('\n').map((line, i) => (
@@ -3656,7 +3656,7 @@ function Applications() {
             </div>
           </div>
           <div 
-            className="overflow-visible"
+            className="overflow-hidden"
             style={{
               paddingLeft: 'calc(15px * (100vw / 1470px))',
               paddingRight: 'calc(15px * (100vw / 1470px))',
@@ -3667,10 +3667,8 @@ function Applications() {
             <div 
               className="relative" 
               style={{ 
-                height: hoveredImageIndex !== null 
-                  ? 'calc(520px * (100vw / 1470px))' 
-                  : 'calc(450px * (100vw / 1470px))', 
-                transition: 'height 0.5s ease-in-out' 
+                height: 'calc(520px * (100vw / 1470px))',
+                minHeight: 'calc(520px * (100vw / 1470px))',
               }}
             >
               {(() => {
@@ -3690,7 +3688,7 @@ function Applications() {
                 
                 return (
                   <div 
-                    className="flex transition-all duration-500 ease-in-out"
+                    className="flex items-center transition-all duration-500 ease-in-out"
                     style={{
                       width: '100%',
                       height: '100%',
@@ -3704,12 +3702,12 @@ function Applications() {
                       return (
                         <div 
                           key={`${activeSection.label}-${item.title}-${index}`} 
-                          className="group relative flex-1 overflow-visible cursor-none transition-all duration-500 ease-in-out"
+                          className="group relative flex-1 overflow-hidden cursor-none transition-all duration-500 ease-in-out"
                           style={{  
-                            height: isHovered 
-                              ? 'calc(520px * (100vw / 1470px))' 
-                              : 'calc(450px * (100vw / 1470px))',
+                            height: 'calc(450px * (100vw / 1470px))',
                             transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                            transformOrigin: 'center center',
+                            alignSelf: 'center',
                             zIndex: isHovered ? 10 : 1,
                           }}
                           onMouseEnter={() => {
@@ -3722,7 +3720,7 @@ function Applications() {
                           }}
                         >
                           <Link href={`#${item.title.toLowerCase().replace(/\s+/g, '-')}`} className="block h-full w-full">
-                            <div className="absolute inset-0 overflow-visible">
+                            <div className="absolute inset-0 overflow-hidden">
                               <Image
                                 src={item.image}
                                 alt={item.title}
