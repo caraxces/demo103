@@ -60,7 +60,7 @@ button {
   background: transparent;
   color: var(--btn-text);
   font-family: var(--font-manrope, "Manrope", sans-serif);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 400;
   letter-spacing: 0.05em;
   line-height: 1;
