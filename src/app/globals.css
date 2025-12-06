@@ -307,6 +307,15 @@ a {
   }
 }
 
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 @keyframes drawCircle {
   from {
     stroke-dashoffset: 78.54;

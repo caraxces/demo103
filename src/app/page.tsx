@@ -2044,8 +2044,6 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     });
   };
 
-  if (!isOpen) return null;
-
   const handleProductItemClick = (item: typeof productDropdownItems[number]) => {
     if (item.submenu) {
       setSelectedProductItem(item);
@@ -2081,6 +2079,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         left: '0',
         right: '0',
         bottom: '0',
+        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        pointerEvents: isOpen ? 'auto' : 'none',
+        opacity: isOpen ? 1 : 0,
       }}
       onClick={(e) => {
         // Prevent clicks from propagating to elements below
@@ -2817,7 +2819,9 @@ function Header() {
       onMouseEnter={() => setIsHeaderHovered(true)}
       onMouseLeave={() => setIsHeaderHovered(false)}
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ease-in-out ${
-        isMobile ? "text-[#111111]" : (pastHero ? "text-[#111111]" : "text-white")
+        isMobile 
+          ? (isMobileMenuOpen || pastHero ? "text-[#111111]" : "text-white")
+          : (pastHero ? "text-[#111111]" : "text-white")
       }`}
       style={{ 
         height: `${headerHeight}px`,
@@ -2864,9 +2868,11 @@ function Header() {
               width: isMobile ? '80px' : 'calc(71.5px * (100vw / 1440px))',
               height: isMobile ? '80px' : 'auto',
               objectFit: isMobile ? 'contain' : 'none',
-              // Logo đen: desktop khi pastHero (invert), mobile luôn đen
-              // Logo trắng: desktop khi ở hero
-              filter: isMobile ? 'brightness(0)' : (pastHero ? 'brightness(0)' : 'none'),
+              // Logo đen: desktop khi pastHero, mobile khi pastHero hoặc mở menu
+              // Logo trắng: desktop khi ở hero, mobile khi ở hero và chưa mở menu
+              filter: isMobile 
+                ? (isMobileMenuOpen || pastHero ? 'brightness(0)' : 'none')
+                : (pastHero ? 'brightness(0)' : 'none'),
             }}
           />
         </Link>
@@ -2969,30 +2975,51 @@ function Header() {
             type="button"
             aria-label="Mở menu"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-500 ${
+            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-500 ease-in-out ${
               isMobileMenuOpen
                 ? "border-[#111111] text-[#111111] bg-[#E3DCD1] hover:bg-[#111111] hover:text-white z-[1001]"
-                : "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
+                : (pastHero 
+                  ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
+                  : "border-white text-white hover:bg-white/20")
             }`}
             style={{ 
               zIndex: isMobileMenuOpen ? 1001 : 'auto',
               position: isMobileMenuOpen ? 'fixed' : 'relative',
               top: isMobileMenuOpen ? '20px' : 'auto',
               right: isMobileMenuOpen ? '20px' : 'auto',
+              transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(0)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             <span className="flex flex-col items-center justify-center gap-[8px]">
-              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-[10px]' : ''}`} />
-              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out ${isMobileMenuOpen ? '-rotate-45 -translate-y-[10px]' : ''}`} />
+              <span 
+                className="block h-[2.5px] w-6 bg-current"
+                style={{
+                  transform: isMobileMenuOpen ? 'rotate(45deg) translateY(10px)' : 'rotate(0deg) translateY(0px)',
+                  transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              />
+              <span 
+                className="block h-[2.5px] w-6 bg-current"
+                style={{
+                  opacity: isMobileMenuOpen ? 0 : 1,
+                  transform: isMobileMenuOpen ? 'scaleX(0)' : 'scaleX(1)',
+                  transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              />
+              <span 
+                className="block h-[2.5px] w-6 bg-current"
+                style={{
+                  transform: isMobileMenuOpen ? 'rotate(-45deg) translateY(-10px)' : 'rotate(0deg) translateY(0px)',
+                  transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              />
             </span>
           </button>
-          {isMobileMenuOpen && (
-            <MobileMenu 
-              isOpen={isMobileMenuOpen}
-              onClose={() => setIsMobileMenuOpen(false)}
-            />
-          )}
+          <MobileMenu 
+            isOpen={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+          />
         </div>
       </div>
     </header>
