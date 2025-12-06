@@ -45,6 +45,9 @@ button {
   --btn-text: #111111;
   --btn-hover-text: #ffffff;
   --btn-hover-fill: #111111;
+  /* Bán kính toả ra = nửa min-width của button */
+  /* min-width: 130px => bán kính = 65px => scale = 65/6 = 10.833 */
+  --btn-hover-scale: 18.833;
 
   position: relative;
   display: inline-flex;
@@ -52,12 +55,12 @@ button {
   justify-content: center;
   min-width: 130px;
   height: 30px;
-  padding: 0 24px;
+  padding: 20px 24px;
   border-radius: 360px;
   background: transparent;
   color: var(--btn-text);
   font-family: var(--font-manrope, "Manrope", sans-serif);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 400;
   letter-spacing: 0.05em;
   line-height: 1;
@@ -118,22 +121,12 @@ button {
   height: 12px;
   border-radius: 100%;
   background: var(--btn-hover-fill);
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(0) scale(1);
   transform-origin: center center;
-  /* 3 động tác rõ ràng:
-     1. Di chuyển lên cao hơn (0.25s) - vừa di chuyển vừa toả chậm
-     2. Vừa di chuyển vừa toả chậm đều cả 2 chiều (0.25s - toả một phần)
-        - Height toả nhanh hơn: 0.3s
-        - Width toả chậm hơn một nửa: 0.9s (gấp 3 lần height)
-     3. Khi đến vị trí cao hơn (0.25s), toả nhanh full button
-     Kích thước circle toả ra = kích thước text (height: 30px)
-  */
-  transition: transform 0.25s ease-out, 
-              height 0.3s var(--cta-ease), 
-              width 0.9s var(--cta-ease), 
-              left 0.25s ease-out, 
-              bottom 0.25s ease-out, 
-              border-radius 0.3s var(--cta-ease);
+  /* Giãn nở theo bán kính từ tâm với tốc độ đều nhau */
+  transition: transform 0.9s var(--cta-ease), 
+              left 0.9s var(--cta-ease), 
+              bottom 0.9s var(--cta-ease);
   z-index: 1;
 }
 
@@ -158,17 +151,12 @@ button {
 .btn:hover .btn__hover {
   left: 50%;
   bottom: 40%;
-  /* Kích thước circle = kích thước text (height: 30px) */
-  /* Button height: 30px, để circle cover toàn bộ button cần tính đường chéo */
-  /* Sử dụng calc để đảm bảo circle đủ lớn cover button (min-width 130px, height 30px) */
-  width: calc(130px * 1.5);
-  height: calc(30px * 1.5);
-  border-radius: 50%;
-  transform: translate(-50%, 50%);
-  /* Animation rõ ràng:
-     1. Di chuyển lên cao hơn (bottom: 40% thay vì 50%) - 0.25s
-     2. Vừa di chuyển vừa toả chậm đều cả 2 chiều (0.25s - toả một phần)
-     3. Khi đến vị trí cao hơn (0.25s), toả nhanh full button (0.2s với delay 0.25s)
+  /* Bán kính toả ra = nửa width của button (responsive) */
+  /* Scale factor = (min-width / 2) / 6 = 130 / 2 / 6 ≈ 10.83 */
+  transform: translate(-50%, 50%) scale(var(--btn-hover-scale));
+  /* Animation:
+     1. Di chuyển lên cao hơn (bottom: 40%) - 0.8s
+     2. Giãn nở theo bán kính từ tâm - 0.8s với easing
   */
 }
 

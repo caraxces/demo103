@@ -1978,6 +1978,8 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   const [showContactForm, setShowContactForm] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  
+  const logoSrc = "/New STILE Logo Vector 1-16.png";
 
   // Use desktop menu items structure - Level 1
   const productMainItems = [
@@ -2058,15 +2060,91 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     setCurrentView(`service-${key}`);
   };
 
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   return (
     <div
       className="fixed inset-0 bg-[#E3DCD1] z-50 overflow-hidden"
       style={{ 
-        zIndex: 1000,
-        top: '80px',
+        zIndex: 1001,
+        top: '0',
+        left: '0',
+        right: '0',
+        bottom: '0',
+      }}
+      onClick={(e) => {
+        // Prevent clicks from propagating to elements below
+        e.stopPropagation();
+      }}
+      onTouchStart={(e) => {
+        // Prevent touch events from propagating to elements below
+        e.stopPropagation();
+      }}
+      onTouchMove={(e) => {
+        // Prevent touch events from propagating to elements below
+        e.stopPropagation();
       }}
     >
-      <div className="relative w-full h-full overflow-y-auto">
+      {/* Header section with logo and hamburger button */}
+      <div 
+        className="relative mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6 bg-[#E3DCD1]"
+        style={{
+          paddingLeft: '0',
+          paddingRight: '20px',
+          paddingTop: '0',
+          height: '80px',
+          position: 'relative',
+          zIndex: 1002,
+        }}
+      >
+        <Link href="#hero" className="flex items-center z-10" style={{
+          marginLeft: '20px',
+          marginTop: '20px',
+        }}>
+          <Image
+            src={logoSrc}
+            alt="Stile logo"
+            width={90}
+            height={34}
+            priority
+            className="h-auto transition-all duration-300"
+            style={{
+              width: '80px',
+              height: '80px',
+              objectFit: 'contain',
+              filter: 'brightness(0)',
+            }}
+          />
+        </Link>
+        <div className="relative">
+          <button
+            type="button"
+            aria-label="Đóng menu"
+            onClick={onClose}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#111111] text-[#111111] bg-[#E3DCD1] hover:bg-[#111111] hover:text-white transition-all duration-500"
+            style={{ 
+              zIndex: 1002,
+            }}
+          >
+            <span className="flex flex-col items-center justify-center gap-[8px]">
+              <span className="block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out rotate-45 translate-y-[10px]" />
+              <span className="block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out opacity-0" />
+              <span className="block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out -rotate-45 -translate-y-[10px]" />
+            </span>
+          </button>
+        </div>
+      </div>
+      <div className="relative w-full overflow-y-auto" style={{ height: 'calc(100vh - 80px)' }}>
         {/* Main Menu View */}
         <div
           className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
@@ -2132,7 +2210,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               </Link>
               
               {/* Contact Form */}
-              <div className={showContactForm ? "py-4" : ""}>
+              <div>
                 <button
                   onClick={() => setShowContactForm(!showContactForm)}
                   className="w-full flex items-center justify-between py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
@@ -2142,36 +2220,68 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     <AnimatedPlusMinusIcon isExpanded={showContactForm} />
                   </span>
                 </button>
-                {showContactForm && (
-                  <div className="flex flex-col gap-3 pt-2">
-                  <input
-                    type="text"
-                    placeholder="Họ và Tên"
-                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e]"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Số Điện Thoại"
-                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e]"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e]"
-                  />
-                  <textarea
-                    placeholder="Nội dung Tin nhắn..."
-                    rows={3}
-                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e] resize-none"
-                  />
-                  <button
-                    type="button"
-                    className="bg-[#5b5448] border border-[#cfc8bc] rounded-[7px] py-[5px] font-manrope text-[12px] text-white"
-                  >
-                    Gửi
-                  </button>
+                <div 
+                  className="flex flex-col items-start w-full overflow-hidden transition-all ease-in-out"
+                  style={{
+                    maxHeight: showContactForm ? '1000px' : '0px',
+                    opacity: showContactForm ? 1 : 0,
+                    transitionDuration: '600ms',
+                  }}
+                >
+                  <div style={{ pointerEvents: showContactForm ? 'auto' : 'none' }}>
+                    <div className="flex flex-col gap-3 pt-2">
+                      {[
+                        { type: 'text', placeholder: 'Họ và Tên', idx: 0 },
+                        { type: 'tel', placeholder: 'Số Điện Thoại', idx: 1 },
+                        { type: 'email', placeholder: 'Email', idx: 2 },
+                        { type: 'textarea', placeholder: 'Nội dung Tin nhắn...', idx: 3 },
+                        { type: 'button', label: 'Gửi', idx: 4 },
+                      ].map((field) => (
+                        field.type === 'textarea' ? (
+                          <textarea
+                            key={field.idx}
+                            placeholder={field.placeholder}
+                            rows={3}
+                            className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e] resize-none transition-all ease-out"
+                            style={{
+                              transform: showContactForm ? 'translateY(0)' : 'translateY(-10px)',
+                              opacity: showContactForm ? 1 : 0,
+                              transitionDuration: '600ms',
+                              transitionDelay: showContactForm ? `${(field.idx + 1) * 60}ms` : `${(4 - field.idx) * 60}ms`
+                            }}
+                          />
+                        ) : field.type === 'button' ? (
+                          <button
+                            key={field.idx}
+                            type="button"
+                            className="bg-[#5b5448] border border-[#cfc8bc] rounded-[7px] py-[5px] font-manrope text-[12px] text-white transition-all ease-out"
+                            style={{
+                              transform: showContactForm ? 'translateY(0)' : 'translateY(-10px)',
+                              opacity: showContactForm ? 1 : 0,
+                              transitionDuration: '600ms',
+                              transitionDelay: showContactForm ? `${(field.idx + 1) * 60}ms` : `${(4 - field.idx) * 60}ms`
+                            }}
+                          >
+                            {field.label}
+                          </button>
+                        ) : (
+                          <input
+                            key={field.idx}
+                            type={field.type}
+                            placeholder={field.placeholder}
+                            className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e] transition-all ease-out"
+                            style={{
+                              transform: showContactForm ? 'translateY(0)' : 'translateY(-10px)',
+                              opacity: showContactForm ? 1 : 0,
+                              transitionDuration: '600ms',
+                              transitionDelay: showContactForm ? `${(field.idx + 1) * 60}ms` : `${(4 - field.idx) * 60}ms`
+                            }}
+                          />
+                        )
+                      ))}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
 
             </div>
@@ -2534,29 +2644,27 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                       }}
                     >
                       <div style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}>
-                        {isExpanded && (
-                          <div className="flex flex-col gap-0 w-full">
-                            {item.items.map((subItem, idx) => (
-                              <Link
-                                key={idx}
-                                href={subItem.href}
-                                onClick={onClose}
-                                className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
-                                style={{ 
-                                  height: '49px',
-                                  paddingTop: '10px',
-                                  paddingBottom: '10px',
-                                  transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
-                                  opacity: isExpanded ? 1 : 0,
-                                  transitionDuration: '600ms',
-                                  transitionDelay: isExpanded ? `${idx * 60}ms` : `${(item.items.length - 1 - idx) * 60}ms`
-                                }}
-                              >
-                                {subItem.label}
-                              </Link>
-                            ))}
-                          </div>
-                        )}
+                        <div className="flex flex-col gap-0 w-full">
+                          {item.items.map((subItem, idx) => (
+                            <Link
+                              key={idx}
+                              href={subItem.href}
+                              onClick={onClose}
+                              className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
+                              style={{ 
+                                height: '49px',
+                                paddingTop: '10px',
+                                paddingBottom: '10px',
+                                transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
+                                opacity: isExpanded ? 1 : 0,
+                                transitionDuration: '600ms',
+                                transitionDelay: isExpanded ? `${idx * 60}ms` : `${(item.items.length - 1 - idx) * 60}ms`
+                              }}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2691,9 +2799,7 @@ function Header() {
   }, []);
 
   const navLinkClass = isMobile
-    ? (onLightSection
     ? "text-[#111111] hover:text-[#555555]"
-        : "text-white hover:text-[#f2f2f2]")
     : (pastHero ? "text-[#111111] hover:text-[#555555]" : "text-white hover:text-[#f2f2f2]");
 
   // Logo đen chính - hiển thị cùng logic với text
@@ -2711,7 +2817,7 @@ function Header() {
       onMouseEnter={() => setIsHeaderHovered(true)}
       onMouseLeave={() => setIsHeaderHovered(false)}
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ease-in-out ${
-        isMobile && onLightSection ? "text-[#111111]" : isMobile ? "text-white" : (pastHero ? "text-[#111111]" : "text-white")
+        isMobile ? "text-[#111111]" : (pastHero ? "text-[#111111]" : "text-white")
       }`}
       style={{ 
         height: `${headerHeight}px`,
@@ -2758,9 +2864,9 @@ function Header() {
               width: isMobile ? '80px' : 'calc(71.5px * (100vw / 1440px))',
               height: isMobile ? '80px' : 'auto',
               objectFit: isMobile ? 'contain' : 'none',
-              // Logo đen: desktop khi pastHero (invert), mobile khi onLightSection = true
-              // Logo trắng: desktop khi ở hero, mobile khi onLightSection = false
-              filter: isMobile ? (onLightSection ? 'brightness(0)' : 'none') : (pastHero ? 'brightness(0)' : 'none'),
+              // Logo đen: desktop khi pastHero (invert), mobile luôn đen
+              // Logo trắng: desktop khi ở hero
+              filter: isMobile ? 'brightness(0)' : (pastHero ? 'brightness(0)' : 'none'),
             }}
           />
         </Link>
@@ -2866,9 +2972,7 @@ function Header() {
             className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-500 ${
               isMobileMenuOpen
                 ? "border-[#111111] text-[#111111] bg-[#E3DCD1] hover:bg-[#111111] hover:text-white z-[1001]"
-                : onLightSection
-                ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
-                : "border-white text-white hover:bg-white/20"
+                : "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
             }`}
             style={{ 
               zIndex: isMobileMenuOpen ? 1001 : 'auto',
