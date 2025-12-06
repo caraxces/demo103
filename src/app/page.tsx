@@ -1988,11 +1988,16 @@ function Header() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const container = document.getElementById(FULLPAGE_CONTAINER_ID);
-          const scrollY = container ? container.scrollTop : window.scrollY || window.pageYOffset;
+          // On mobile, use window scroll; on desktop, use container scroll
+          const scrollY = isMobile 
+            ? (window.scrollY || window.pageYOffset || 0)
+            : (() => {
+                const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+                return container ? container.scrollTop : (window.scrollY || window.pageYOffset);
+              })();
           
           // Nếu scroll xuống và đã scroll quá một khoảng nhỏ
-          if (scrollY > lastScrollY.current && scrollY > 100) {
+          if (scrollY > lastScrollY.current && scrollY > 30) {
             setIsHeaderVisible(false);
           } 
           // Nếu scroll lên
@@ -2012,18 +2017,23 @@ function Header() {
       }
     };
 
-    const container = document.getElementById(FULLPAGE_CONTAINER_ID);
-    const target = container || window;
+    // On mobile, listen to window scroll; on desktop, listen to container scroll
+    const target = isMobile ? window : (document.getElementById(FULLPAGE_CONTAINER_ID) || window);
     
     // Set initial scroll position
-    lastScrollY.current = container ? container.scrollTop : window.scrollY || window.pageYOffset;
+    lastScrollY.current = isMobile 
+      ? (window.scrollY || window.pageYOffset || 0)
+      : (() => {
+          const container = document.getElementById(FULLPAGE_CONTAINER_ID);
+          return container ? container.scrollTop : (window.scrollY || window.pageYOffset);
+        })();
     
     target.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
       target.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const sections = document.querySelectorAll<HTMLElement>('[data-header-light="true"]');
@@ -2060,8 +2070,8 @@ function Header() {
   // Desktop: đen khi pastHero, trắng khi ở hero. Mobile: đen khi onLightSection, trắng khi không
   const logoSrc = "/New STILE Logo Vector 1-16.png";
 
-  const baseHeight = pastHero ? 29 : 40;
-  const headerHeight = isHeaderHovered ? baseHeight + 6 : baseHeight;
+  const baseHeight = isMobile ? 80 : (pastHero ? 29 : 40);
+  const headerHeight = isMobile ? 80 : (isHeaderHovered ? baseHeight + 6 : baseHeight);
   // Logo height calculation: logo width * (34/90) + 5px
   // Desktop: calc(71.5px * (100vw / 1440px)) * (34/90) + 5px = calc(27px * (100vw / 1440px)) + 5px
   // Mobile: 120px * (34/90) + 5px = 45.33px + 5px = 50.33px
@@ -2086,23 +2096,24 @@ function Header() {
         className="absolute left-0 right-0 top-0 transition-all duration-500 ease-in-out"
         style={{
           height: isMobile 
-            ? `${120 * (34 / 90) + 5}px` 
+            ? `${80 + 20}px` 
             : `calc(54px * (100vw / 1440px) + 5px)`,
           width: '100%',
-          backgroundColor: pastHero ? '#EEEBE6' : 'transparent',
+          backgroundColor: isMobile ? 'transparent' : (pastHero ? '#EEEBE6' : 'transparent'),
           zIndex: -1,
         }}
       />
       <div 
-        className="relative mx-auto flex h-full w-full items-center px-6 max-lg:px-6"
+        className="relative mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6"
         style={{
-          paddingLeft: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
-          paddingRight: isMobile ? '24px' : 'calc(57px * (100vw / 1440px))',
-          paddingTop: isMobile ? '30px' : 'calc(20px * (100vw / 1440px))',
+          paddingLeft: isMobile ? '0' : 'calc(24px * (100vw / 1440px))',
+          paddingRight: isMobile ? '20px' : 'calc(57px * (100vw / 1440px))',
+          paddingTop: isMobile ? '0' : 'calc(20px * (100vw / 1440px))',
         }}
       >
         <Link href="#hero" className="flex items-center z-10" style={{
-          marginLeft: isMobile ? '0' : 'calc(60px * (100vw / 1440px))',
+          marginLeft: isMobile ? '20px' : 'calc(60px * (100vw / 1440px))',
+          marginTop: isMobile ? '20px' : 'calc(20px * (100vw / 1440px))',
         }}>
           <Image
             src={logoSrc}
@@ -2112,8 +2123,9 @@ function Header() {
             priority
             className="h-auto transition-all duration-300"
             style={{
-              width: isMobile ? '120px' : 'calc(71.5px * (100vw / 1440px))',
-              marginTop: isMobile ? '20px' : 'calc(5px * (100vw / 1440px))',
+              width: isMobile ? '80px' : 'calc(71.5px * (100vw / 1440px))',
+              height: isMobile ? '80px' : 'auto',
+              objectFit: isMobile ? 'contain' : 'none',
               // Logo đen: desktop khi pastHero (invert), mobile khi onLightSection = true
               // Logo trắng: desktop khi ở hero, mobile khi onLightSection = false
               filter: isMobile ? (onLightSection ? 'brightness(0)' : 'none') : (pastHero ? 'brightness(0)' : 'none'),
@@ -2218,6 +2230,7 @@ function Header() {
             VN / EN
           </button>
         </div>
+        {/* Mobile menu - Hamburger button on the right */}
         <div className="relative lg:hidden">
           <button
             type="button"
@@ -2364,8 +2377,7 @@ function Hero() {
             <span className="block">TỪ THIÊN NHIÊN</span>
           </span>
           <span className="block lg:hidden whitespace-pre">
-            <span className="block">BỀ MẶT LẤY CẢM HỨNG</span>
-            <span className="block">TỪ THIÊN NHIÊN</span>
+            Art of surface
           </span>
         </h1>
         <p 
@@ -2843,28 +2855,28 @@ function Gallery() {
         </div>
         
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center min-h-screen px-6 py-20">
-          <div className="space-y-6 text-left max-w-[500px]">
+        <div className="relative z-10 flex flex-col items-center min-h-screen px-6" style={{ paddingTop: '160px' }}>
+          <div className="space-y-6 text-center max-w-[500px]">
             <h2 
               className="font-heading uppercase text-white"
               style={{
-                fontSize: '96px',
-                lineHeight: '77px',
-                letterSpacing: '4.8px',
+                fontSize: 'clamp(35px, 8vw, 72px)',
+                lineHeight: 'clamp(58px, 9vw, 70px)',
+                letterSpacing: 'clamp(2.4px, 0.4vw, 3.6px)',
               }}
             >
-              ARTILE<br />GALLERY
+              ARTILE GALLERY
             </h2>
             <p 
-              className="font-montserrat text-white text-justify"
+              className="font-montserrat text-white text-center"
               style={{
-                fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                fontSize: 'clamp(14px, calc(14px + (100vw - 480px) * 0.0125), 18px)',
                 lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
               }}
             >
               Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
             </p>
-            <div className="pt-2 flex justify-start">
+            <div className="pt-2 flex justify-center">
               <PillButton label="Khám phá ngay" theme="dark" />
             </div>
           </div>
@@ -2950,13 +2962,14 @@ function FeaturedProducts() {
         </h2>
       </div>
 
-      {/* Desktop: Content từ giữa màn hình, bên trái, text justify */}
+      {/* Desktop: Content từ giữa màn hình, bên trái, text left */}
       {!isMobile && (
         <div 
           className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-20"
           style={{
             paddingLeft: 'calc(104px * (100vw / 1440px))',
-            maxWidth: 'calc(520px * (100vw / 1440px))',
+            maxWidth: 'calc(700px * (100vw / 1440px))',
+            width: 'calc(700px * (100vw / 1440px))',
           }}
         >
           <div
@@ -2983,7 +2996,7 @@ function FeaturedProducts() {
               {variant.title}
             </h3>
             <p 
-              className="font-montserrat text-[#151515] text-justify"
+              className="font-montserrat text-[#151515] text-left"
               style={{
                 fontSize: 'calc(16px * (100vw / 1440px))',
                 lineHeight: 'calc(25px * (100vw / 1440px))',
@@ -3092,6 +3105,7 @@ function FeaturedProducts() {
 function Collections() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [mobileCollectionIndex, setMobileCollectionIndex] = useState(0);
+  const desktopSectionRef = useRef<HTMLDivElement>(null);
   const touchStartXRef = useRef<number | null>(null);
   const touchDiffRef = useRef<number>(0);
 
@@ -3100,6 +3114,22 @@ function Collections() {
       setActiveSlide((prev) => (prev + 1) % collectionSlides.length);
     }, 5200);
     return () => clearInterval(timer);
+  }, []);
+
+  // Control desktop section visibility to override CSS
+  useEffect(() => {
+    const updateDisplay = () => {
+      if (desktopSectionRef.current) {
+        if (window.innerWidth >= 1024) {
+          desktopSectionRef.current.style.display = 'flex';
+        } else {
+          desktopSectionRef.current.style.display = 'none';
+        }
+      }
+    };
+    updateDisplay();
+    window.addEventListener('resize', updateDisplay);
+    return () => window.removeEventListener('resize', updateDisplay);
   }, []);
 
   const handleMobilePrev = () => {
@@ -3142,7 +3172,14 @@ function Collections() {
 
   return (
     <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1', minHeight: 'calc((560px + 303px + 15px + 50px + 150px) * (100vw / 1589px))' }}>
-      <div className="section-inner !p-0 hidden lg:block" style={{ paddingBottom: 'calc(150px * (100vw / 1589px))' }}>
+      {/* Desktop Version - Hidden on mobile, shown on desktop (lg and above) */}
+      <div 
+        ref={desktopSectionRef}
+        className="section-inner !p-0 hidden lg:block" 
+        style={{ 
+          paddingBottom: 'calc(150px * (100vw / 1589px))',
+        }}
+      >
         <div className="relative overflow-hidden" style={{ width: '100%', minHeight: 'calc((560px + 303px + 15px + 50px) * (100vw / 1589px))' }}>
           {/* Heading "BỘ SƯU TẬP" - 40px above image container, centered on image */}
           <div 
@@ -4158,11 +4195,12 @@ function CatalogueCtaAndFooter() {
                   <Image
                     src="/FOOTER/logoSTile.png"
                     alt="Stile"
-                    width={180}
-                    height={72}
+                    width={80}
+                    height={80}
                     className="h-auto"
                     style={{
-                      width: 'calc(75px * (100vw / 1470px))',
+                      width: '80px',
+                      height: '80px',
                     }}
                   />
                   
@@ -4343,9 +4381,13 @@ function CatalogueCtaAndFooter() {
             <Image
               src="/FOOTER/logoSTile.png"
               alt="Stile"
-              width={120}
-              height={60}
-              className="h-auto w-[120px]"
+              width={100}
+              height={100}
+              className="h-auto"
+              style={{
+                width: '100px',
+                height: '100px',
+              }}
             />
             <div>
               <h3 className="font-heading text-[18px] uppercase tracking-[0.08em]">CÔNG TY TNHH STILE</h3>
