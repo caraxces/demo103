@@ -1942,6 +1942,636 @@ function ServiceDropdownMenu({ onLightSection }: { onLightSection: boolean }) {
   );
 }
 
+// Animated Plus/Minus Icon
+const AnimatedPlusMinusIcon = ({ isExpanded }: { isExpanded: boolean }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none" className="relative">
+    {/* Horizontal line - always visible (minus sign) */}
+    <rect 
+      y="5" 
+      width="11" 
+      height="1" 
+      fill="#010101"
+      className="transition-all duration-500 ease-in-out"
+    />
+    {/* Vertical line - rotates 90deg to become horizontal and fades out when expanded */}
+    <rect 
+      x="5" 
+      y="0" 
+      width="1" 
+      height="11" 
+      fill="#010101"
+      className="transition-all duration-500 ease-in-out"
+      style={{
+        transform: `rotate(${isExpanded ? 90 : 0}deg)`,
+        transformOrigin: 'center',
+        opacity: isExpanded ? 0 : 1,
+      }}
+    />
+  </svg>
+);
+
+// Mobile Menu Component
+function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [currentView, setCurrentView] = useState<'main' | 'products' | 'services' | string>('main');
+  const [selectedProductItem, setSelectedProductItem] = useState<typeof productDropdownItems[number] | null>(null);
+  const [selectedServiceItem, setSelectedServiceItem] = useState<string | null>(null);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  // Use desktop menu items structure - Level 1
+  const productMainItems = [
+    { label: "GẠCH ỐP LÁT", hasSubmenu: true },
+    { label: "HIỆU ỨNG", hasSubmenu: true },
+    { label: "NỘI THẤT", hasSubmenu: true },
+    { label: "ỨNG DỤNG", hasSubmenu: true },
+  ];
+
+  const serviceMainItems = {
+    studio: {
+      title: "STILE STUDIO",
+      items: [
+        { label: "Thiết Kế", href: "#" },
+        { label: "Thi Công", href: "#" },
+      ],
+    },
+    policy: {
+      title: "CHÍNH SÁCH",
+      items: [
+        { label: "Bảo Hành", href: "#" },
+        { label: "Chứng Nhận", href: "#" },
+        { label: "Đổi Trả", href: "#" },
+      ],
+    },
+    download: {
+      title: "DOWNLOAD",
+      items: [
+        { label: "Catalogue", href: "#" },
+        { label: "Hướng Dẫn Thi Công", href: "#" },
+        { label: "Thông Số Kỹ Thuật", href: "#" },
+        { label: "Hướng Dẫn Vệ Sinh", href: "#" },
+      ],
+    },
+  };
+
+  // Reset to main view when menu closes
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentView('main');
+      setSelectedProductItem(null);
+      setSelectedServiceItem(null);
+      setShowContactForm(false);
+      setExpandedItems(new Set());
+    }
+  }, [isOpen]);
+
+  const handleViewChange = (newView: string, direction: 'left' | 'right' = 'right') => {
+    setSlideDirection(direction);
+    setCurrentView(newView);
+  };
+
+  const toggleExpanded = (itemLabel: string) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemLabel)) {
+        newSet.delete(itemLabel);
+      } else {
+        newSet.add(itemLabel);
+      }
+      return newSet;
+    });
+  };
+
+  if (!isOpen) return null;
+
+  const handleProductItemClick = (item: typeof productDropdownItems[number]) => {
+    if (item.submenu) {
+      setSelectedProductItem(item);
+      setCurrentView(`product-${item.label}`);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleServiceItemClick = (key: string) => {
+    setSelectedServiceItem(key);
+    setCurrentView(`service-${key}`);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-[#E3DCD1] z-50 overflow-hidden"
+      style={{ 
+        zIndex: 1000,
+        top: '80px',
+      }}
+    >
+      <div className="relative w-full h-full overflow-y-auto">
+        {/* Main Menu View */}
+        <div
+          className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+            currentView === 'main' ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          {currentView === 'main' && (
+          <div className="px-6 pb-8 pt-6">
+            {/* Part 1: Header */}
+            <div className="relative mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6 border-b border-black pb-4 mb-4">
+              <h2 className="font-heading text-[#111111] text-center w-full" style={{ fontSize: '24px', letterSpacing: '1.44px' }}>
+                MENU
+              </h2>
+            </div>
+            
+            {/* Part 2: Main Navigation */}
+            <nav className="space-y-0 border-b border-black pb-4 mb-4">
+              <Link
+                href="#about"
+                onClick={onClose}
+                className="block py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+              >
+                Về STile
+              </Link>
+              <button
+                onClick={() => handleViewChange('products', 'right')}
+                className="w-full flex items-center justify-between py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+              >
+                <span className="text-[#111111]">Sản Phẩm</span>
+                <span className="text-[#111111] text-[10px]">›</span>
+              </button>
+              <Link
+                href="#projects"
+                onClick={onClose}
+                className="block py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+              >
+                Công Trình & Xu Hướng
+              </Link>
+              <Link
+                href="#gallery"
+                onClick={onClose}
+                className="block py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+              >
+                Artile Gallery
+              </Link>
+              <button
+                onClick={() => handleViewChange('services', 'right')}
+                className="w-full flex items-center justify-between py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+              >
+                <span className="text-[#111111]">Dịch Vụ</span>
+                <span className="text-[#111111] text-[10px]">›</span>
+              </button>
+            </nav>
+
+            {/* Part 3: Footer Section */}
+            <div className="mt-4 pt-4 space-y-0 border-b border-black pb-4 mb-4">
+              <Link
+                href="#search"
+                onClick={onClose}
+                className="block py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+              >
+                Tìm Kiếm
+              </Link>
+              
+              {/* Contact Form */}
+              <div className={showContactForm ? "py-4" : ""}>
+                <button
+                  onClick={() => setShowContactForm(!showContactForm)}
+                  className="w-full flex items-center justify-between py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+                >
+                  <span className="text-[#111111]">Liên Hệ Ngay</span>
+                  <span className="text-[#111111] flex items-center justify-center">
+                    <AnimatedPlusMinusIcon isExpanded={showContactForm} />
+                  </span>
+                </button>
+                {showContactForm && (
+                  <div className="flex flex-col gap-3 pt-2">
+                  <input
+                    type="text"
+                    placeholder="Họ và Tên"
+                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e]"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Số Điện Thoại"
+                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e]"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e]"
+                  />
+                  <textarea
+                    placeholder="Nội dung Tin nhắn..."
+                    rows={3}
+                    className="bg-[#f3ece1] border border-[#cfc8bc] rounded-[7px] px-[10px] py-[5px] font-manrope text-[12px] text-[#8e8e8e] resize-none"
+                  />
+                  <button
+                    type="button"
+                    className="bg-[#5b5448] border border-[#cfc8bc] rounded-[7px] py-[5px] font-manrope text-[12px] text-white"
+                  >
+                    Gửi
+                  </button>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Part 4: Social Media Section */}
+            <div className="mt-4 pt-4 space-y-0">
+              <h3 className="font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] mb-4">
+                Các Nền Tảng Mạng Xã Hội
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {footerSocials.map((item) => (
+                  <Link
+                    key={item.alt}
+                    href="#"
+                    className="flex h-[30px] w-[30px] items-center justify-center"
+                  >
+                    <Image
+                      src={item.src}
+                      alt={item.alt}
+                      width={30}
+                      height={30}
+                      className="h-auto"
+                      style={{ width: '30px', height: '30px' }}
+                    />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+          )}
+        </div>
+
+        {/* Products Sub-menu - Level 1 */}
+        <div
+          className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+            currentView === 'products' && !selectedProductItem
+              ? 'translate-x-0'
+              : currentView.startsWith('product') || currentView === 'products-list'
+              ? '-translate-x-full'
+              : 'translate-x-full'
+          }`}
+        >
+          {currentView === 'products' && !selectedProductItem && (
+          <div className="px-6 pb-8 pt-6">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={() => handleViewChange('main', 'left')}
+                className="mr-4 flex h-8 w-8 items-center justify-center"
+              >
+                <span className="text-[#111111] text-2xl">‹</span>
+              </button>
+              <h2 className="font-montserrat text-[#111111] text-[15px] font-normal tracking-[0.9px] text-center flex-1">
+                Sản Phẩm
+              </h2>
+              <div className="w-8" />
+            </div>
+            
+            <nav className="space-y-0">
+              {productMainItems.map((item) => {
+                const isExpanded = expandedItems.has(item.label);
+                return (
+                  <div key={item.label} className="w-full">
+                    <button
+                      onClick={() => toggleExpanded(item.label)}
+                      className="w-full h-[48px] flex items-center justify-between relative"
+                    >
+                      <span 
+                        className="font-heading text-[#111111] text-center absolute left-1/2 -translate-x-1/2"
+                        style={{ 
+                          fontSize: '20px', 
+                          letterSpacing: '1.2px',
+                          lineHeight: '24px'
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                      <span className="text-[#111111] flex items-center justify-center ml-auto">
+                        <AnimatedPlusMinusIcon isExpanded={isExpanded} />
+                      </span>
+                    </button>
+                    <div 
+                      className="flex flex-col items-start w-full overflow-hidden transition-all ease-in-out"
+                      style={{
+                        maxHeight: isExpanded ? '1000px' : '0px',
+                        opacity: isExpanded ? 1 : 0,
+                        transitionDuration: '600ms',
+                      }}
+                    >
+                      <div style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}>
+                        {item.label === "GẠCH ỐP LÁT" && (
+                          <div className="flex flex-col gap-0 w-full">
+                            {["Tất Cả", "Bộ Sưu Tập", "Châu Á", "Châu Âu", "Trang Trí"].map((subItem, idx) => (
+                              <Link
+                                key={idx}
+                                href="#"
+                                onClick={onClose}
+                                className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
+                                style={{ 
+                                  height: idx === 4 ? '48px' : '49px',
+                                  paddingTop: '10px',
+                                  paddingBottom: '10px',
+                                  transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
+                                  opacity: isExpanded ? 1 : 0,
+                                  transitionDuration: '600ms',
+                                  transitionDelay: isExpanded ? `${idx * 60}ms` : `${(4 - idx) * 60}ms`
+                                }}
+                              >
+                                {subItem}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                        {item.label === "HIỆU ỨNG" && (
+                          <div className="flex flex-col gap-0 w-full">
+                            {["Tất Cả", "Đá Marble", "Đá Tự Nhiên", "Xi Măng, Bê Tông", "Kim Loại", "Gỗ", "Mosaic", "Khác"].map((subItem, idx) => (
+                              <Link
+                                key={idx}
+                                href="#"
+                                onClick={onClose}
+                                className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
+                                style={{ 
+                                  height: idx < 3 ? '49px' : '48px',
+                                  paddingTop: '10px',
+                                  paddingBottom: '10px',
+                                  transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
+                                  opacity: isExpanded ? 1 : 0,
+                                  transitionDuration: '600ms',
+                                  transitionDelay: isExpanded ? `${idx * 60}ms` : `${(7 - idx) * 60}ms`
+                                }}
+                              >
+                                {subItem}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                        {item.label === "NỘI THẤT" && (
+                          <div className="flex flex-col gap-0 w-full">
+                            {["Đèn Trang Trí", "Bàn Ăn", "Thiết Bị Vệ Sinh"].map((subItem, idx) => (
+                              <Link
+                                key={idx}
+                                href="#"
+                                onClick={onClose}
+                                className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
+                                style={{ 
+                                  height: '49px',
+                                  paddingTop: '10px',
+                                  paddingBottom: '10px',
+                                  transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
+                                  opacity: isExpanded ? 1 : 0,
+                                  transitionDuration: '600ms',
+                                  transitionDelay: isExpanded ? `${idx * 60}ms` : `${(2 - idx) * 60}ms`
+                                }}
+                              >
+                                {subItem}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                        {item.label === "ỨNG DỤNG" && (
+                          <div className="flex flex-col gap-0 w-full">
+                            {["Ốp Tường", "Lát Sàn", "Nội Thất", "Ốp Mặt Ngoài"].map((subItem, idx) => (
+                              <Link
+                                key={idx}
+                                href="#"
+                                onClick={onClose}
+                                className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
+                                style={{ 
+                                  height: idx === 3 ? '48px' : '49px',
+                                  paddingTop: '10px',
+                                  paddingBottom: '10px',
+                                  transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
+                                  opacity: isExpanded ? 1 : 0,
+                                  transitionDuration: '600ms',
+                                  transitionDelay: isExpanded ? `${idx * 60}ms` : `${(3 - idx) * 60}ms`
+                                }}
+                              >
+                                {subItem}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </nav>
+          </div>
+          )}
+        </div>
+
+        {/* Products Sub-menu - Level 2 (GẠCH ỐP LÁT items) */}
+        <div
+          className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+            currentView === 'products-list'
+              ? 'translate-x-0'
+              : currentView.startsWith('product-')
+              ? '-translate-x-full'
+              : 'translate-x-full'
+          }`}
+        >
+          {currentView === 'products-list' && (
+          <div className="px-6 pb-8 pt-6">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={() => handleViewChange('products', 'left')}
+                className="mr-4 flex h-8 w-8 items-center justify-center"
+              >
+                <span className="text-[#111111] text-2xl">‹</span>
+              </button>
+              <h2 className="font-montserrat text-[#111111] text-[15px] font-normal tracking-[0.9px] text-center flex-1">
+                GẠCH ỐP LÁT
+              </h2>
+              <div className="w-8" />
+            </div>
+            
+            <nav className="space-y-0">
+              {productDropdownItems.map((item) => {
+                const isExpanded = expandedItems.has(item.label);
+                return (
+                  <div key={item.label} className="w-full">
+                    <button
+                      onClick={() => {
+                        if (item.submenu) {
+                          toggleExpanded(item.label);
+                        } else {
+                          onClose();
+                        }
+                      }}
+                      className="w-full block py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] flex items-center justify-between"
+                    >
+                      <span className="text-[#111111]">{item.label}</span>
+                      {item.submenu && (
+                        <span className="text-[#111111] flex items-center justify-center">
+                          <AnimatedPlusMinusIcon isExpanded={isExpanded} />
+                        </span>
+                      )}
+                    </button>
+                    {item.submenu && isExpanded && (
+                      <div className="pl-0 pb-2">
+                        {item.submenu.type === 'dimensions' && (
+                          <div className="grid grid-cols-3 gap-4 pt-2">
+                            <div className="flex flex-col gap-2">
+                              {item.submenu.leftColumn.map((size, idx) => (
+                                <Link
+                                  key={idx}
+                                  href="#"
+                                  onClick={onClose}
+                                  className="block py-2 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+                                >
+                                  {size}
+                                </Link>
+                              ))}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {item.submenu.rightColumn.map((size, idx) => (
+                                <Link
+                                  key={idx}
+                                  href="#"
+                                  onClick={onClose}
+                                  className="block py-2 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+                                >
+                                  {size}
+                                </Link>
+                              ))}
+                            </div>
+                            <div className="flex flex-col">
+                              {item.submenu.other && (
+                                <Link
+                                  href="#"
+                                  onClick={onClose}
+                                  className="block py-2 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+                                >
+                                  {item.submenu.other}
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {item.submenu.type === 'products' && (
+                          <div className="flex flex-col gap-0 pt-2">
+                            {item.submenu.items.map((product, idx) => (
+                              <Link
+                                key={idx}
+                                href="#"
+                                onClick={onClose}
+                                className="block py-4 font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px]"
+                              >
+                                {product}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+          </div>
+          )}
+        </div>
+
+
+        {/* Services Sub-menu - Level 1 */}
+        <div
+          className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+            currentView === 'services' && !selectedServiceItem
+              ? 'translate-x-0'
+              : currentView.startsWith('service-')
+              ? '-translate-x-full'
+              : 'translate-x-full'
+          }`}
+        >
+          {currentView === 'services' && !selectedServiceItem && (
+
+          <div className="px-6 pb-8 pt-6">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={() => handleViewChange('main', 'left')}
+                className="mr-4 flex h-8 w-8 items-center justify-center"
+              >
+                <span className="text-[#111111] text-2xl">‹</span>
+              </button>
+              <h2 className="font-montserrat text-[#111111] text-[15px] font-normal tracking-[0.9px] text-center flex-1">
+                Dịch Vụ
+              </h2>
+              <div className="w-8" />
+            </div>
+            
+            <nav className="space-y-0">
+              {Object.entries(serviceMainItems).map(([key, item]) => {
+                const isExpanded = expandedItems.has(item.title);
+                return (
+                  <div key={key} className="w-full">
+                    <button
+                      onClick={() => toggleExpanded(item.title)}
+                      className="w-full h-[48px] flex items-center justify-between relative"
+                    >
+                      <span 
+                        className="font-heading text-[#111111] text-center absolute left-1/2 -translate-x-1/2"
+                        style={{ 
+                          fontSize: '20px', 
+                          letterSpacing: '1.2px',
+                          lineHeight: '24px'
+                        }}
+                      >
+                        {item.title}
+                      </span>
+                      <span className="text-[#111111] flex items-center justify-center ml-auto">
+                        <AnimatedPlusMinusIcon isExpanded={isExpanded} />
+                      </span>
+                    </button>
+                    <div 
+                      className="flex flex-col items-start w-full overflow-hidden transition-all ease-in-out"
+                      style={{
+                        maxHeight: isExpanded ? '1000px' : '0px',
+                        opacity: isExpanded ? 1 : 0,
+                        transitionDuration: '600ms',
+                      }}
+                    >
+                      <div style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}>
+                        {isExpanded && (
+                          <div className="flex flex-col gap-0 w-full">
+                            {item.items.map((subItem, idx) => (
+                              <Link
+                                key={idx}
+                                href={subItem.href}
+                                onClick={onClose}
+                                className="box-border flex gap-[10px] items-center px-[10px] font-montserrat text-[#111111] text-[15px] font-medium tracking-[0.9px] w-full transition-all ease-out"
+                                style={{ 
+                                  height: '49px',
+                                  paddingTop: '10px',
+                                  paddingBottom: '10px',
+                                  transform: isExpanded ? 'translateY(0)' : 'translateY(-10px)',
+                                  opacity: isExpanded ? 1 : 0,
+                                  transitionDuration: '600ms',
+                                  transitionDelay: isExpanded ? `${idx * 60}ms` : `${(item.items.length - 1 - idx) * 60}ms`
+                                }}
+                              >
+                                {subItem.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </nav>
+          </div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 function Header() {
   const [pastHero, setPastHero] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -2099,7 +2729,9 @@ function Header() {
             ? `${80 + 20}px` 
             : `calc(54px * (100vw / 1440px) + 5px)`,
           width: '100%',
-          backgroundColor: isMobile ? 'transparent' : (pastHero ? '#EEEBE6' : 'transparent'),
+          backgroundColor: isMobile 
+            ? (isMobileMenuOpen ? '#E3DCD1' : 'transparent')
+            : (pastHero ? '#EEEBE6' : 'transparent'),
           zIndex: -1,
         }}
       />
@@ -2165,11 +2797,6 @@ function Header() {
               )}
             </div>
           ))}
-          <HeaderDropdownMenu 
-            onLightSection={pastHero} 
-            type="menu"
-            triggerLabel="Menu"
-          />
         </nav>
         <div 
           className="hidden items-center lg:flex ml-auto z-10"
@@ -2236,63 +2863,31 @@ function Header() {
             type="button"
             aria-label="Mở menu"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border transition ${
-              onLightSection
+            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-500 ${
+              isMobileMenuOpen
+                ? "border-[#111111] text-[#111111] bg-[#E3DCD1] hover:bg-[#111111] hover:text-white z-[1001]"
+                : onLightSection
                 ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                 : "border-white text-white hover:bg-white/20"
             }`}
+            style={{ 
+              zIndex: isMobileMenuOpen ? 1001 : 'auto',
+              position: isMobileMenuOpen ? 'fixed' : 'relative',
+              top: isMobileMenuOpen ? '20px' : 'auto',
+              right: isMobileMenuOpen ? '20px' : 'auto',
+            }}
           >
             <span className="flex flex-col items-center justify-center gap-[8px]">
-              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-[10px]' : ''}`} />
-              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-[10px]' : ''}`} />
+              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-[10px]' : ''}`} />
+              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block h-[2.5px] w-6 bg-current transition-all duration-500 ease-in-out ${isMobileMenuOpen ? '-rotate-45 -translate-y-[10px]' : ''}`} />
             </span>
           </button>
           {isMobileMenuOpen && (
-            <>
-              <div 
-                className="fixed inset-0 bg-black/50 z-40"
-                onClick={() => setIsMobileMenuOpen(false)}
-              />
-              <div
-                className={`fixed right-0 top-0 bottom-0 w-[280px] shadow-lg transition-transform duration-300 ease-in-out ${
-                  isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                } ${
-                  onLightSection 
-                    ? 'bg-white' 
-                    : 'bg-[#111111]'
-                }`}
-                style={{ zIndex: 1000 }}
-              >
-                <nav className="flex flex-col py-4 h-full">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`px-6 py-3 transition text-[15px] font-normal tracking-[0.06em] ${
-                        onLightSection
-                          ? 'text-[#111111] hover:bg-gray-100'
-                          : 'text-white hover:bg-gray-800'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                  <Link
-                    href="#contact"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`px-6 py-3 transition text-[15px] font-normal tracking-[0.06em] ${
-                      onLightSection
-                        ? 'text-[#111111] hover:bg-gray-100'
-                        : 'text-white hover:bg-gray-800'
-                    }`}
-                  >
-                    Liên hệ
-                  </Link>
-                </nav>
-              </div>
-            </>
+            <MobileMenu 
+              isOpen={isMobileMenuOpen}
+              onClose={() => setIsMobileMenuOpen(false)}
+            />
           )}
         </div>
       </div>
