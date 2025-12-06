@@ -2367,7 +2367,7 @@ function Hero() {
           className="font-heading uppercase max-lg:max-w-[685px] max-lg:leading-[56px] max-lg:tracking-[0.02em]"
           style={{
             maxWidth: !isMobile ? 'calc(685px * (100vw / 1440px))' : '100%',
-            fontSize: !isMobile ? 'calc(58px * (100vw / 1440px))' : '40px',
+            fontSize: !isMobile ? 'calc(58px * (100vw / 1440px))' : '38px',
             lineHeight: !isMobile ? 'calc(73px * (100vw / 1440px))' : '56px',
             letterSpacing: !isMobile ? 'calc(1.16px * (100vw / 1440px))' : '0.02em',
           }}
