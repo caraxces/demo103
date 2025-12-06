@@ -1270,7 +1270,7 @@ function HeaderDropdownMenu({
                 <h3 
                   className="font-heading font-bold uppercase tracking-[0.05em] mb-6 text-[#111111]"
                   style={{
-                    fontSize: 'calc(18px * (100vw / 1440px))',
+                    fontSize: 'calc(14px * (100vw / 1440px))',
                     marginBottom: 'calc(24px * (100vw / 1440px))',
                   }}
                 >
