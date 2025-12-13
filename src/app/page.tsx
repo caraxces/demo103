@@ -3537,11 +3537,15 @@ function About() {
 
 function Gallery() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [typedText, setTypedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isFullyRevealed, setIsFullyRevealed] = useState(false);
   const titleRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const textDescriptionRef = useRef<HTMLDivElement>(null);
   const lastMousePosRef = useRef<{ x: number; y: number } | null>(null);
   const randomRevealedRef = useRef<Array<{ x: number; y: number; radius: number }>>([]);
   const maskInitializedRef = useRef(false);
@@ -3559,6 +3563,43 @@ function Gallery() {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Typing effect starts automatically when fully revealed (backup trigger)
+  useEffect(() => {
+    if (!isLoaded || !isFullyRevealed || typeof window === 'undefined' || window.innerWidth < 1024) return;
+    
+    // Start typing immediately when fully revealed (backup in case direct trigger didn't work)
+    if (!isTyping && isLoaded && isFullyRevealed) {
+      setIsTyping(true);
+    }
+  }, [isLoaded, isFullyRevealed]);
+
+  // Typing animation - only start when fully revealed
+  useEffect(() => {
+    if (!isTyping || !isLoaded || !isFullyRevealed || typeof window === 'undefined' || window.innerWidth < 1024) {
+      setTypedText('');
+      return;
+    }
+
+    const fullText = '"Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.\n\nỞ STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."';
+    
+    // Start typing immediately with first character
+    setTypedText(fullText[0] || '');
+    let currentIndex = 1;
+
+    const typingInterval = setInterval(() => {
+      if (currentIndex < fullText.length) {
+        setTypedText(fullText.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 15); // Typing speed: 15ms per character (faster)
+
+    return () => {
+      clearInterval(typingInterval);
+    };
+  }, [isTyping, isLoaded, isFullyRevealed]);
 
   // Initialize random reveal spots
   useEffect(() => {
@@ -3732,6 +3773,11 @@ function Gallery() {
           ctx.globalCompositeOperation = 'source-over';
           isSpreadingRef.current = false;
           isFullyRevealedRef.current = true;
+          setIsFullyRevealed(true);
+          // Start typing after 0.5 seconds delay
+          setTimeout(() => {
+            setIsTyping(true);
+          }, 500);
         }
       };
       
@@ -3951,6 +3997,7 @@ function Gallery() {
 
         {/* Descriptive Text - Figma: left-[calc(50%+1.5px)] top-[836px] w-[1231px] */}
         <div 
+          ref={textDescriptionRef}
           className="absolute z-20 font-montserrat font-normal text-center text-black"
             style={{
             left: 'calc(50% + 1.5px * (100vw / 1440px))',
@@ -3960,16 +4007,13 @@ function Gallery() {
             maxWidth: '85vw',
             fontSize: 'calc(14px * (100vw / 1440px))',
             lineHeight: 'calc(25px * (100vw / 1440px))',
+            whiteSpace: 'pre-wrap',
+            opacity: isFullyRevealed ? 1 : 0,
+            transition: isFullyRevealed ? 'opacity 0.3s ease-in' : 'none',
           }}
         >
-          <p className="mb-0">
-            "Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.
-          </p>
-          <p className="mb-0">&nbsp;</p>
-          <p className="mb-0">
-            Ở STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."
-          </p>
-          <p>&nbsp;</p>
+          {typedText || (isTyping ? '' : '')}
+          {isTyping && typedText.length > 0 && <span className="animate-pulse">|</span>}
         </div>
 
         {/* Button "Khám phá ngay" - Figma: left-[calc(50%+1px)] top-[968px] */}
@@ -4056,6 +4100,10 @@ function FeaturedProducts() {
   const [animatingVariant, setAnimatingVariant] = useState<number | null>(null);
   const variant = featuredVariants[activeVariant];
   const sectionRef = useRef<HTMLElement>(null);
+  const [typedText, setTypedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
 
   // DEBUG: Điều chỉnh vị trí header fixed trên desktop
   const DEBUG_HEADER_TOP = '120px';      // Vị trí top của header (từ trên xuống)
@@ -4077,6 +4125,63 @@ function FeaturedProducts() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Typing effect when section comes into view AND image is loaded
+  useEffect(() => {
+    if (!sectionRef.current || isMobile || !imageLoaded) return;
+
+    const checkVisibility = () => {
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (rect) {
+        const isInView = rect.top < window.innerHeight * 0.7 && rect.bottom > 0;
+        if (isInView && !isTyping && imageLoaded) {
+          setIsTyping(true);
+        }
+      }
+    };
+
+    // Check on mount and scroll
+    checkVisibility();
+    window.addEventListener('scroll', checkVisibility, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', checkVisibility);
+    };
+  }, [isMobile, isTyping, imageLoaded]);
+
+  // Typing animation - reset and start when variant changes or when typing is triggered
+  useEffect(() => {
+    if (!isTyping || isMobile) {
+      setTypedText('');
+      return;
+    }
+
+    // Use the full description text as shown in design
+    const fullText = "The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.\n\nIn the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.";
+    
+    setTypedText('');
+    let currentIndex = 0;
+
+    const typingInterval = setInterval(() => {
+      if (currentIndex < fullText.length) {
+        setTypedText(fullText.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 20); // Typing speed: 20ms per character
+
+    return () => {
+      clearInterval(typingInterval);
+    };
+  }, [isTyping, variant.id, isMobile]);
+
+  // Reset typing and image loaded state when variant changes
+  useEffect(() => {
+    setTypedText('');
+    setIsTyping(false);
+    setImageLoaded(false);
+  }, [variant.id]);
 
 
   const imageSrc = isMobile && variant.mobileImage ? variant.mobileImage : variant.image;
@@ -4115,6 +4220,11 @@ function FeaturedProducts() {
                 objectPosition: isMobile ? "calc(50% - 60px) center" : "center",
                 transform: isMobile ? "scale(1.6)" : undefined,
                 }}
+              onLoad={() => {
+                if (isActive) {
+                  setImageLoaded(true);
+                }
+              }}
               />
               {/* Gradient overlay - Desktop only: đậm ở dưới và trên, trong suốt ở giữa */}
               {!isMobile && (
@@ -4191,16 +4301,17 @@ function FeaturedProducts() {
               {variant.title}
             </h3>
             <p 
+              ref={textRef}
               className="font-montserrat text-[#151515] text-left"
               style={{
                 fontSize: 'calc(16px * (100vw / 1440px))',
                 lineHeight: 'calc(25px * (100vw / 1440px))',
                 marginTop: 'calc(24px * (100vw / 1440px))',
+                whiteSpace: 'pre-wrap',
               }}
             >
-              The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.
-              <br /><br />
-              In the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.
+              {typedText || (isTyping ? '' : variant.description || "The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth, twin faces, reflect each other and collaborate in perfect synergy.\n\nIn the constant interchange with the surrounding environment, nature shows us that we are part of an intricate and wonderful living system. A harmonious meeting, expressed through grandiose and cyclic movements, which give form to the structure itself of the Gemini collection, inspired by the natural flows between earth and sky.")}
+              {isTyping && typedText.length > 0 && <span className="animate-pulse">|</span>}
             </p>
             <div 
               className="pt-2"
