@@ -3912,7 +3912,7 @@ function Gallery() {
           />
         </div>
 
-        {/* Title "ARTILE GALLERY" - Figma: left-[calc(50%+627px)] top-[132px] with transform */}
+        {/* Title "ARTILE GALLERY" - SVG - Figma: left-[calc(50%+627px)] top-[132px] with transform */}
         <div
           ref={titleRef}
           className="absolute z-30 text-right"
@@ -3922,25 +3922,16 @@ function Gallery() {
             transform: 'translateX(-100%) translateY(-50%)',
           }}
         >
-          <h2 
-            className="font-heading uppercase flex flex-col justify-center"
+          <img
+            src="/ARTILE GALLERY/ARTILE GALLERY.svg"
+            alt="ARTILE GALLERY"
+            className="h-auto"
             style={{ 
-              fontSize: 'calc(110px * (100vw / 1440px))',
-              lineHeight: 'calc(94px * (100vw / 1440px))',
-              letterSpacing: 'calc(2.2px * (100vw / 1440px))',
-              background: 'linear-gradient(180deg, #8B7355 0%, #C4A574 49.31%, #D4B896 100%)',
-              backgroundImage: 'url(/ARTILE GALLERY/image.png), linear-gradient(180deg, #8B7355 0%, #C4A574 49.31%, #D4B896 100%)',
-              backgroundSize: 'cover, cover',
-              backgroundPosition: '49.31% 1.87%, center',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              color: 'transparent',
+              width: 'auto',
+              height: 'calc(170px * (100vw / 1440px))',
+              maxWidth: 'none',
             }}
-          >
-            <p className="mb-0">ARTILE</p>
-            <p>GALLERY</p>
-          </h2>
+          />
         </div>
 
         {/* Tagline - Figma: right-[92px] top-[237px] */}
@@ -4010,20 +4001,14 @@ function Gallery() {
         <div className="relative z-10 flex flex-col items-center justify-center min-h-full px-6 py-20">
           <div className="space-y-6 text-center max-w-[500px]">
             {/* Title */}
-            <h2 
-              className="font-heading uppercase"
+            <img
+              src="/ARTILE GALLERY/ARTILE GALLERY.svg"
+              alt="ARTILE GALLERY"
+              className="h-auto w-full max-w-[700px]"
               style={{
-                fontSize: 'clamp(40px, 10vw, 72px)',
-                lineHeight: 'clamp(50px, 12vw, 70px)',
-                letterSpacing: 'clamp(2px, 0.5vw, 3px)',
-                background: 'linear-gradient(180deg, #8B7355 0%, #C4A574 49.31%, #D4B896 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                height: 'auto',
               }}
-            >
-              ARTILE<br />GALLERY
-            </h2>
+            />
             
             {/* Tagline */}
             <p 
