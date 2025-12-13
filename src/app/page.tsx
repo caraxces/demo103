@@ -3540,11 +3540,12 @@ function Gallery() {
   const [typedText, setTypedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isFullyRevealed, setIsFullyRevealed] = useState(false);
+  const [hasStartedDrawing, setHasStartedDrawing] = useState(false);
   const titleRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const textDescriptionRef = useRef<HTMLDivElement>(null);
   const lastMousePosRef = useRef<{ x: number; y: number } | null>(null);
   const randomRevealedRef = useRef<Array<{ x: number; y: number; radius: number }>>([]);
@@ -3557,26 +3558,32 @@ function Gallery() {
   // Height should be responsive based on width: height = width / 1.274
 
   useEffect(() => {
-    // Trigger loading animation after component mounts
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 100);
-    return () => clearTimeout(timer);
+    // Set loaded when video is ready
+    if (videoRef.current) {
+      const handleCanPlay = () => {
+        setIsLoaded(true);
+      };
+      if (videoRef.current.readyState >= 3) {
+        setIsLoaded(true);
+      } else {
+        videoRef.current.addEventListener('canplay', handleCanPlay, { once: true });
+        return () => {
+          videoRef.current?.removeEventListener('canplay', handleCanPlay);
+        };
+      }
+    }
   }, []);
 
-  // Typing effect starts automatically when fully revealed (backup trigger)
+  // Preload video when component mounts
   useEffect(() => {
-    if (!isLoaded || !isFullyRevealed || typeof window === 'undefined' || window.innerWidth < 1024) return;
-    
-    // Start typing immediately when fully revealed (backup in case direct trigger didn't work)
-    if (!isTyping && isLoaded && isFullyRevealed) {
-      setIsTyping(true);
+    if (videoRef.current && typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      videoRef.current.load();
     }
-  }, [isLoaded, isFullyRevealed]);
+  }, []);
 
-  // Typing animation - only start when fully revealed
+  // Typing animation - starts when user begins drawing
   useEffect(() => {
-    if (!isTyping || !isLoaded || !isFullyRevealed || typeof window === 'undefined' || window.innerWidth < 1024) {
+    if (!isTyping || !isLoaded || typeof window === 'undefined' || window.innerWidth < 1024) {
       setTypedText('');
       return;
     }
@@ -3594,12 +3601,12 @@ function Gallery() {
       } else {
         clearInterval(typingInterval);
       }
-    }, 15); // Typing speed: 15ms per character (faster)
+    }, 10); // Typing speed: 10ms per character (faster)
 
     return () => {
       clearInterval(typingInterval);
     };
-  }, [isTyping, isLoaded, isFullyRevealed]);
+  }, [isTyping, isLoaded]);
 
   // Initialize random reveal spots
   useEffect(() => {
@@ -3774,10 +3781,6 @@ function Gallery() {
           isSpreadingRef.current = false;
           isFullyRevealedRef.current = true;
           setIsFullyRevealed(true);
-          // Start typing after 0.5 seconds delay
-          setTimeout(() => {
-            setIsTyping(true);
-          }, 500);
         }
       };
       
@@ -3875,6 +3878,18 @@ function Gallery() {
       ctx.globalCompositeOperation = 'source-over';
       lastMousePosRef.current = { x, y };
       
+      // Start typing effect and video when user starts drawing (first brush stroke)
+      if (!hasStartedDrawing) {
+        setHasStartedDrawing(true);
+        setIsTyping(true);
+        // Start video immediately when user starts drawing
+        if (videoRef.current) {
+          videoRef.current.play().catch((err) => {
+            console.error(err);
+          });
+        }
+      }
+      
       // Set timeout to start spread animation after 1.5 seconds of no movement (only if not fully revealed)
       if (!isFullyRevealedRef.current) {
         if (spreadTimeoutRef.current) {
@@ -3931,7 +3946,7 @@ function Gallery() {
     <section ref={sectionRef} id="gallery" className="fullpage-section relative w-full bg-[#E3DCD1] text-black" style={{ overflow: 'visible', height: 'auto', minHeight: 'calc(1130 / 1440 * 100vw)', zIndex: 0 }}>
       {/* Desktop Version */}
       <div ref={innerRef} className="hidden lg:block relative w-full overflow-visible" style={{ height: 'calc(1130 / 1440 * 100vw)', minHeight: 'calc(1130 / 1440 * 100vw)', position: 'relative' }}>
-        {/* Watercolor Background SVG - Figma: left-[-1px] top-[18px] w-[1442px] h-[956px] */}
+        {/* Video Background - same layout as SVG, revealed through canvas mask */}
         <div 
           className="absolute overflow-hidden pointer-events-none"
           style={{
@@ -3939,25 +3954,35 @@ function Gallery() {
             top: 'calc(18px * (100vw / 1440px))',
             width: 'calc(1442px * (100vw / 1440px))',
             height: 'calc(956px * (100vw / 1440px))',
+            opacity: 1,
+            zIndex: 10,
           }}
         >
-          <div className="absolute inset-0" style={{ opacity: isLoaded ? 1 : 0 }}>
-            <img
-              ref={imageRef}
-              src="/ARTILE GALLERY/artile gallery water color beige trans 1.svg"
-              alt="Artile Gallery Watercolor Background"
-              className="absolute h-[98.73%] left-0 max-w-none top-[1.27%] w-full"
-              style={{ objectFit: 'cover' }}
-              onLoad={() => setIsLoaded(true)}
-            />
-          </div>
-          {/* Reveal mask canvas - Desktop only */}
-          <canvas
-            ref={canvasRef}
-            className="hidden lg:block absolute inset-0 pointer-events-auto z-20"
-            style={{ mixBlendMode: 'normal' }}
-          />
+          <video
+            ref={videoRef}
+            className="absolute h-[98.73%] left-0 max-w-none top-[1.27%] w-full"
+            style={{ objectFit: 'cover' }}
+            muted
+            playsInline
+            preload="auto"
+            onCanPlay={() => {
+              setIsLoaded(true);
+            }}
+          >
+            <source src="/ARTILE GALLERY/ARTILE GALLERY SECTION.mp4" type="video/mp4" />
+          </video>
         </div>
+
+        {/* Reveal mask canvas - Desktop only - reveals video gradually, hides when fully revealed */}
+        <canvas
+          ref={canvasRef}
+          className="hidden lg:block absolute inset-0 pointer-events-auto z-30"
+          style={{ 
+            mixBlendMode: 'normal',
+            opacity: isFullyRevealed ? 0 : 1,
+            transition: isFullyRevealed ? 'opacity 0.3s ease-out' : 'none',
+          }}
+        />
 
         {/* Title "ARTILE GALLERY" - SVG - Figma: left-[calc(50%+627px)] top-[132px] with transform */}
         <div
@@ -4005,7 +4030,7 @@ function Gallery() {
             transform: 'translateX(-50%)',
             width: 'calc(1231px * (100vw / 1440px))',
             maxWidth: '85vw',
-            fontSize: 'calc(14px * (100vw / 1440px))',
+            fontSize: 'calc(16px * (100vw / 1440px))',
             lineHeight: 'calc(25px * (100vw / 1440px))',
             whiteSpace: 'pre-wrap',
             opacity: isFullyRevealed ? 1 : 0,
