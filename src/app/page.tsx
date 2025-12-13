@@ -3127,11 +3127,15 @@ function Hero() {
 
 function About() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const stickyRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<HTMLDivElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
-  const [imageVisible, setImageVisible] = useState(false);
+  const [svgAnimated, setSvgAnimated] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Figma design dimensions: 1440x820
+  const figmaWidth = 1440;
+  const figmaHeight = 820;
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -3150,31 +3154,58 @@ function About() {
   }, []);
 
   useEffect(() => {
-    const node = stickyRef.current;
-    if (!node) return;
-    // Trên tablet, hiển thị ảnh ngay lập tức
-    if (isTablet) {
-      setImageVisible(true);
-      return;
-    }
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
+
     const observer = new IntersectionObserver(
-      ([entry]) => setImageVisible(entry.isIntersecting),
+      ([entry]) => {
+        if (entry.isIntersecting && !svgAnimated) {
+          setSvgAnimated(true);
+          // Add animation class to SVG container
+          svgElement.classList.add('svg-animate');
+          
+          // Try to animate paths if they exist
+          const paths = svgElement.querySelectorAll('path');
+          if (paths.length > 0) {
+            paths.forEach((path, index) => {
+              try {
+                const pathLength = path.getTotalLength();
+                path.style.strokeDasharray = `${pathLength}`;
+                path.style.strokeDashoffset = `${pathLength}`;
+                path.style.fill = 'transparent';
+                path.style.stroke = '#000';
+                path.style.strokeWidth = '2';
+                
+                // Animate stroke
+                path.style.animation = `drawPath 2s ease forwards ${index * 0.1}s`;
+              } catch (e) {
+                // If path doesn't support getTotalLength, skip
+              }
+            });
+            
+            // After stroke animation, fill the paths
+            setTimeout(() => {
+              paths.forEach((path) => {
+                path.style.animation = `fillPath 1s ease forwards`;
+              });
+            }, 2000 + paths.length * 100);
+          }
+        }
+      },
       { threshold: 0.25 }
     );
-    observer.observe(node);
+    
+    observer.observe(svgElement);
     return () => observer.disconnect();
-  }, [isTablet]);
+  }, [svgAnimated]);
 
   useEffect(() => {
-    const imageNode = stickyRef.current;
     const textNode = textRef.current;
-    if (!imageNode || !textNode) return;
+    if (!textNode) return;
 
-    imageNode.style.transform = "translate3d(0px, 0px, 0px)";
     textNode.style.transform = "translate3d(0px, 0px, 0px)";
 
     return () => {
-      imageNode.style.transform = "";
       textNode.style.transform = "";
     };
   }, []);
@@ -3184,241 +3215,317 @@ function About() {
       ref={sectionRef}
       id="about"
       data-header-light="true"
-      className="fullpage-section flex items-center"
+      className="fullpage-section flex items-center overflow-visible"
+      style={{
+        minHeight: '100vh',
+        height: 'auto',
+        zIndex: 1,
+      }}
     >
-      <div className="section-inner">
-        {/* Desktop: >= 1440px - Scale theo màn hình lớn */}
-        {/* Mobile: < 980px - Layout dọc */}
-        <div 
-          className={`mx-auto w-full items-center ${isTablet ? 'hidden' : ''} ${isMobile ? 'flex flex-col gap-10 px-0 pt-16' : 'grid'}`}
-          style={{
-            display: isMobile ? 'flex' : (isTablet ? 'none' : 'grid'),
-            flexDirection: isMobile ? 'column' : 'unset',
-            maxWidth: !isMobile && !isTablet ? 'calc(1440px * (100vw / 1440px))' : '100%',
-            gridTemplateColumns: !isMobile && !isTablet ? `minmax(0, calc(640px * (100vw / 1440px))) minmax(0, 1fr)` : 'unset',
-            gap: isMobile ? '40px' : (!isTablet ? 'calc(80px * (100vw / 1440px))' : 'unset'),
-            paddingLeft: isMobile ? '0' : (!isTablet ? 'calc(104px * (100vw / 1440px))' : 'unset'),
-            paddingRight: isMobile ? '0' : (!isTablet ? 'calc(104px * (100vw / 1440px))' : 'unset'),
-            width: '100%',
-            boxSizing: 'border-box',
-          }}
-        >
-          <div
-            ref={textRef}
-            className="flex flex-col transition-transform duration-300 ease-out will-change-transform text-left"
-            style={{
-              gap: isMobile ? '24px' : 'calc(24px * (100vw / 1440px))',
-              paddingLeft: isMobile ? '24px' : '0',
-              paddingRight: isMobile ? '24px' : '0',
-            }}
-          >
-            <span 
-              className="font-alt font-medium tracking-[0.05em]"
-              style={{
-                fontSize: isMobile ? '14px' : 'calc(20px * (100vw / 1440px))',
-                letterSpacing: '0.05em',
-              }}
-            >
-              VỀ CHÚNG TÔI
-            </span>
-            <h2 className="font-heading tracking-[0.02em] uppercase text-[#000000]">
-              {isMobile ? (
-                <>
-                  <span style={{ 
-                    fontSize: '18px', 
-                    lineHeight: '1.2', 
-                    display: 'block',
-                  }}>
-                    ĐỊNH HÌNH CHUẨN MỰC MỚI CHO
-                  </span>
-                  <span style={{ 
-                    fontSize: 'clamp(36px, calc(36px + (100vw - 480px) * 0.0375), 42px)', 
-                    lineHeight: '1.2', 
-                    display: 'block',
-                  }}>
-                    BỀ MẶT ỐP LÁT
-                  </span>
-                </>
-              ) : (
-                <span style={{ 
-                  fontSize: 'calc(48px * (100vw / 1440px))',
-                  lineHeight: 'calc(60px * (100vw / 1440px))',
-                  display: 'block',
-                }}>
-                  ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
-                </span>
-              )}
-            </h2>
-            <p 
-              className="font-montserrat text-justify text-[#1a1a1a]"
-              style={{
-                fontSize: isMobile ? 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)' : 'calc(14px * (100vw / 1440px))',
-                lineHeight: isMobile ? 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)' : 'calc(25px * (100vw / 1440px))',
-              }}
-            >
-              STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
-              triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
-              dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
-              nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
-              thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
-            </p>
-            <div 
-              className="pt-2 flex justify-start"
-              style={{
-                paddingTop: isMobile ? '8px' : 'calc(8px * (100vw / 1440px))',
-              }}
-            >
-              <PillButton label="Khám phá ngay" />
-            </div>
-          </div>
+      <div className="section-inner relative w-full overflow-visible" style={{ minHeight: 'calc(820px * (100vh / 820px))', height: 'auto' }}>
+        {/* Desktop: >= 1440px - Layout theo Figma design (1440x820) */}
+        {!isMobile && !isTablet && (
           <div 
-            className="relative flex justify-end"
+            className="relative mx-auto w-full overflow-visible"
             style={{
-              width: '100%',
-              justifyContent: 'flex-end',
+              maxWidth: 'calc(1440px * (100vw / 1440px))',
+              paddingLeft: 'calc(104px * (100vw / 1440px))',
+              paddingRight: 'calc(104px * (100vw / 1440px))',
+              minHeight: 'calc(820px * (100vh / 820px))',
+              height: 'auto',
+              paddingTop: 'calc(188px * (100vh / 820px))',
+              paddingBottom: 'calc(100px * (100vh / 820px))',
             }}
           >
-            <div 
-              className="hidden lg:block lg:sticky"
-              style={{
-                top: 'calc(140px * (100vw / 1440px))',
-                width: 'calc(534px * (100vw / 1440px))',
-                maxWidth: 'calc(534px * (100vw / 1440px))',
-                flexShrink: 0,
-              }}
-            >
-              <div
-                ref={stickyRef}
-                className={`relative overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out aspect-[534/601] ${
-                  imageVisible ? "opacity-100" : "opacity-0"
-                }`}
-                style={{
-                  width: '100%',
-                }}
-              >
-                <Image
-                  src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
-                  alt="Logo Stile trên mặt đá"
-                  fill
-                  className="object-contain"
-                  sizes="534px"
-                />
-              </div>
-            </div>
-            <div className="block w-full max-w-none lg:hidden mt-10">
-              <div className="relative left-1/2 w-screen -translate-x-1/2 transform aspect-[534/601] overflow-hidden max-lg:rounded-none">
-                <Image
-                  src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
-                  alt="Logo Stile trên mặt đá"
-                  fill
-                  className="object-cover"
-                  sizes="480px"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tablet: 980px - 1439px - Scale từ desktop 1440px */}
-        {isTablet && (
-          <div 
-            className="mx-auto grid w-full items-center"
-            style={{
-              display: 'grid',
-              width: '100%',
-              maxWidth: '100%',
-              gridTemplateColumns: `minmax(0, ${(640 / 1440) * 100}%) minmax(0, 1fr)`,
-              gap: `${(80 / 1440) * 100}vw`,
-              paddingLeft: `${(104 / 1440) * 100}vw`,
-              paddingRight: `${(104 / 1440) * 100}vw`,
-              boxSizing: 'border-box',
-            }}
-          >
+            {/* Left side - Text content */}
             <div
               ref={textRef}
-              className="flex flex-col transition-transform duration-300 ease-out will-change-transform text-left"
+              className="absolute left-0 flex flex-col text-left"
               style={{
-                gap: `${(24 / 1440) * 100}vw`,
-                width: '100%',
-                maxWidth: '100%',
+                left: 'calc(104px * (100vw / 1440px))',
+                top: 'calc(188px * (100vh / 820px))',
+                width: 'calc(684px * (100vw / 1440px))',
+                zIndex: 2,
+              }}
+            >
+              {/* Heading - 3 lines */}
+              <h2 className="font-heading uppercase text-[#000000] leading-none" style={{
+                fontSize: 'calc(64px * (100vw / 1440px))',
+                lineHeight: 'calc(60px * (100vw / 1440px))',
+                letterSpacing: '0.02em',
+              }}>
+                <span style={{ display: 'block' }}>ĐỊNH HÌNH</span>
+                <span style={{ display: 'block', marginTop: 'calc(15px * (100vh / 820px))' }}>CHUẨN MỰC MỚI</span>
+                <span style={{ display: 'block', marginTop: 'calc(15px * (100vh / 820px))' }}>CHO BỀ MẶT ỐP LÁT</span>
+              </h2>
+
+              {/* Paragraphs */}
+              <div 
+                className="font-manrope text-justify text-[#000000]"
+                style={{
+                  marginTop: 'calc(141px * (100vh / 820px))',
+                  fontSize: 'calc(16px * (100vw / 1440px))',
+                  lineHeight: 'calc(25px * (100vw / 1440px))',
+                }}
+              >
+                <p className="mb-0">
+                  STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát triển những bề mặt đột phá về kích cỡ, thiết kế và công nghệ.
+                </p>
+                <p className="mb-0">&nbsp;</p>
+                <p>
+                  Kết hợp kinh nghiệm dày dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
+                </p>
+              </div>
+
+              {/* Button */}
+              <div 
+                className="flex justify-start"
+                style={{
+                  marginTop: 'calc(40px * (100vh / 820px))',
+                  }}
+                >
+                  <PillButton label="Khám phá ngay" />
+              </div>
+            </div>
+
+            {/* Right side - SVG Logo */}
+            <div 
+              className="absolute top-0 bottom-0 overflow-visible"
+              style={{
+                right: 0,
+                top: 0,
+                width: 'calc((3980px * (100vw * (1 / 1440px))) * 0.35)',
+                height: 'calc((2450px * (100vh * (1 / 820px))) * 0.35)',
+                maxWidth: 'calc(150px + 100vw)',
+                zIndex: 0,
+                }}
+              >
+                <div
+                  ref={svgRef}
+                className={`absolute inset-0 ${svgAnimated ? 'svg-animate' : ''}`}
+                  style={{
+                    opacity: svgAnimated ? 1 : 0,
+                    transition: 'opacity 0.5s ease',
+                  zIndex: 0,
+                  }}
+                >
+                  <img
+                    src="/VỀ CHÚNG TÔI/Corona_Camera002._Interactive LightMix00100 1.svg"
+                    alt="STILE Logo"
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                    style={{
+                    objectPosition: 'right center',
+                    }}
+                  />
+              </div>
+            </div>
+
+            {/* Rotated "VỀ CHÚNG TÔI" text overlay */}
+            <div 
+              className="absolute flex items-center justify-center pointer-events-none"
+              style={{
+                left: 'calc(958px * (100vw / 1440px))',
+                top: 'calc(240.17px * (100vh / 820px))',
+                width: 'calc(170.413px * (100vw / 1440px))',
+                height: 'calc(170.413px * (100vh / 820px))',
+                zIndex: 3,
+              }}
+            >
+              {/* <p 
+                className="font-alt font-medium text-[#000000] whitespace-nowrap"
+                style={{
+                  fontSize: 'calc(20px * (100vw / 1440px))',
+                  lineHeight: 'calc(48px * (100vh / 820px))',
+                  letterSpacing: 'calc(4.4px * (100vw / 1440px))',
+                  transform: 'rotate(315deg)',
+                }}
+              >
+                VỀ CHÚNG TÔI
+              </p> */}
+            </div>
+          </div>
+        )}
+
+        {/* Mobile: < 980px - Layout dọc */}
+        {isMobile && (
+          <div className="flex flex-col gap-10 px-6 pt-16 pb-16">
+            <div
+              ref={textRef}
+              className="flex flex-col text-left"
+              style={{
+                gap: '24px',
               }}
             >
               <span 
                 className="font-alt font-medium tracking-[0.05em]"
                 style={{
-                  fontSize: `${(20 / 1440) * 100}vw`,
+                  fontSize: '14px',
                   letterSpacing: '0.05em',
                 }}
               >
                 VỀ CHÚNG TÔI
               </span>
-              <h2 
-                className="font-heading tracking-[0.02em] uppercase text-[#000000]"
-                style={{
-                  fontSize: `${(48 / 1440) * 100}vw`,
-                  lineHeight: `${(60 / 1440) * 100}vw`,
-                  letterSpacing: '0.02em',
-                }}
-              >
-                ĐỊNH HÌNH CHUẨN MỰC MỚI CHO BỀ MẶT ỐP LÁT
+              <h2 className="font-heading tracking-[0.02em] uppercase text-[#000000]">
+                <span style={{ 
+                  fontSize: '18px', 
+                  lineHeight: '1.2', 
+                  display: 'block',
+                }}>
+                  ĐỊNH HÌNH CHUẨN MỰC MỚI CHO
+                </span>
+                <span style={{ 
+                  fontSize: 'clamp(36px, calc(36px + (100vw - 480px) * 0.0375), 42px)', 
+                  lineHeight: '1.2', 
+                  display: 'block',
+                }}>
+                  BỀ MẶT ỐP LÁT
+                </span>
               </h2>
               <p 
-                className="font-montserrat text-justify text-[#1a1a1a]"
+                className="font-manrope text-justify text-[#000000]"
                 style={{
-                  fontSize: `${(14 / 1440) * 100}vw`,
-                  lineHeight: `${(25 / 1440) * 100}vw`,
+                  fontSize: 'clamp(16px, calc(16px + (100vw - 480px) * 0.0125), 18px)',
+                  lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
                 }}
               >
                 STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát
-                triển những bề mặt đột phá về kích cỡ , thiết kế và công nghệ. Kết hợp kinh nghiệm dày
+                triển những bề mặt đột phá về kích cỡ, thiết kế và công nghệ. Kết hợp kinh nghiệm dày
                 dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các
                 nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân
                 thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
               </p>
-              <div 
-                className="pt-2 flex justify-start"
-                style={{
-                  paddingTop: `${(8 / 1440) * 100}vw`,
-                }}
-              >
+              <div className="pt-2 flex justify-start">
                 <PillButton label="Khám phá ngay" />
               </div>
             </div>
-            <div 
-              className="relative flex justify-end"
+            <div className="relative w-full aspect-[534/601] overflow-hidden">
+              <div
+                ref={svgRef}
+                className={`relative w-full h-full ${svgAnimated ? 'svg-animate' : ''}`}
+                style={{
+                  opacity: svgAnimated ? 1 : 0,
+                  transition: 'opacity 0.5s ease',
+                }}
+              >
+                <img
+                  src="/VỀ CHÚNG TÔI/Corona_Camera002._Interactive LightMix00100 1.svg"
+                  alt="STILE Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tablet: 980px - 1439px - Scale từ desktop 1440px */}
+        {isTablet && (
+          <div 
+            className="relative mx-auto w-full overflow-visible"
+            style={{
+              paddingLeft: `${(104 / 1440) * 100}vw`,
+              paddingRight: `${(104 / 1440) * 100}vw`,
+              minHeight: `${(820 / 820) * 100}vh`,
+              height: 'auto',
+              paddingTop: `${(188 / 820) * 100}vh`,
+              paddingBottom: `${(100 / 820) * 100}vh`,
+            }}
+          >
+            <div
+              ref={textRef}
+              className="absolute left-0 flex flex-col text-left"
               style={{
-                width: '100%',
-                maxWidth: '100%',
+                left: `${(104 / 1440) * 100}vw`,
+                top: `${(188 / 820) * 100}vh`,
+                width: `${(684 / 1440) * 100}vw`,
               }}
             >
+              <h2 className="font-heading uppercase text-[#000000] leading-none" style={{
+                fontSize: `${(64 / 1440) * 100}vw`,
+                lineHeight: `${(60 / 1440) * 100}vw`,
+                letterSpacing: '0.02em',
+              }}>
+                <span style={{ display: 'block' }}>ĐỊNH HÌNH</span>
+                <span style={{ display: 'block', marginTop: `${(15 / 820) * 100}vh` }}>CHUẨN MỰC MỚI</span>
+                <span style={{ display: 'block', marginTop: `${(15 / 820) * 100}vh` }}>CHO BỀ MẶT ỐP LÁT</span>
+              </h2>
+
               <div 
-                className="sticky"
+                className="font-manrope text-justify text-[#000000]"
                 style={{
-                  top: `${(140 / 1440) * 100}vw`,
-                  width: `${(534 / 1440) * 100}vw`,
-                  maxWidth: `${(534 / 1440) * 100}vw`,
-                  minWidth: `${(534 / 1440) * 100}vw`,
-                  flexShrink: 0,
+                  marginTop: `${(141 / 820) * 100}vh`,
+                  fontSize: `${(16 / 1440) * 100}vw`,
+                  lineHeight: `${(25 / 1440) * 100}vw`,
+                }}
+              >
+                <p className="mb-0">
+                  STILE là một trong những nhà cung cấp giải pháp ốp lát hàng đầu Việt Nam tiên phong phát triển những bề mặt đột phá về kích cỡ, thiết kế và công nghệ.
+                </p>
+                <p className="mb-0">&nbsp;</p>
+                <p>
+                  Kết hợp kinh nghiệm dày dặn cùng sự am hiểu sâu sắc về lĩnh vực sản xuất gạch, chúng tôi lựa chọn hợp tác cùng các nhà sản xuất sỡ hữu nguồn nguyên liệu chất lượng cao, quy trình cấp tiến và công nghệ thân thiện hàng đầu thế giới (Ý, Tây Ban Nha, Ấn Độ,...).
+                </p>
+              </div>
+
+              <div 
+                className="flex justify-start"
+                style={{
+                  marginTop: `${(40 / 820) * 100}vh`,
+                  }}
+                >
+                  <PillButton label="Khám phá ngay" />
+              </div>
+            </div>
+
+            <div 
+              className="absolute top-0 bottom-0 overflow-visible"
+              style={{
+                right: 0,
+                top: 0,
+                width: 'calc((3980px * (100vw * (1 / 1440px))) * 0.35)',
+                height: 'calc((3250px * (100vh * (1 / 820px))) * 0.35)',
+                maxWidth: 'calc(150px + 100vw)',
+                zIndex: 0,
                 }}
               >
                 <div
-                  ref={stickyRef}
-                  className="relative overflow-hidden rounded-lg shadow-lg transition-opacity duration-600 ease-out"
+                  ref={svgRef}
+                className={`absolute inset-0 ${svgAnimated ? 'svg-animate' : ''}`}
                   style={{
-                    width: '100%',
-                    aspectRatio: '534 / 601',
-                    opacity: imageVisible ? 1 : 0,
+                    opacity: svgAnimated ? 1 : 0,
+                    transition: 'opacity 0.5s ease',
                   }}
                 >
-                  <Image
-                    src="/VỀ CHÚNG TÔI/Gemini_Generated_Image_owhtrlowhtrlowht 1.png"
-                    alt="Logo Stile trên mặt đá"
-                    fill
-                    className="object-contain"
-                    sizes="534px"
+                  <img
+                    src="/VỀ CHÚNG TÔI/Corona_Camera002._Interactive LightMix00100 1.svg"
+                    alt="STILE Logo"
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                    style={{
+                    objectPosition: 'right center',
+                    }}
                   />
-                </div>
               </div>
+            </div>
+
+            <div 
+              className="absolute flex items-center justify-center pointer-events-none"
+              style={{
+                left: `${(958 / 1440) * 100}vw`,
+                top: `${(240.17 / 820) * 100}vh`,
+                width: `${(170.413 / 1440) * 100}vw`,
+                height: `${(170.413 / 820) * 100}vh`,
+              }}
+            >
+              <p 
+                className="font-alt font-medium text-[#000000] whitespace-nowrap"
+                style={{
+                  fontSize: `${(20 / 1440) * 100}vw`,
+                  lineHeight: `${(48 / 820) * 100}vh`,
+                  letterSpacing: `${(4.4 / 1440) * 100}vw`,
+                  transform: 'rotate(315deg)',
+                }}
+              >
+                VỀ CHÚNG TÔI
+              </p>
             </div>
           </div>
         )}
@@ -3428,182 +3535,516 @@ function About() {
 }
 
 function Gallery() {
-  const [activePair, setActivePair] = useState(0);
-
-  const imagePairs = [
-    [
-      { src: "/ARTILE GALLERY/image4.png", alt: "Artile Gallery 4" },
-      { src: "/ARTILE GALLERY/image2.png", alt: "Artile Gallery 2" },
-    ],
-    [
-      { src: "/ARTILE GALLERY/image1.png", alt: "Artile Gallery 1" },
-      { src: "/ARTILE GALLERY/imag5.png", alt: "Artile Gallery 5" },
-    ],
-  ];
+  const [isLoaded, setIsLoaded] = useState(false);
+  const titleRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const lastMousePosRef = useRef<{ x: number; y: number } | null>(null);
+  const randomRevealedRef = useRef<Array<{ x: number; y: number; radius: number }>>([]);
+  const maskInitializedRef = useRef(false);
+  const spreadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSpreadingRef = useRef(false);
+  const isFullyRevealedRef = useRef(false);
+  
+  // Figma design: 1440x1130 aspect ratio
+  // Height should be responsive based on width: height = width / 1.274
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActivePair((prev) => (prev + 1) % imagePairs.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    // Trigger loading animation after component mounts
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
+  // Initialize random reveal spots
+  useEffect(() => {
+    if (!isLoaded || !canvasRef.current) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Create random reveal spots (top, middle, bottom areas)
+    const randomSpots: Array<{ x: number; y: number; radius: number }> = [];
+    const numSpots = 8;
+    
+    for (let i = 0; i < numSpots; i++) {
+      const area = Math.random();
+      let y;
+      if (area < 0.33) {
+        y = Math.random() * (canvas.height * 0.3);
+      } else if (area < 0.66) {
+        y = canvas.height * 0.3 + Math.random() * (canvas.height * 0.4);
+      } else {
+        y = canvas.height * 0.7 + Math.random() * (canvas.height * 0.3);
+      }
+      
+      randomSpots.push({
+        x: Math.random() * canvas.width,
+        y: y,
+        radius: 60 + Math.random() * 80,
+      });
+    }
+    
+    randomRevealedRef.current = randomSpots;
+  }, [isLoaded]);
+
+  // Watercolor brush reveal effect
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const section = sectionRef.current;
+    if (!canvas || !section || typeof window === 'undefined' || window.innerWidth < 1024) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    // Set canvas size
+    const updateCanvasSize = () => {
+      const rect = section.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      maskInitializedRef.current = false;
+      // Redraw mask when resize
+      initializeMask();
+    };
+    
+    // Initialize mask with background and random spots
+    const initializeMask = () => {
+      if (!ctx || maskInitializedRef.current) return;
+      
+      // Fill with background color
+      ctx.fillStyle = '#E2DACF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Use composite to erase revealed areas
+      ctx.globalCompositeOperation = 'destination-out';
+      
+      // Draw random revealed spots
+      randomRevealedRef.current.forEach(spot => {
+        const gradient = ctx.createRadialGradient(
+          spot.x, spot.y, 0,
+          spot.x, spot.y, spot.radius
+        );
+        gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+        gradient.addColorStop(0.6, 'rgba(226, 218, 207, 0.8)');
+        gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(spot.x, spot.y, spot.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      ctx.globalCompositeOperation = 'source-over';
+      maskInitializedRef.current = true;
+    };
+    
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    // Initial draw
+    if (isLoaded && !maskInitializedRef.current) {
+      setTimeout(() => {
+        initializeMask();
+      }, 200);
+    }
+
+    let lastMoveTime = Date.now();
+    let movementSpeed = 0;
+
+    // Function to spread reveal from existing areas to full canvas
+    const startSpreadAnimation = () => {
+      if (isSpreadingRef.current || !ctx || isFullyRevealedRef.current) return;
+      isSpreadingRef.current = true;
+      
+      const startTime = Date.now();
+      const duration = 4000; // 4 seconds to spread (22% slower)
+      
+      const animateSpread = () => {
+        if (!ctx) return;
+        
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth spread
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        
+        // Redraw mask with spreading effect
+        ctx.fillStyle = '#E2DACF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.globalCompositeOperation = 'destination-out';
+        
+        // Calculate max spread radius
+        const maxRadius = Math.max(canvas.width, canvas.height) * 1.2;
+        
+        // Spread from random spots
+        randomRevealedRef.current.forEach(spot => {
+          const expandedRadius = spot.radius + (maxRadius - spot.radius) * easeProgress;
+          const gradient = ctx.createRadialGradient(
+            spot.x, spot.y, 0,
+            spot.x, spot.y, expandedRadius
+          );
+          gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+          gradient.addColorStop(0.5, 'rgba(226, 218, 207, 0.8)');
+          gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(spot.x, spot.y, expandedRadius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        
+        // Additional spread from center to cover all areas
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const spreadRadius = maxRadius * easeProgress;
+        
+        const spreadGradient = ctx.createRadialGradient(
+          centerX, centerY, 0,
+          centerX, centerY, spreadRadius
+        );
+        spreadGradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+        spreadGradient.addColorStop(0.4, 'rgba(226, 218, 207, 0.9)');
+        spreadGradient.addColorStop(0.7, 'rgba(226, 218, 207, 0.5)');
+        spreadGradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        
+        ctx.fillStyle = spreadGradient;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, spreadRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.globalCompositeOperation = 'source-over';
+        
+        if (progress < 1) {
+          requestAnimationFrame(animateSpread);
+        } else {
+          // Final state - fully revealed
+          ctx.fillStyle = '#E2DACF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.fillStyle = 'rgba(226, 218, 207, 1)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'source-over';
+          isSpreadingRef.current = false;
+          isFullyRevealedRef.current = true;
+        }
+      };
+      
+      animateSpread();
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!section || !ctx || !maskInitializedRef.current) return;
+      const rect = section.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      if (x < 0 || x > rect.width || y < 0 || y > rect.height) return;
+
+      const now = Date.now();
+      const timeDelta = now - lastMoveTime;
+      
+      // Clear spread timeout if mouse is moving
+      if (spreadTimeoutRef.current) {
+        clearTimeout(spreadTimeoutRef.current);
+        spreadTimeoutRef.current = null;
+      }
+      
+      // Calculate movement speed
+      if (lastMousePosRef.current) {
+        const dx = x - lastMousePosRef.current.x;
+        const dy = y - lastMousePosRef.current.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        movementSpeed = distance / Math.max(timeDelta, 1) * 1000; // pixels per second
+      }
+      
+      lastMoveTime = now;
+
+      // Only add noise/randomness when moving fast (speed > 50 px/s)
+      const isMovingFast = movementSpeed > 50;
+      
+      // Draw brush strokes with varying widths (31-56px) - direct reveal (kept forever)
+      ctx.globalCompositeOperation = 'destination-out';
+      
+      // Multiple overlapping brush strokes for watercolor effect
+      for (let i = 0; i < 3; i++) {
+        const offsetX = isMovingFast ? (Math.random() - 0.5) * 8 : 0;
+        const offsetY = isMovingFast ? (Math.random() - 0.5) * 8 : 0;
+        const brushWidth = 31 + Math.random() * 25; // 31-56px (25% larger)
+        const brushRadius = brushWidth / 2;
+        
+        // Create soft brush gradient
+        const gradient = ctx.createRadialGradient(
+          x + offsetX, y + offsetY, 0,
+          x + offsetX, y + offsetY, brushRadius
+        );
+        gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+        gradient.addColorStop(0.5, 'rgba(226, 218, 207, 0.8)');
+        gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        
+        // Draw brush circle
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x + offsetX, y + offsetY, brushRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Connect to previous point with stroke (only first layer to avoid overdrawing)
+        if (lastMousePosRef.current && i === 0) {
+          const prevX = lastMousePosRef.current.x;
+          const prevY = lastMousePosRef.current.y;
+          
+          // Create gradient along the stroke
+          const strokeGradient = ctx.createLinearGradient(prevX, prevY, x, y);
+          strokeGradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+          strokeGradient.addColorStop(1, 'rgba(226, 218, 207, 1)');
+          
+          ctx.strokeStyle = strokeGradient;
+          ctx.lineWidth = brushWidth;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          ctx.beginPath();
+          ctx.moveTo(prevX, prevY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+        }
+      }
+      
+      ctx.globalCompositeOperation = 'source-over';
+      lastMousePosRef.current = { x, y };
+      
+      // Set timeout to start spread animation after 1.5 seconds of no movement (only if not fully revealed)
+      if (!isFullyRevealedRef.current) {
+        if (spreadTimeoutRef.current) {
+          clearTimeout(spreadTimeoutRef.current);
+        }
+        spreadTimeoutRef.current = setTimeout(() => {
+          if (!isSpreadingRef.current && !isFullyRevealedRef.current) {
+            startSpreadAnimation();
+          }
+        }, 500);
+      }
+    };
+
+    const handleMouseEnter = () => {
+      if (!maskInitializedRef.current) {
+        initializeMask();
+      }
+    };
+
+    const handleMouseLeave = () => {
+      lastMousePosRef.current = null;
+      movementSpeed = 0;
+      
+      // Start spread animation after 1.5 seconds (only if not fully revealed)
+      if (!isFullyRevealedRef.current) {
+        if (spreadTimeoutRef.current) {
+          clearTimeout(spreadTimeoutRef.current);
+        }
+        spreadTimeoutRef.current = setTimeout(() => {
+          if (!isSpreadingRef.current && !isFullyRevealedRef.current) {
+            startSpreadAnimation();
+          }
+        }, 500);
+      }
+    };
+
+    section.addEventListener('mousemove', handleMouseMove);
+    section.addEventListener('mouseenter', handleMouseEnter);
+    section.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      window.removeEventListener('resize', updateCanvasSize);
+      section.removeEventListener('mousemove', handleMouseMove);
+      section.removeEventListener('mouseenter', handleMouseEnter);
+      section.removeEventListener('mouseleave', handleMouseLeave);
+      if (spreadTimeoutRef.current) {
+        clearTimeout(spreadTimeoutRef.current);
+      }
+    };
+  }, [isLoaded]);
+
+
   return (
-    <section id="gallery" className="fullpage-section relative w-full overflow-hidden bg-[#282828] text-white">
-      <div className="hidden lg:block relative h-full w-full">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <Image
-            src="/ARTILE GALLERY/image.png"
-            alt="Artile Gallery Background"
-            fill
-            priority
-            className="object-cover"
+    <section ref={sectionRef} id="gallery" className="fullpage-section relative w-full bg-[#E3DCD1] text-black" style={{ overflow: 'visible', height: 'auto', minHeight: 'calc(1130 / 1440 * 100vw)', zIndex: 0 }}>
+      {/* Desktop Version */}
+      <div ref={innerRef} className="hidden lg:block relative w-full overflow-visible" style={{ height: 'calc(1130 / 1440 * 100vw)', minHeight: 'calc(1130 / 1440 * 100vw)', position: 'relative' }}>
+        {/* Watercolor Background SVG - Figma: left-[-1px] top-[18px] w-[1442px] h-[956px] */}
+        <div 
+          className="absolute overflow-hidden pointer-events-none"
+          style={{
+            left: 'calc(-1px * (100vw / 1440px))',
+            top: 'calc(18px * (100vw / 1440px))',
+            width: 'calc(1442px * (100vw / 1440px))',
+            height: 'calc(956px * (100vw / 1440px))',
+          }}
+        >
+          <div className="absolute inset-0" style={{ opacity: isLoaded ? 1 : 0 }}>
+            <img
+              ref={imageRef}
+              src="/ARTILE GALLERY/artile gallery water color beige trans 1.svg"
+              alt="Artile Gallery Watercolor Background"
+              className="absolute h-[98.73%] left-0 max-w-none top-[1.27%] w-full"
+              style={{ objectFit: 'cover' }}
+              onLoad={() => setIsLoaded(true)}
+            />
+          </div>
+          {/* Reveal mask canvas - Desktop only */}
+          <canvas
+            ref={canvasRef}
+            className="hidden lg:block absolute inset-0 pointer-events-auto z-20"
+            style={{ mixBlendMode: 'normal' }}
           />
         </div>
 
-        {/* Gradient Overlay - từ phải sang trái (chéo) */}
-        <div 
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to left, rgba(0, 0, 0, 3) 0%, rgba(0, 0, 0, 0) 100%)',
-          }}
-        />
-
-        {/* Image 1 - Top/Left */}
+        {/* Title "ARTILE GALLERY" - Figma: left-[calc(50%+627px)] top-[132px] with transform */}
         <div
-          className="absolute z-20 transition-opacity duration-700"
+          ref={titleRef}
+          className="absolute z-30 text-right"
           style={{
-            left: 'calc(330px * (100vw / 1470px))',
-            top: '42%',
-            height: 'calc(400px * (100vw / 1470px))',
-            transform: 'translateY(-50%) rotate(12deg)',
+            left: 'calc(50% + 627px * (100vw / 1440px))',
+            top: 'calc(132px * (100vw / 1440px))',
+            transform: 'translateX(-100%) translateY(-50%)',
           }}
         >
-          <div 
-            className="relative h-full overflow-hidden shadow-2xl" 
+          <h2 
+            className="font-heading uppercase flex flex-col justify-center"
             style={{ 
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-              width: 'auto',
+              fontSize: 'calc(110px * (100vw / 1440px))',
+              lineHeight: 'calc(94px * (100vw / 1440px))',
+              letterSpacing: 'calc(2.2px * (100vw / 1440px))',
+              background: 'linear-gradient(180deg, #8B7355 0%, #C4A574 49.31%, #D4B896 100%)',
+              backgroundImage: 'url(/ARTILE GALLERY/image.png), linear-gradient(180deg, #8B7355 0%, #C4A574 49.31%, #D4B896 100%)',
+              backgroundSize: 'cover, cover',
+              backgroundPosition: '49.31% 1.87%, center',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
             }}
           >
-            <Image
-              src={imagePairs[activePair][0].src}
-              alt={imagePairs[activePair][0].alt}
-              width={400}
-              height={400}
-              className="h-full w-auto object-contain"
-              sizes="400px"
-            />
-          </div>
+            <p className="mb-0">ARTILE</p>
+            <p>GALLERY</p>
+          </h2>
         </div>
 
-        {/* Image 2 - Bottom/Left */}
-        <div
-          className="absolute z-[5] transition-opacity duration-700"
+        {/* Tagline - Figma: right-[92px] top-[237px] */}
+        <p 
+          className="absolute z-20 font-montserrat font-normal text-right text-black"
           style={{
-            left: 'calc(80px * (100vw / 1470px))',
-            top: '70%',
-            height: 'calc(400px * (100vw / 1470px))',
-            transform: 'translateY(-50%) rotate(0deg)',
+            right: 'calc(92px * (100vw / 1440px))',
+            top: 'calc(237px * (100vw / 1440px))',
+            fontSize: 'calc(14px * (100vw / 1440px))',
+            lineHeight: 'calc(25px * (100vw / 1440px))',
+            letterSpacing: 'calc(3.22px * (100vw / 1440px))',
           }}
         >
-          <div 
-            className="relative h-full overflow-hidden shadow-2xl" 
-            style={{ 
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-              width: 'auto',
-            }}
-          >
-            <Image
-              src={imagePairs[activePair][1].src}
-              alt={imagePairs[activePair][1].alt}
-              width={400}
-              height={400}
-              className="h-full w-auto object-contain"
-              sizes="400px"
-            />
-          </div>
-        </div>
+          "Nơi Không Gian kể câu chuyện về Nghệ Thuật"
+        </p>
 
-        {/* Content - Right Side */}
+        {/* Descriptive Text - Figma: left-[calc(50%+1.5px)] top-[836px] w-[1231px] */}
         <div 
-          className="absolute top-1/2 z-30"
-          style={{
-            right: 'calc(100px * (100vw / 1470px))',
-            maxWidth: 'calc(500px * (100vw / 1470px))',
-            paddingRight: 'calc(32px * (100vw / 1470px))',
-          }}
-        >
-          <div 
+          className="absolute z-20 font-montserrat font-normal text-center text-black"
             style={{
-              gap: 'calc(24px * (100vw / 1470px))',
-            }}
-            className="flex flex-col text-left"
-          >
-            <h2 
-              className="font-heading uppercase text-white"
+            left: 'calc(50% + 1.5px * (100vw / 1440px))',
+            top: 'calc(836px * (100vw / 1440px))',
+            transform: 'translateX(-50%)',
+            width: 'calc(1231px * (100vw / 1440px))',
+            maxWidth: '85vw',
+            fontSize: 'calc(14px * (100vw / 1440px))',
+            lineHeight: 'calc(25px * (100vw / 1440px))',
+          }}
+        >
+          <p className="mb-0">
+            "Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.
+          </p>
+          <p className="mb-0">&nbsp;</p>
+          <p className="mb-0">
+            Ở STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."
+          </p>
+          <p>&nbsp;</p>
+        </div>
+
+        {/* Button "Khám phá ngay" - Figma: left-[calc(50%+1px)] top-[968px] */}
+        <div 
+          className="absolute z-20 left-1/2"
               style={{
-                fontSize: 'calc(64px * (100vw / 1470px))',
-                lineHeight: 'calc(64px * (100vw / 1470px))',
-                letterSpacing: '0.05em',
+            top: 'calc(968px * (100vw / 1440px))',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <PillButton label="Khám phá ngay" theme="light" />
+        </div>
+      </div>
+
+      {/* Mobile Version */}
+      <div className="relative w-full lg:hidden" style={{ aspectRatio: '1440 / 1130', minHeight: '70vh' }}>
+        {/* Watercolor Background SVG */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className={`absolute inset-0 ${isLoaded ? 'watercolor-loading' : ''}`} style={{ opacity: isLoaded ? 1 : 0 }}>
+            <img
+              src="/ARTILE GALLERY/artile gallery water color beige trans 1.svg"
+              alt="Artile Gallery Watercolor Background"
+              className="absolute h-full w-full object-cover"
+              onLoad={() => setIsLoaded(true)}
+            />
+          </div>
+        </div>
+        
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-full px-6 py-20">
+          <div className="space-y-6 text-center max-w-[500px]">
+            {/* Title */}
+            <h2 
+              className="font-heading uppercase"
+              style={{
+                fontSize: 'clamp(40px, 10vw, 72px)',
+                lineHeight: 'clamp(50px, 12vw, 70px)',
+                letterSpacing: 'clamp(2px, 0.5vw, 3px)',
+                background: 'linear-gradient(180deg, #8B7355 0%, #C4A574 49.31%, #D4B896 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
             >
               ARTILE<br />GALLERY
             </h2>
+            
+            {/* Tagline */}
             <p 
-              className="font-montserrat text-gray-300 text-justify"
+              className="font-montserrat font-normal text-black"
               style={{
-                fontSize: 'calc(16px * (100vw / 1470px))',
-                lineHeight: 'calc(28px * (100vw / 1470px))',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: 'clamp(20px, 4.5vw, 25px)',
+                letterSpacing: 'clamp(2px, 0.7vw, 3px)',
               }}
             >
-              Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
+              "Nơi Không Gian kể câu chuyện về Nghệ Thuật"
             </p>
-            <div style={{ paddingTop: 'calc(8px * (100vw / 1470px))' }}>
-              <PillButton label="Khám phá ngay" theme="dark" />
+            
+            {/* Descriptive Text */}
+            <div 
+              className="font-montserrat font-normal text-center space-y-3 text-black"
+              style={{
+                fontSize: 'clamp(13px, 3.5vw, 14px)',
+                lineHeight: 'clamp(22px, 5vw, 25px)',
+              }}
+            >
+              <p>
+                "Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.
+              </p>
+              <p>
+                Ở STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."
+              </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Version - Simple background layout */}
-      <div className="relative w-full lg:hidden min-h-screen">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <Image
-            src="/ARTILE GALLERY/image copy.png"
-            alt="Artile Gallery Background"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-        
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center min-h-screen px-6" style={{ paddingTop: '160px' }}>
-          <div className="space-y-6 text-center max-w-[500px]">
-            <h2 
-              className="font-heading uppercase text-white"
-              style={{
-                fontSize: 'clamp(35px, 8vw, 72px)',
-                lineHeight: 'clamp(58px, 9vw, 70px)',
-                letterSpacing: 'clamp(2.4px, 0.4vw, 3.6px)',
-              }}
-            >
-              ARTILE GALLERY
-            </h2>
-            <p 
-              className="font-montserrat text-white text-center"
-              style={{
-                fontSize: 'clamp(14px, calc(14px + (100vw - 480px) * 0.0125), 18px)',
-                lineHeight: 'clamp(24px, calc(24px + (100vw - 480px) * 0.025), 28px)',
-              }}
-            >
-              Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm là một tác phẩm nghệ thuật, được sắp đặt một cách có chủ đích, thể hiện cá tính và câu chuyện riêng.
-            </p>
-            <div className="pt-2 flex justify-center">
-              <PillButton label="Khám phá ngay" theme="dark" />
+            
+            {/* Button */}
+            <div className="pt-4 flex justify-center">
+              <PillButton label="Khám phá ngay" theme="light" />
             </div>
           </div>
         </div>
@@ -3617,6 +4058,7 @@ function FeaturedProducts() {
   const [isMobile, setIsMobile] = useState(false);
   const [animatingVariant, setAnimatingVariant] = useState<number | null>(null);
   const variant = featuredVariants[activeVariant];
+  const sectionRef = useRef<HTMLElement>(null);
 
   // DEBUG: Điều chỉnh vị trí header fixed trên desktop
   const DEBUG_HEADER_TOP = '120px';      // Vị trí top của header (từ trên xuống)
@@ -3639,10 +4081,12 @@ function FeaturedProducts() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
   const imageSrc = isMobile && variant.mobileImage ? variant.mobileImage : variant.image;
 
   return (
     <section
+      ref={sectionRef}
       id="featured"
       data-header-light="true"
       className="fullpage-section relative w-full overflow-hidden bg-[#f0f0f0] text-[#1a1a1a] lg:min-h-0"
