@@ -2865,9 +2865,9 @@ function Header() {
             priority
             className="h-auto transition-all duration-300"
             style={{
-              width: isMobile ? '80px' : 'calc(71.5px * (100vw / 1440px))',
+              width: isMobile ? '80px' : 'calc((100px * (100vw * (1 / 1440px))) * 0.75)',
               height: isMobile ? '80px' : 'auto',
-              objectFit: isMobile ? 'contain' : 'none',
+              objectFit: isMobile ? 'contain' : 'contain',
               // Logo đen: desktop khi pastHero, mobile khi pastHero hoặc mở menu
               // Logo trắng: desktop khi ở hero, mobile khi ở hero và chưa mở menu
               filter: isMobile 
@@ -3250,7 +3250,7 @@ function About() {
             >
               {/* Heading - 3 lines */}
               <h2 className="font-heading uppercase text-[#000000] leading-none" style={{
-                fontSize: 'calc(64px * (100vw / 1440px))',
+                fontSize: 'calc(58px * (100vw * (1 / 1440px)))',
                 lineHeight: 'calc(60px * (100vw / 1440px))',
                 letterSpacing: '0.02em',
               }}>
@@ -3295,7 +3295,7 @@ function About() {
                 right: 0,
                 top: 0,
                 width: 'calc((3980px * (100vw * (1 / 1440px))) * 0.35)',
-                height: 'calc((2450px * (100vh * (1 / 820px))) * 0.35)',
+                height: 'calc((3050px * (100vh * (1 / 820px))) * 0.35)',
                 maxWidth: 'calc(150px + 100vw)',
                 zIndex: 0,
                 }}
@@ -3767,29 +3767,38 @@ function Gallery() {
       // Only add noise/randomness when moving fast (speed > 50 px/s)
       const isMovingFast = movementSpeed > 50;
       
-      // Draw brush strokes with varying widths (31-56px) - direct reveal (kept forever)
+      // Draw brush strokes with varying widths (62-112px) - double size - direct reveal (kept forever)
       ctx.globalCompositeOperation = 'destination-out';
       
       // Multiple overlapping brush strokes for watercolor effect
       for (let i = 0; i < 3; i++) {
-        const offsetX = isMovingFast ? (Math.random() - 0.5) * 8 : 0;
-        const offsetY = isMovingFast ? (Math.random() - 0.5) * 8 : 0;
-        const brushWidth = 31 + Math.random() * 25; // 31-56px (25% larger)
+        const offsetX = isMovingFast ? (Math.random() - 0.5) * 16 : 0; // Increased offset for larger brush
+        const offsetY = isMovingFast ? (Math.random() - 0.5) * 16 : 0;
+        const brushWidth = (31 + Math.random() * 25) * 2; // 62-112px (double size)
         const brushRadius = brushWidth / 2;
+        // Extended radius for softer edge (loang ra)
+        const gradientRadius = brushRadius * 1.4;
         
-        // Create soft brush gradient
+        // Create soft brush gradient with 4 colors: #685C4E #807060 #B8A38B #E0D4C5
         const gradient = ctx.createRadialGradient(
           x + offsetX, y + offsetY, 0,
-          x + offsetX, y + offsetY, brushRadius
+          x + offsetX, y + offsetY, gradientRadius
         );
-        gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-        gradient.addColorStop(0.5, 'rgba(226, 218, 207, 0.8)');
-        gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        // Center: darkest color #685C4E
+        gradient.addColorStop(0, 'rgba(104, 92, 78, 1)');
+        // Transition to #807060
+        gradient.addColorStop(0.25, 'rgba(128, 112, 96, 0.95)');
+        // Transition to #B8A38B
+        gradient.addColorStop(0.5, 'rgba(184, 163, 139, 0.7)');
+        // Transition to #E0D4C5
+        gradient.addColorStop(0.75, 'rgba(224, 212, 197, 0.4)');
+        // Edge: fully transparent for soft bleed effect
+        gradient.addColorStop(1, 'rgba(224, 212, 197, 0)');
         
         // Draw brush circle
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(x + offsetX, y + offsetY, brushRadius, 0, Math.PI * 2);
+        ctx.arc(x + offsetX, y + offsetY, gradientRadius, 0, Math.PI * 2);
         ctx.fill();
         
         // Connect to previous point with stroke (only first layer to avoid overdrawing)
@@ -3797,10 +3806,12 @@ function Gallery() {
           const prevX = lastMousePosRef.current.x;
           const prevY = lastMousePosRef.current.y;
           
-          // Create gradient along the stroke
+          // Create gradient along the stroke with 4 colors
           const strokeGradient = ctx.createLinearGradient(prevX, prevY, x, y);
-          strokeGradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-          strokeGradient.addColorStop(1, 'rgba(226, 218, 207, 1)');
+          strokeGradient.addColorStop(0, 'rgba(104, 92, 78, 1)');
+          strokeGradient.addColorStop(0.33, 'rgba(128, 112, 96, 1)');
+          strokeGradient.addColorStop(0.66, 'rgba(184, 163, 139, 1)');
+          strokeGradient.addColorStop(1, 'rgba(224, 212, 197, 1)');
           
           ctx.strokeStyle = strokeGradient;
           ctx.lineWidth = brushWidth;
