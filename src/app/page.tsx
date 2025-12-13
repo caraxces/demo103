@@ -84,8 +84,8 @@ const featuredVariants = [
     id: "gemini-acero",
     collection: "Gemini",
     title: "Acero",
-    image: "/SẢN PHẨM NỔI BẬT/1GEMINI_ACERO.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Acero_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 1.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 1.svg",
     description:
       "The profound dialog between humans and nature translates into an interplay of glimpses and reflections, where humans and the earth mirror each other and collaborate in perfect synergy.",
     swatch: "#b68363",
@@ -94,8 +94,8 @@ const featuredVariants = [
     id: "gemini-grano",
     collection: "Gemini",
     title: "Grano",
-    image: "/SẢN PHẨM NỔI BẬT/2GEMINI_GRANO.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Grano_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 2.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 2.svg",
     description:
       "A tactile shade that blends warm minerals and muted neutrals, creating calm, grounding spaces with subtle surface movement.",
     swatch: "#a88b6a",
@@ -104,8 +104,8 @@ const featuredVariants = [
     id: "gemini-cielo",
     collection: "Gemini",
     title: "Cielo",
-    image: "/SẢN PHẨM NỔI BẬT/3GEMINI_CIELO.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Ceilo_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 3.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 3.svg",
     description:
       "Inspired by expansive skies, Cielo layers delicate veining over a soft base, ideal for serene living environments.",
     swatch: "#9aa0a8",
@@ -114,8 +114,8 @@ const featuredVariants = [
     id: "gemini-cerene",
     collection: "Gemini",
     title: "Cerene",
-    image: "/SẢN PHẨM NỔI BẬT/4GEMINI_CERENE.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Cenere_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 4.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 4.svg",
     description:
       "Cerene balances matte and gloss accents to elevate contemporary interiors with refined simplicity.",
     swatch: "#c7b4a3",
@@ -124,8 +124,8 @@ const featuredVariants = [
     id: "gemini-muschio",
     collection: "Gemini",
     title: "Muschio",
-    image: "/SẢN PHẨM NỔI BẬT/6GEMINI_MUSCHIO.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Muschio_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 5.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 5.svg",
     description:
       "Earthy greens paired with organic textures bring a biophilic sensibility to large feature surfaces.",
     swatch: "#71806a",
@@ -134,8 +134,8 @@ const featuredVariants = [
     id: "gemini-luce",
     collection: "Gemini",
     title: "Luce",
-    image: "/SẢN PHẨM NỔI BẬT/6GEMINI_LUCE.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/Luce_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 6.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 6.svg",
     description:
       "Luce captures luminous gradients, echoing the softly diffused daylight of refined residential settings.",
     swatch: "#d3c7be",
@@ -144,8 +144,8 @@ const featuredVariants = [
     id: "gemini-flora-luce",
     collection: "Gemini",
     title: "Flora Luce",
-    image: "/SẢN PHẨM NỔI BẬT/7GEMINI_FLORA LUCE.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/FLO_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 1 7.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 1 7.svg",
     description:
       "Flora Luce celebrates botanical motifs layered over a satin base, creating immersive, nature-led surfaces.",
     swatch: "#8f826d",
@@ -154,8 +154,8 @@ const featuredVariants = [
     id: "gemini-flora-pelle",
     collection: "Gemini",
     title: "Flora Pelle",
-    image: "/SẢN PHẨM NỔI BẬT/8GEMINI_FLORA PELLE.jpg",
-    mobileImage: "/SẢN PHẨM NỔI BẬT/mobile/FloraPelle_Interactive LightMix.jpg",
+    image: "/SẢN PHẨM NỔI BẬT/CAM 2 1.svg",
+    mobileImage: "/SẢN PHẨM NỔI BẬT/CAM 2 1.svg",
     description:
       "A sophisticated interplay of warm undertones and soft botanicals, tailored for hospitality statements.",
     swatch: "#b18e6d",
@@ -2806,7 +2806,7 @@ function Header() {
 
   // Logo đen chính - hiển thị cùng logic với text
   // Desktop: đen khi pastHero, trắng khi ở hero. Mobile: đen khi onLightSection, trắng khi không
-  const logoSrc = "/New STILE Logo Vector 1-16.png";
+  const logoSrc = isMobile ? "/New STILE Logo Vector 1-16.png" : "/LOGO/logo-stile.svg";
 
   const baseHeight = isMobile ? 80 : (pastHero ? 29 : 40);
   const headerHeight = isMobile ? 80 : (isHeaderHovered ? baseHeight + 6 : baseHeight);
@@ -2855,7 +2855,8 @@ function Header() {
       >
         <Link href="#hero" className="flex items-center z-10" style={{
           marginLeft: isMobile ? '20px' : 'calc(60px * (100vw / 1440px))',
-          marginTop: isMobile ? '20px' : 'calc(20px * (100vw / 1440px))',
+          marginTop: isMobile ? '20px' : '0',
+          alignSelf: isMobile ? 'flex-start' : 'center',
         }}>
           <Image
             src={logoSrc}
@@ -4093,20 +4094,48 @@ function FeaturedProducts() {
           const vImageSrc = isMobile && v.mobileImage ? v.mobileImage : v.image;
           const isActive = v.id === variant.id;
           return (
-            <Image
+            <div
               key={v.id}
+              className="absolute inset-0 transition-opacity duration-700 ease-in-out"
+              style={{
+                opacity: isActive ? 1 : 0,
+                pointerEvents: isActive ? 'auto' : 'none',
+                ...(!isMobile && {
+                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1)',
+                }),
+              }}
+            >
+              <Image
               src={vImageSrc}
               alt={v.title}
               fill
               priority={v.id === featuredVariants[0].id}
-              className="object-cover transition-opacity duration-700 ease-in-out"
+                className="object-cover"
               style={{
                 objectPosition: isMobile ? "calc(50% - 60px) center" : "center",
                 transform: isMobile ? "scale(1.6)" : undefined,
-                opacity: isActive ? 1 : 0,
-                pointerEvents: isActive ? 'auto' : 'none',
-              }}
-            />
+                }}
+              />
+              {/* Gradient overlay - Desktop only: đậm ở dưới và trên, trong suốt ở giữa */}
+              {!isMobile && (
+                <>
+                  {/* Gradient from bottom (dưới lên) - theo Figma design */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.00) 92.23%, rgba(0, 0, 0, 0.10) 96.611%, rgba(0, 0, 0, 0.50) 112.38%)',
+                    }}
+                  />
+                  {/* Gradient from top (trên xuống) - đậm hơn */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 92.23%, rgba(0, 0, 0, 0.10) 96.611%, rgba(0, 0, 0, 0.50) 112.38%)',
+                    }}
+                  />
+                </>
+              )}
+            </div>
           );
         })}
       </div>
