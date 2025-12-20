@@ -609,7 +609,7 @@ function BackgroundColorManager() {
     const container = document.getElementById(FULLPAGE_CONTAINER_ID);
     if (!container) return;
 
-    // Sections without fullwidth images (will transition to #E3DCD1)
+    // Sections without fullwidth images (will transition to #EBE3D8)
     const sectionsWithoutFullwidth = [
       '#about',
       '#applications',
@@ -618,9 +618,9 @@ function BackgroundColorManager() {
     ];
 
     // Track target color and current color for smooth animation
-    // Start with #E3DCD1 (homepage background color)
-    let targetColor = '#E3DCD1';
-    let currentColor = '#E3DCD1';
+    // Start with #EBE3D8 (homepage background color)
+    let targetColor = '#EBE3D8';
+    let currentColor = '#EBE3D8';
     let animationFrameId: number | null = null;
 
     // Convert hex to RGB
@@ -702,13 +702,13 @@ function BackgroundColorManager() {
       });
 
       // Set target color based on visibility
-      // Homepage background is always #E3DCD1
+      // Homepage background is always #EBE3D8
       if (isSectionWithoutFullwidth && maxVisibility > 0.2) {
-        // Keep #E3DCD1 when on sections without fullwidth (at least 20% visible)
-        targetColor = '#E3DCD1';
+        // Keep #EBE3D8 when on sections without fullwidth (at least 20% visible)
+        targetColor = '#EBE3D8';
       } else {
-        // Keep #E3DCD1 as default homepage background
-        targetColor = '#E3DCD1';
+        // Keep #EBE3D8 as default homepage background
+        targetColor = '#EBE3D8';
       }
 
       // Start animation if not already running
@@ -717,9 +717,9 @@ function BackgroundColorManager() {
       }
     };
 
-    // Set initial body and html background to #E3DCD1 (homepage background)
-    document.body.style.backgroundColor = '#E3DCD1';
-    document.documentElement.style.backgroundColor = '#E3DCD1';
+    // Set initial body and html background to #EBE3D8 (homepage background)
+    document.body.style.backgroundColor = '#EBE3D8';
+    document.documentElement.style.backgroundColor = '#EBE3D8';
     document.body.style.transition = 'none'; // No CSS transition, we handle it manually
 
     // Use IntersectionObserver for better performance
@@ -768,7 +768,7 @@ function BackgroundColorManager() {
 
 export default function Home() {
   return (
-    <div className="text-[#111111]" style={{ backgroundColor: '#E3DCD1' }}>
+    <div className="text-[#111111]" style={{ backgroundColor: '#EBE3D8' }}>
       <DisableZoom />
       <AnchorScrollManager />
       <SectionVisibilityManager />
@@ -1396,7 +1396,7 @@ function HeaderDropdownMenu({
         className={`fixed left-0 right-0 border-t border-b border-black transition-all duration-300 ease-out z-50 ${
           type === 'product' || type === 'service' 
             ? 'bg-[#EEEBE6]' 
-            : 'bg-[#E3DCD1]'
+            : 'bg-[#EBE3D8]'
         } ${
           type === 'product' || type === 'service'
             ? (isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none')
@@ -2072,7 +2072,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
   return (
     <div
-      className="fixed inset-0 bg-[#E3DCD1] z-50 overflow-hidden"
+      className="fixed inset-0 bg-[#EBE3D8] z-50 overflow-hidden"
       style={{ 
         zIndex: 1001,
         top: '0',
@@ -2099,7 +2099,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     >
       {/* Header section with logo and hamburger button */}
       <div 
-        className="relative mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6 bg-[#E3DCD1]"
+        className="relative mx-auto flex h-full w-full items-center justify-between px-6 max-lg:px-6 bg-[#EBE3D8]"
         style={{
           paddingLeft: '0',
           paddingRight: '20px',
@@ -2133,7 +2133,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             type="button"
             aria-label="Đóng menu"
             onClick={onClose}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#111111] text-[#111111] bg-[#E3DCD1] hover:bg-[#111111] hover:text-white transition-all duration-500"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#111111] text-[#111111] bg-[#EBE3D8] hover:bg-[#111111] hover:text-white transition-all duration-500"
             style={{ 
               zIndex: 1002,
             }}
@@ -2840,7 +2840,7 @@ function Header() {
             : `calc(54px * (100vw / 1440px) + 5px)`,
           width: '100%',
           backgroundColor: isMobile 
-            ? (isMobileMenuOpen ? '#E3DCD1' : 'transparent')
+                ? (isMobileMenuOpen ? '#EBE3D8' : 'transparent')
             : (pastHero ? '#EEEBE6' : 'transparent'),
           zIndex: -1,
         }}
@@ -2978,7 +2978,7 @@ function Header() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-500 ease-in-out ${
               isMobileMenuOpen
-                ? "border-[#111111] text-[#111111] bg-[#E3DCD1] hover:bg-[#111111] hover:text-white z-[1001]"
+                ? "border-[#111111] text-[#111111] bg-[#EBE3D8] hover:bg-[#111111] hover:text-white z-[1001]"
                 : (pastHero 
                   ? "border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
                   : "border-white text-white hover:bg-white/20")
@@ -3233,6 +3233,7 @@ function About() {
         minHeight: '100vh',
         height: 'auto',
         zIndex: 1,
+        marginBottom: '100px',
       }}
     >
       <div className="section-inner relative w-full overflow-visible" style={{ minHeight: 'calc(820px * (100vh / 820px))', height: 'auto' }}>
@@ -3678,7 +3679,7 @@ function Gallery() {
     const initializeMask = () => {
       if (!ctx || mobileMaskInitializedRef.current) return;
       
-      ctx.fillStyle = '#E2DACF';
+      ctx.fillStyle = '#EBE3D8';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       ctx.globalCompositeOperation = 'destination-out';
@@ -3688,9 +3689,9 @@ function Gallery() {
           spot.x, spot.y, 0,
           spot.x, spot.y, spot.radius
         );
-        gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-        gradient.addColorStop(0.6, 'rgba(226, 218, 207, 0.8)');
-        gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        gradient.addColorStop(0, 'rgba(235, 227, 216, 1)');
+        gradient.addColorStop(0.6, 'rgba(235, 227, 216, 0.8)');
+        gradient.addColorStop(1, 'rgba(235, 227, 216, 0)');
         
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -3728,7 +3729,7 @@ function Gallery() {
         const progress = Math.min(elapsed / duration, 1);
         const easeProgress = 1 - Math.pow(1 - progress, 3);
         
-        ctx.fillStyle = '#E2DACF';
+        ctx.fillStyle = '#EBE3D8';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         ctx.globalCompositeOperation = 'destination-out';
@@ -3740,9 +3741,9 @@ function Gallery() {
             spot.x, spot.y, 0,
             spot.x, spot.y, expandedRadius
           );
-          gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-          gradient.addColorStop(0.5, 'rgba(226, 218, 207, 0.8)');
-          gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+          gradient.addColorStop(0, 'rgba(235, 227, 216, 1)');
+          gradient.addColorStop(0.5, 'rgba(235, 227, 216, 0.8)');
+          gradient.addColorStop(1, 'rgba(235, 227, 216, 0)');
           
           ctx.fillStyle = gradient;
           ctx.beginPath();
@@ -3758,10 +3759,10 @@ function Gallery() {
           centerX, centerY, 0,
           centerX, centerY, spreadRadius
         );
-        spreadGradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-        spreadGradient.addColorStop(0.4, 'rgba(226, 218, 207, 0.9)');
-        spreadGradient.addColorStop(0.7, 'rgba(226, 218, 207, 0.5)');
-        spreadGradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        spreadGradient.addColorStop(0, 'rgba(235, 227, 216, 1)');
+        spreadGradient.addColorStop(0.4, 'rgba(235, 227, 216, 0.9)');
+        spreadGradient.addColorStop(0.7, 'rgba(235, 227, 216, 0.5)');
+        spreadGradient.addColorStop(1, 'rgba(235, 227, 216, 0)');
         
         ctx.fillStyle = spreadGradient;
         ctx.beginPath();
@@ -3773,10 +3774,10 @@ function Gallery() {
         if (progress < 1) {
           requestAnimationFrame(animateSpread);
         } else {
-          ctx.fillStyle = '#E2DACF';
+          ctx.fillStyle = '#EBE3D8';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.globalCompositeOperation = 'destination-out';
-          ctx.fillStyle = 'rgba(226, 218, 207, 1)';
+          ctx.fillStyle = 'rgba(235, 227, 216, 1)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.globalCompositeOperation = 'source-over';
           mobileIsSpreadingRef.current = false;
@@ -4021,7 +4022,7 @@ function Gallery() {
       if (!ctx || maskInitializedRef.current) return;
       
       // Fill with background color
-      ctx.fillStyle = '#E2DACF';
+      ctx.fillStyle = '#EBE3D8';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       // Use composite to erase revealed areas
@@ -4033,9 +4034,9 @@ function Gallery() {
           spot.x, spot.y, 0,
           spot.x, spot.y, spot.radius
         );
-        gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-        gradient.addColorStop(0.6, 'rgba(226, 218, 207, 0.8)');
-        gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        gradient.addColorStop(0, 'rgba(235, 227, 216, 1)');
+        gradient.addColorStop(0.6, 'rgba(235, 227, 216, 0.8)');
+        gradient.addColorStop(1, 'rgba(235, 227, 216, 0)');
         
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -4078,7 +4079,7 @@ function Gallery() {
         const easeProgress = 1 - Math.pow(1 - progress, 3);
         
         // Redraw mask with spreading effect
-        ctx.fillStyle = '#E2DACF';
+        ctx.fillStyle = '#EBE3D8';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         ctx.globalCompositeOperation = 'destination-out';
@@ -4093,9 +4094,9 @@ function Gallery() {
             spot.x, spot.y, 0,
             spot.x, spot.y, expandedRadius
           );
-          gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-          gradient.addColorStop(0.5, 'rgba(226, 218, 207, 0.8)');
-          gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+          gradient.addColorStop(0, 'rgba(235, 227, 216, 1)');
+          gradient.addColorStop(0.5, 'rgba(235, 227, 216, 0.8)');
+          gradient.addColorStop(1, 'rgba(235, 227, 216, 0)');
           
           ctx.fillStyle = gradient;
           ctx.beginPath();
@@ -4112,10 +4113,10 @@ function Gallery() {
           centerX, centerY, 0,
           centerX, centerY, spreadRadius
         );
-        spreadGradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
-        spreadGradient.addColorStop(0.4, 'rgba(226, 218, 207, 0.9)');
-        spreadGradient.addColorStop(0.7, 'rgba(226, 218, 207, 0.5)');
-        spreadGradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        spreadGradient.addColorStop(0, 'rgba(235, 227, 216, 1)');
+        spreadGradient.addColorStop(0.4, 'rgba(235, 227, 216, 0.9)');
+        spreadGradient.addColorStop(0.7, 'rgba(235, 227, 216, 0.5)');
+        spreadGradient.addColorStop(1, 'rgba(235, 227, 216, 0)');
         
         ctx.fillStyle = spreadGradient;
         ctx.beginPath();
@@ -4128,10 +4129,10 @@ function Gallery() {
           requestAnimationFrame(animateSpread);
         } else {
           // Final state - fully revealed
-          ctx.fillStyle = '#E2DACF';
+          ctx.fillStyle = '#EBE3D8';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.globalCompositeOperation = 'destination-out';
-          ctx.fillStyle = 'rgba(226, 218, 207, 1)';
+          ctx.fillStyle = 'rgba(235, 227, 216, 1)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.globalCompositeOperation = 'source-over';
           isSpreadingRef.current = false;
@@ -4303,7 +4304,7 @@ function Gallery() {
 
 
   return (
-    <section ref={sectionRef} id="gallery" className="fullpage-section relative w-full bg-[#E3DCD1] text-black" style={{ overflow: 'visible', height: 'auto', minHeight: 'calc(1500 / 1440 * 100vw)', zIndex: 0 }}>
+    <section ref={sectionRef} id="gallery" className="fullpage-section relative w-full bg-[#EBE3D8] text-black" style={{ overflow: 'visible', height: 'auto', minHeight: 'calc(1500 / 1440 * 100vw)', zIndex: 0 }}>
       {/* Desktop Version */}
       <div ref={innerRef} className="hidden lg:block relative w-full overflow-visible" style={{ height: 'calc(1500 / 1440 * 100vw)', minHeight: 'calc(1500 / 1440 * 100vw)', position: 'relative' }}>
         {/* Video Background - centered vertically for best display */}
@@ -4423,7 +4424,7 @@ function Gallery() {
       {/* Mobile Version */}
       <div 
         ref={mobileContainerRef}
-        className="relative w-full lg:hidden bg-[#E3DCD1]"
+        className="relative w-full lg:hidden bg-[#EBE3D8]"
         style={{ minHeight: 'auto' }}
       >
         {/* Title above video */}
@@ -4891,7 +4892,7 @@ function Collections() {
   };
 
   return (
-    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#E3DCD1', minHeight: 'calc((560px + 303px + 15px + 50px + 150px) * (100vw / 1589px))' }}>
+    <section id="collections" className="fullpage-section relative w-full overflow-hidden" style={{ backgroundColor: '#EBE3D8', minHeight: 'calc((560px + 303px + 15px + 50px + 150px) * (100vw / 1589px))' }}>
       {/* Desktop Version - Hidden on mobile, shown on desktop (lg and above) */}
       <div 
         ref={desktopSectionRef}
@@ -5107,7 +5108,7 @@ function Collections() {
             {collectionSlides.map((slide, index) => (
               <div 
                 key={`content-${slide.id}`}
-                className="absolute bg-[#E3DCD1]"
+                className="absolute bg-[#EBE3D8]"
                     style={{
                   left: 0,
                   top: 0,
@@ -5123,7 +5124,7 @@ function Collections() {
                 }}
               >
                 {/* Title */}
-                <div className="bg-[#E3DCD1] px-0 py-[10px] pr-[10px]">
+                <div className="bg-[#EBE3D8] px-0 py-[10px] pr-[10px]">
                   <div className="flex items-center">
                     <p className="font-montserrat font-medium text-black leading-[53px]" style={{ fontSize: 'calc(36px * (100vw / 1589px))' }}>
                       {slide.title} <span className="font-normal" style={{ fontSize: 'calc(20px * (100vw / 1589px))' }}>{slide.subtitle}</span>
@@ -5133,7 +5134,7 @@ function Collections() {
 
                 {/* Description */}
                 <div 
-                  className="bg-[#E3DCD1] px-0 py-[10px] pr-[10px] flex items-center justify-center"
+                  className="bg-[#EBE3D8] px-0 py-[10px] pr-[10px] flex items-center justify-center"
                   style={{
                     marginTop: 'calc((597px - 530px - 53px) * (100vw / 1589px))',
                   }}
@@ -5324,7 +5325,7 @@ function Applications() {
   };
 
   return (
-    <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible">
+    <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible" style={{ marginBottom: '70px' }}>
       <div className="section-inner overflow-visible">
         <div 
           className="hidden w-full flex-col lg:flex overflow-visible"
@@ -5885,7 +5886,7 @@ function CatalogueCtaAndFooter() {
 
         {/* Footer - Bottom section */}
         <div 
-          className="flex-1 bg-[#E3DCD1] flex flex-col"
+          className="flex-1 bg-[#EBE3D8] flex flex-col"
           style={{
             paddingLeft: 'calc(104px * (100vw / 1470px))',
             paddingRight: 'calc(104px * (100vw / 1470px))',

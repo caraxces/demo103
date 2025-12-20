@@ -29,7 +29,7 @@ body {
 body {
   min-height: 100dvh;
   font-family: var(--font-sans);
-  background-color: #E3DCD1;
+  background-color: #EBE3D8;
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
