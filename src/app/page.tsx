@@ -3061,15 +3061,27 @@ function Hero() {
               className={`absolute inset-0 transform-gpu transition-[opacity,transform,filter] duration-[1300ms] ease-[cubic-bezier(0.6,0.05,0.2,1)] ${
                 isActive ? "opacity-100 scale-100" : "pointer-events-none opacity-0 scale-[1.05] brightness-[0.85]"
               }`}
+              style={{
+                willChange: isActive || currentSlide === (index + 1) % heroSlides.length ? 'opacity, transform' : 'auto',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+              }}
             >
               <Image
                 src={slide.src}
                 alt={slide.alt}
                 fill
                 priority={index === 0}
-                className={`object-cover transition-transform duration-[3200ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
-                  isActive ? "scale-100" : "scale-[1.08]"
-                }`}
+                quality={95}
+                sizes="100vw"
+                className="object-cover"
+                style={{
+                  willChange: isActive || currentSlide === (index + 1) % heroSlides.length ? 'transform' : 'auto',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform: isActive ? 'scale(1)' : 'scale(1.05)',
+                  transition: 'transform 1300ms cubic-bezier(0.6, 0.05, 0.2, 1)',
+                }}
               />
               {isActive ? <div key={`${slide.src}-highlight`} className="tile-highlight" /> : null}
             </div>
@@ -3583,12 +3595,23 @@ function Gallery() {
 
   // Typing animation - starts when user begins drawing
   useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3585',message:'Typing effect useEffect triggered',data:{isTyping,isLoaded,windowWidth:typeof window !== 'undefined' ? window.innerWidth : 'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3'})}).catch(()=>{});
+    // #endregion
+    
     if (!isTyping || !isLoaded || typeof window === 'undefined' || window.innerWidth < 1024) {
+      // #region agent log
+      fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3590',message:'Typing effect skipped',data:{reason:!isTyping?'!isTyping':!isLoaded?'!isLoaded':typeof window === 'undefined'?'!window':window.innerWidth < 1024?'width<1024':'unknown'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3'})}).catch(()=>{});
+      // #endregion
       setTypedText('');
       return;
     }
 
     const fullText = '"Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.\n\nỞ STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."';
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3595',message:'Starting typing animation',data:{fullTextLength:fullText.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     
     // Start typing immediately with first character
     setTypedText(fullText[0] || '');
@@ -3600,6 +3623,9 @@ function Gallery() {
         currentIndex++;
       } else {
         clearInterval(typingInterval);
+        // #region agent log
+        fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3608',message:'Typing animation completed',data:{finalLength:currentIndex},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+        // #endregion
       }
     }, 10); // Typing speed: 10ms per character (faster)
 
@@ -3880,6 +3906,9 @@ function Gallery() {
       
       // Start typing effect and video when user starts drawing (first brush stroke)
       if (!hasStartedDrawing) {
+        // #region agent log
+        fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3882',message:'First brush stroke - starting typing and video',data:{isLoaded,hasStartedDrawing},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+        // #endregion
         setHasStartedDrawing(true);
         setIsTyping(true);
         // Start video immediately when user starts drawing
@@ -4033,12 +4062,12 @@ function Gallery() {
             fontSize: 'calc(16px * (100vw / 1440px))',
             lineHeight: 'calc(25px * (100vw / 1440px))',
             whiteSpace: 'pre-wrap',
-            opacity: isFullyRevealed ? 1 : 0,
-            transition: isFullyRevealed ? 'opacity 0.3s ease-in' : 'none',
+            opacity: hasStartedDrawing ? 1 : 0, // Show text when user starts drawing, not when fully revealed
+            transition: hasStartedDrawing ? 'opacity 0.3s ease-in' : 'none',
           }}
         >
-          {typedText || (isTyping ? '' : '')}
-          {isTyping && typedText.length > 0 && <span className="animate-pulse">|</span>}
+          {typedText}
+          {isTyping && <span className="animate-pulse">|</span>}
         </div>
 
         {/* Button "Khám phá ngay" - Figma: left-[calc(50%+1px)] top-[968px] */}
