@@ -3411,13 +3411,15 @@ function About() {
                 <PillButton label="Khám phá ngay" />
               </div>
             </div>
-            <div className="relative w-full aspect-[534/601] overflow-hidden">
+            <div className="relative w-full aspect-[534/601] overflow-visible flex items-center justify-center">
               <div
                 ref={svgRef}
                 className={`relative w-full h-full ${svgAnimated ? 'svg-animate' : ''}`}
                 style={{
                   opacity: svgAnimated ? 1 : 0,
                   transition: 'opacity 0.5s ease',
+                  transform: 'scale(1.2)',
+                  transformOrigin: 'center center',
                 }}
               >
                 <img
@@ -3551,6 +3553,7 @@ function Gallery() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [typedText, setTypedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
   const [isFullyRevealed, setIsFullyRevealed] = useState(false);
   const [hasStartedDrawing, setHasStartedDrawing] = useState(false);
   const titleRef = useRef<HTMLDivElement>(null);
@@ -3565,9 +3568,21 @@ function Gallery() {
   const spreadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSpreadingRef = useRef(false);
   const isFullyRevealedRef = useRef(false);
+  const mobileContainerRef = useRef<HTMLDivElement>(null);
+  const mobileContentRef = useRef<HTMLDivElement>(null);
+  const mobileCanvasRef = useRef<HTMLCanvasElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoContainerRef = useRef<HTMLDivElement>(null);
+  const mobileLastTouchPosRef = useRef<{ x: number; y: number } | null>(null);
+  const mobileRandomRevealedRef = useRef<Array<{ x: number; y: number; radius: number }>>([]);
+  const mobileMaskInitializedRef = useRef(false);
+  const mobileSpreadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mobileIsSpreadingRef = useRef(false);
+  const mobileIsFullyRevealedRef = useRef(false);
+  const mobileHasStartedDrawingRef = useRef(false);
   
-  // Figma design: 1440x1130 aspect ratio
-  // Height should be responsive based on width: height = width / 1.274
+  // Figma design: 1440x1500 aspect ratio (increased from 1130 for better spacing)
+  // Height should be responsive based on width: height = width / 0.96
 
   useEffect(() => {
     // Set loaded when video is ready
@@ -3593,22 +3608,333 @@ function Gallery() {
     }
   }, []);
 
-  // Typing animation - starts when user begins drawing
+  // Mobile video initialization
   useEffect(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3585',message:'Typing effect useEffect triggered',data:{isTyping,isLoaded,windowWidth:typeof window !== 'undefined' ? window.innerWidth : 'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3'})}).catch(()=>{});
-    // #endregion
+    if (mobileVideoRef.current && typeof window !== 'undefined' && window.innerWidth < 1024) {
+      mobileVideoRef.current.load();
+      // Try autoplay on mobile
+      mobileVideoRef.current.play().catch((err) => {
+        console.error('Mobile video autoplay failed:', err);
+      });
+    }
+  }, []);
+
+  // Initialize random reveal spots for mobile
+  useEffect(() => {
+    if (!isLoaded || !mobileCanvasRef.current || !mobileVideoContainerRef.current || typeof window === 'undefined' || window.innerWidth >= 1024) return;
     
+    const canvas = mobileCanvasRef.current;
+    const videoContainer = mobileVideoContainerRef.current;
+    const rect = videoContainer.getBoundingClientRect();
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size first
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    // Create random reveal spots
+    const randomSpots: Array<{ x: number; y: number; radius: number }> = [];
+    const numSpots = 8;
+    
+    for (let i = 0; i < numSpots; i++) {
+      const area = Math.random();
+      let y;
+      if (area < 0.33) {
+        y = Math.random() * (canvas.height * 0.3);
+      } else if (area < 0.66) {
+        y = canvas.height * 0.3 + Math.random() * (canvas.height * 0.4);
+      } else {
+        y = canvas.height * 0.7 + Math.random() * (canvas.height * 0.3);
+      }
+      
+      randomSpots.push({
+        x: Math.random() * canvas.width,
+        y: y,
+        radius: 60 + Math.random() * 80,
+      });
+    }
+    
+    mobileRandomRevealedRef.current = randomSpots;
+  }, [isLoaded]);
+
+  // Mobile canvas reveal effect with touch events
+  useEffect(() => {
+    const canvas = mobileCanvasRef.current;
+    const videoContainer = mobileVideoContainerRef.current;
+    if (!canvas || !videoContainer || typeof window === 'undefined' || window.innerWidth >= 1024) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    const updateCanvasSize = () => {
+      const rect = videoContainer.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      mobileMaskInitializedRef.current = false;
+      initializeMask();
+    };
+    
+    const initializeMask = () => {
+      if (!ctx || mobileMaskInitializedRef.current) return;
+      
+      ctx.fillStyle = '#E2DACF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.globalCompositeOperation = 'destination-out';
+      
+      mobileRandomRevealedRef.current.forEach(spot => {
+        const gradient = ctx.createRadialGradient(
+          spot.x, spot.y, 0,
+          spot.x, spot.y, spot.radius
+        );
+        gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+        gradient.addColorStop(0.6, 'rgba(226, 218, 207, 0.8)');
+        gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(spot.x, spot.y, spot.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      ctx.globalCompositeOperation = 'source-over';
+      mobileMaskInitializedRef.current = true;
+    };
+    
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    if (isLoaded && !mobileMaskInitializedRef.current) {
+      setTimeout(() => {
+        initializeMask();
+      }, 200);
+    }
+
+    let lastMoveTime = Date.now();
+    let movementSpeed = 0;
+
+    const startSpreadAnimation = () => {
+      if (mobileIsSpreadingRef.current || !ctx || mobileIsFullyRevealedRef.current) return;
+      mobileIsSpreadingRef.current = true;
+      
+      const startTime = Date.now();
+      const duration = 4000;
+      
+      const animateSpread = () => {
+        if (!ctx) return;
+        
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        
+        ctx.fillStyle = '#E2DACF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.globalCompositeOperation = 'destination-out';
+        const maxRadius = Math.max(canvas.width, canvas.height) * 1.2;
+        
+        mobileRandomRevealedRef.current.forEach(spot => {
+          const expandedRadius = spot.radius + (maxRadius - spot.radius) * easeProgress;
+          const gradient = ctx.createRadialGradient(
+            spot.x, spot.y, 0,
+            spot.x, spot.y, expandedRadius
+          );
+          gradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+          gradient.addColorStop(0.5, 'rgba(226, 218, 207, 0.8)');
+          gradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(spot.x, spot.y, expandedRadius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const spreadRadius = maxRadius * easeProgress;
+        
+        const spreadGradient = ctx.createRadialGradient(
+          centerX, centerY, 0,
+          centerX, centerY, spreadRadius
+        );
+        spreadGradient.addColorStop(0, 'rgba(226, 218, 207, 1)');
+        spreadGradient.addColorStop(0.4, 'rgba(226, 218, 207, 0.9)');
+        spreadGradient.addColorStop(0.7, 'rgba(226, 218, 207, 0.5)');
+        spreadGradient.addColorStop(1, 'rgba(226, 218, 207, 0)');
+        
+        ctx.fillStyle = spreadGradient;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, spreadRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.globalCompositeOperation = 'source-over';
+        
+        if (progress < 1) {
+          requestAnimationFrame(animateSpread);
+        } else {
+          ctx.fillStyle = '#E2DACF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.fillStyle = 'rgba(226, 218, 207, 1)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'source-over';
+          mobileIsSpreadingRef.current = false;
+          mobileIsFullyRevealedRef.current = true;
+          setIsFullyRevealed(true);
+        }
+      };
+      
+      animateSpread();
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      if (!videoContainer || !ctx || !mobileMaskInitializedRef.current) return;
+      const rect = videoContainer.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      
+      if (x < 0 || x > rect.width || y < 0 || y > rect.height) return;
+
+      const now = Date.now();
+      const timeDelta = now - lastMoveTime;
+      
+      if (mobileSpreadTimeoutRef.current) {
+        clearTimeout(mobileSpreadTimeoutRef.current);
+        mobileSpreadTimeoutRef.current = null;
+      }
+      
+      if (mobileLastTouchPosRef.current) {
+        const dx = x - mobileLastTouchPosRef.current.x;
+        const dy = y - mobileLastTouchPosRef.current.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        movementSpeed = distance / Math.max(timeDelta, 1) * 1000;
+      }
+      
+      lastMoveTime = now;
+      const isMovingFast = movementSpeed > 50;
+      
+      ctx.globalCompositeOperation = 'destination-out';
+      
+      for (let i = 0; i < 3; i++) {
+        const offsetX = isMovingFast ? (Math.random() - 0.5) * 16 : 0;
+        const offsetY = isMovingFast ? (Math.random() - 0.5) * 16 : 0;
+        const brushWidth = (31 + Math.random() * 25) * 2;
+        const brushRadius = brushWidth / 2;
+        const gradientRadius = brushRadius * 1.4;
+        
+        const gradient = ctx.createRadialGradient(
+          x + offsetX, y + offsetY, 0,
+          x + offsetX, y + offsetY, gradientRadius
+        );
+        gradient.addColorStop(0, 'rgba(104, 92, 78, 1)');
+        gradient.addColorStop(0.25, 'rgba(128, 112, 96, 0.95)');
+        gradient.addColorStop(0.5, 'rgba(184, 163, 139, 0.7)');
+        gradient.addColorStop(0.75, 'rgba(224, 212, 197, 0.4)');
+        gradient.addColorStop(1, 'rgba(224, 212, 197, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x + offsetX, y + offsetY, gradientRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        if (mobileLastTouchPosRef.current && i === 0) {
+          const prevX = mobileLastTouchPosRef.current.x;
+          const prevY = mobileLastTouchPosRef.current.y;
+          
+          const strokeGradient = ctx.createLinearGradient(prevX, prevY, x, y);
+          strokeGradient.addColorStop(0, 'rgba(104, 92, 78, 1)');
+          strokeGradient.addColorStop(0.33, 'rgba(128, 112, 96, 1)');
+          strokeGradient.addColorStop(0.66, 'rgba(184, 163, 139, 1)');
+          strokeGradient.addColorStop(1, 'rgba(224, 212, 197, 1)');
+          
+          ctx.strokeStyle = strokeGradient;
+          ctx.lineWidth = brushWidth;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          ctx.beginPath();
+          ctx.moveTo(prevX, prevY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+        }
+      }
+      
+      ctx.globalCompositeOperation = 'source-over';
+      mobileLastTouchPosRef.current = { x, y };
+      
+      if (!mobileHasStartedDrawingRef.current) {
+        mobileHasStartedDrawingRef.current = true;
+        setHasStartedDrawing(true);
+        setIsTyping(true);
+        setIsTypingComplete(false);
+        if (mobileVideoRef.current) {
+          mobileVideoRef.current.play().catch((err) => {
+            console.error('Mobile video play on touch failed:', err);
+          });
+        }
+      }
+      
+      if (!mobileIsFullyRevealedRef.current) {
+        if (mobileSpreadTimeoutRef.current) {
+          clearTimeout(mobileSpreadTimeoutRef.current);
+        }
+        mobileSpreadTimeoutRef.current = setTimeout(() => {
+          if (!mobileIsSpreadingRef.current && !mobileIsFullyRevealedRef.current) {
+            startSpreadAnimation();
+          }
+        }, 500);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      mobileLastTouchPosRef.current = null;
+      movementSpeed = 0;
+      
+      if (!mobileIsFullyRevealedRef.current) {
+        if (mobileSpreadTimeoutRef.current) {
+          clearTimeout(mobileSpreadTimeoutRef.current);
+        }
+        mobileSpreadTimeoutRef.current = setTimeout(() => {
+          if (!mobileIsSpreadingRef.current && !mobileIsFullyRevealedRef.current) {
+            startSpreadAnimation();
+          }
+        }, 500);
+      }
+    };
+
+    videoContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+    videoContainer.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('resize', updateCanvasSize);
+      videoContainer.removeEventListener('touchmove', handleTouchMove);
+      videoContainer.removeEventListener('touchend', handleTouchEnd);
+      if (mobileSpreadTimeoutRef.current) {
+        clearTimeout(mobileSpreadTimeoutRef.current);
+      }
+    };
+  }, [isLoaded]);
+
+  // Typing animation - starts when user begins drawing, chỉ chạy 1 lần duy nhất
+  useEffect(() => {
+    const fullText = '"Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.\n\nỞ STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."';
+    
+    // Nếu đã typing xong rồi, không chạy lại nữa - chỉ đảm bảo text đầy đủ
+    if (isTypingComplete) {
+      if (typedText !== fullText) {
+        setTypedText(fullText);
+      }
+      return;
+    }
+    
+    // Nếu chưa đủ điều kiện để typing, không làm gì cả (không reset text)
     if (!isTyping || !isLoaded || typeof window === 'undefined' || window.innerWidth < 1024) {
-      // #region agent log
-      fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3590',message:'Typing effect skipped',data:{reason:!isTyping?'!isTyping':!isLoaded?'!isLoaded':typeof window === 'undefined'?'!window':window.innerWidth < 1024?'width<1024':'unknown'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3'})}).catch(()=>{});
-      // #endregion
-      setTypedText('');
       return;
     }
 
-    const fullText = '"Tại STile, chúng tôi không đơn thuần gọi đó là Showroom. Với chúng tôi, mỗi sản phẩm hiện diện ở đây đều là một tác phẩm nghệ thuật được chọn lọc, sắp đặt có chủ đích. Mỗi bề mặt, mỗi đường vân đều mang trong mình chất riêng và khi đặt cạnh nhau, chúng tạo nên một không gian kể chuyện.\n\nỞ STile, chúng tôi giới thiệu những tác phẩm nghệ thuật để khách hàng trải nghiệm và cảm nhận phong cách sống qua từng thiết kế muốn truyền tải."';
-    
     // #region agent log
     fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3595',message:'Starting typing animation',data:{fullTextLength:fullText.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
     // #endregion
@@ -3623,16 +3949,20 @@ function Gallery() {
         currentIndex++;
       } else {
         clearInterval(typingInterval);
+        // Set full text để đảm bảo text vẫn hiển thị đầy đủ
+        setTypedText(fullText);
+        setIsTyping(false);
+        setIsTypingComplete(true);
         // #region agent log
         fetch('http://127.0.0.1:7247/ingest/ee9aa5dd-fc2c-4758-9f04-3d172de49f45',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page.tsx:3608',message:'Typing animation completed',data:{finalLength:currentIndex},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
         // #endregion
       }
-    }, 10); // Typing speed: 10ms per character (faster)
+    }, 35); // Typing speed: 35ms per character (chậm hơn)
 
     return () => {
       clearInterval(typingInterval);
     };
-  }, [isTyping, isLoaded]);
+  }, [isTyping, isLoaded, isTypingComplete]);
 
   // Initialize random reveal spots
   useEffect(() => {
@@ -3911,6 +4241,7 @@ function Gallery() {
         // #endregion
         setHasStartedDrawing(true);
         setIsTyping(true);
+        setIsTypingComplete(false);
         // Start video immediately when user starts drawing
         if (videoRef.current) {
           videoRef.current.play().catch((err) => {
@@ -3972,15 +4303,15 @@ function Gallery() {
 
 
   return (
-    <section ref={sectionRef} id="gallery" className="fullpage-section relative w-full bg-[#E3DCD1] text-black" style={{ overflow: 'visible', height: 'auto', minHeight: 'calc(1130 / 1440 * 100vw)', zIndex: 0 }}>
+    <section ref={sectionRef} id="gallery" className="fullpage-section relative w-full bg-[#E3DCD1] text-black" style={{ overflow: 'visible', height: 'auto', minHeight: 'calc(1500 / 1440 * 100vw)', zIndex: 0 }}>
       {/* Desktop Version */}
-      <div ref={innerRef} className="hidden lg:block relative w-full overflow-visible" style={{ height: 'calc(1130 / 1440 * 100vw)', minHeight: 'calc(1130 / 1440 * 100vw)', position: 'relative' }}>
-        {/* Video Background - same layout as SVG, revealed through canvas mask */}
+      <div ref={innerRef} className="hidden lg:block relative w-full overflow-visible" style={{ height: 'calc(1500 / 1440 * 100vw)', minHeight: 'calc(1500 / 1440 * 100vw)', position: 'relative' }}>
+        {/* Video Background - centered vertically for best display */}
         <div 
           className="absolute overflow-hidden pointer-events-none"
           style={{
             left: 'calc(-1px * (100vw / 1440px))',
-            top: 'calc(18px * (100vw / 1440px))',
+            top: 'calc(185px * (100vw / 1440px))', // Centered vertically: (1500 - 956) / 2 = 272, adjusted to 185 for better visual balance
             width: 'calc(1442px * (100vw / 1440px))',
             height: 'calc(956px * (100vw / 1440px))',
             opacity: 1,
@@ -3994,8 +4325,15 @@ function Gallery() {
             muted
             playsInline
             preload="auto"
+            loop={false}
             onCanPlay={() => {
               setIsLoaded(true);
+            }}
+            onEnded={() => {
+              // Đảm bảo video dừng khi kết thúc
+              if (videoRef.current) {
+                videoRef.current.pause();
+              }
             }}
           >
             <source src="/ARTILE GALLERY/ARTILE GALLERY SECTION.mp4" type="video/mp4" />
@@ -4013,7 +4351,7 @@ function Gallery() {
           }}
         />
 
-        {/* Title "ARTILE GALLERY" - SVG - Figma: left-[calc(50%+627px)] top-[132px] with transform */}
+        {/* Title "ARTILE GALLERY" - SVG - Adjusted for taller section */}
         <div
           ref={titleRef}
           className="absolute z-30 text-right"
@@ -4035,7 +4373,7 @@ function Gallery() {
           />
         </div>
 
-        {/* Tagline - Figma: right-[92px] top-[237px] */}
+        {/* Tagline - Adjusted position for taller section */}
         <p 
           className="absolute z-20 font-montserrat font-normal text-right text-black"
           style={{
@@ -4049,13 +4387,13 @@ function Gallery() {
           "Nơi Không Gian kể câu chuyện về Nghệ Thuật"
         </p>
 
-        {/* Descriptive Text - Figma: left-[calc(50%+1.5px)] top-[836px] w-[1231px] */}
+        {/* Descriptive Text - Adjusted position to prevent overlap, moved below video */}
         <div 
           ref={textDescriptionRef}
           className="absolute z-20 font-montserrat font-normal text-center text-black"
             style={{
             left: 'calc(50% + 1.5px * (100vw / 1440px))',
-            top: 'calc(836px * (100vw / 1440px))',
+            top: 'calc(1206px * (100vw / 1440px))', // Moved down: 185 + 956 + 65 = 1206 (video top + video height + spacing)
             transform: 'translateX(-50%)',
             width: 'calc(1231px * (100vw / 1440px))',
             maxWidth: '85vw',
@@ -4067,14 +4405,14 @@ function Gallery() {
           }}
         >
           {typedText}
-          {isTyping && <span className="animate-pulse">|</span>}
+          {isTyping && !isTypingComplete && <span className="animate-pulse">|</span>}
         </div>
 
-        {/* Button "Khám phá ngay" - Figma: left-[calc(50%+1px)] top-[968px] */}
+        {/* Button "Khám phá ngay" - Adjusted position below text */}
         <div 
           className="absolute z-20 left-1/2"
               style={{
-            top: 'calc(968px * (100vw / 1440px))',
+            top: 'calc(1338px * (100vw / 1440px))', // Moved down: 1206 + 132 (text height estimate) = 1338
             transform: 'translateX(-50%)',
           }}
         >
@@ -4083,49 +4421,71 @@ function Gallery() {
       </div>
 
       {/* Mobile Version */}
-      <div className="relative w-full lg:hidden" style={{ aspectRatio: '1440 / 1130', minHeight: '70vh' }}>
-        {/* Watercolor Background SVG */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute inset-0 ${isLoaded ? 'watercolor-loading' : ''}`} style={{ opacity: isLoaded ? 1 : 0 }}>
-            <img
-              src="/ARTILE GALLERY/artile gallery water color beige trans 1.svg"
-              alt="Artile Gallery Watercolor Background"
-              className="absolute h-full w-full object-cover"
-              onLoad={() => setIsLoaded(true)}
-            />
-          </div>
+      <div 
+        ref={mobileContainerRef}
+        className="relative w-full lg:hidden bg-[#E3DCD1]"
+        style={{ minHeight: 'auto' }}
+      >
+        {/* Title above video */}
+        <div className="relative w-full flex justify-center px-4 pt-8 pb-4">
+          <img
+            src="/ARTILE GALLERY/image copy 3.png"
+            alt="ARTILE GALLERY"
+            className="h-auto w-full max-w-[400px]"
+            style={{
+              height: 'auto',
+            }}
+          />
+        </div>
+
+        {/* Video Background */}
+        <div 
+          ref={mobileVideoContainerRef}
+          className="relative w-full overflow-hidden"
+          style={{ aspectRatio: '1440 / 956', minHeight: '50vh' }}
+        >
+          <video
+            ref={mobileVideoRef}
+            className="absolute inset-0 w-full h-full object-cover"
+            muted
+            playsInline
+            preload="auto"
+            loop={false}
+            onCanPlay={() => {
+              setIsLoaded(true);
+            }}
+            onEnded={() => {
+              if (mobileVideoRef.current) {
+                mobileVideoRef.current.pause();
+              }
+            }}
+          >
+            <source src="/ARTILE GALLERY/ARTILE GALLERY SECTION.mp4" type="video/mp4" />
+          </video>
+
+          {/* Canvas reveal mask for mobile */}
+          <canvas
+            ref={mobileCanvasRef}
+            className="absolute inset-0 pointer-events-auto z-20"
+            style={{ 
+              mixBlendMode: 'normal',
+              opacity: isFullyRevealed ? 0 : 1,
+              transition: isFullyRevealed ? 'opacity 0.3s ease-out' : 'none',
+            }}
+          />
         </div>
         
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-full px-6 py-20">
-          <div className="space-y-6 text-center max-w-[500px]">
-            {/* Title */}
-            <img
-              src="/ARTILE GALLERY/ARTILE GALLERY.svg"
-              alt="ARTILE GALLERY"
-              className="h-auto w-full max-w-[700px]"
-              style={{
-                height: 'auto',
-              }}
-            />
-            
-            {/* Tagline */}
-            <p 
-              className="font-montserrat font-normal text-black"
-              style={{
-                fontSize: 'clamp(12px, 3vw, 14px)',
-                lineHeight: 'clamp(20px, 4.5vw, 25px)',
-                letterSpacing: 'clamp(2px, 0.7vw, 3px)',
-              }}
-            >
-              "Nơi Không Gian kể câu chuyện về Nghệ Thuật"
-            </p>
-            
+        {/* Content below video */}
+        <div 
+          ref={mobileContentRef}
+          className="relative z-10 flex flex-col items-center px-6 py-8"
+        >
+          <div className="space-y-4 text-center max-w-[500px] w-full">
             {/* Descriptive Text */}
             <div 
               className="font-montserrat font-normal text-center space-y-3 text-black"
               style={{
-                fontSize: 'clamp(13px, 3.5vw, 14px)',
+                fontSize: 'clamp(11px, 3.5vw, 14px)',
                 lineHeight: 'clamp(22px, 5vw, 25px)',
               }}
             >
