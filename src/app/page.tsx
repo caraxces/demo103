@@ -4411,10 +4411,11 @@ function Gallery() {
 
         {/* Button "Khám phá ngay" - Adjusted position below text */}
         <div 
-          className="absolute z-20 left-1/2"
+          className="absolute z-40 left-1/2"
               style={{
             top: 'calc(1338px * (100vw / 1440px))', // Moved down: 1206 + 132 (text height estimate) = 1338
             transform: 'translateX(-50%)',
+            pointerEvents: 'auto',
           }}
         >
           <PillButton label="Khám phá ngay" theme="light" />
@@ -4829,10 +4830,19 @@ function Collections() {
   const desktopSectionRef = useRef<HTMLDivElement>(null);
   const touchStartXRef = useRef<number | null>(null);
   const touchDiffRef = useRef<number>(0);
+  const previousSlideRef = useRef<number>(0);
 
   useEffect(() => {
+    // Only auto-advance on desktop
+    if (typeof window === 'undefined' || window.innerWidth < 1024) return;
+    
     const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % collectionSlides.length);
+      setActiveSlide((prev) => {
+        previousSlideRef.current = prev;
+        // Always move forward, reset to 0 when reaching the end (no reverse)
+        const next = prev + 1;
+        return next >= collectionSlides.length ? 0 : next;
+      });
     }, 5200);
     return () => clearInterval(timer);
   }, []);
@@ -4939,9 +4949,7 @@ function Collections() {
                 opacity: activeSlide === 2 ? 1 : 0,
                 transform: activeSlide === 2 
                   ? 'translateX(0)' 
-                  : activeSlide < 2 
-                    ? 'translateX(100%)' 
-                    : 'translateX(-100%)',
+                  : 'translateX(100%)', // Always from right, no reverse
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 2 ? 'auto' : 'none',
               }}
@@ -4964,9 +4972,7 @@ function Collections() {
                 opacity: activeSlide === 1 ? 1 : 0,
                 transform: activeSlide === 1 
                   ? 'translateX(0)' 
-                  : activeSlide < 1 
-                    ? 'translateX(100%)' 
-                    : 'translateX(-100%)',
+                  : 'translateX(100%)', // Always from right, no reverse
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 1 ? 'auto' : 'none',
               }}
@@ -4989,9 +4995,7 @@ function Collections() {
                 opacity: activeSlide === 0 ? 1 : 0,
                 transform: activeSlide === 0 
                   ? 'translateX(0)' 
-                  : activeSlide < 0 
-                    ? 'translateX(100%)' 
-                    : 'translateX(-100%)',
+                  : 'translateX(100%)', // Always from right, no reverse
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 0 ? 'auto' : 'none',
               }}
@@ -5027,9 +5031,7 @@ function Collections() {
                 opacity: activeSlide === 2 ? 1 : 0,
                 transform: activeSlide === 2 
                   ? 'translateX(0)' 
-                  : activeSlide < 2 
-                    ? 'translateX(-100%)' 
-                    : 'translateX(100%)',
+                  : 'translateX(100%)', // Always from right, no reverse
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 2 ? 'auto' : 'none',
               }}
@@ -5052,9 +5054,7 @@ function Collections() {
                 opacity: activeSlide === 1 ? 1 : 0,
                 transform: activeSlide === 1 
                   ? 'translateX(0)' 
-                  : activeSlide < 1 
-                    ? 'translateX(-100%)' 
-                    : 'translateX(100%)',
+                  : 'translateX(100%)', // Always from right, no reverse
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 1 ? 'auto' : 'none',
               }}
@@ -5077,9 +5077,7 @@ function Collections() {
                 opacity: activeSlide === 0 ? 1 : 0,
                 transform: activeSlide === 0 
                   ? 'translateX(0)' 
-                  : activeSlide < 0 
-                    ? 'translateX(-100%)' 
-                    : 'translateX(100%)',
+                  : 'translateX(100%)', // Always from right, no reverse
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 0 ? 'auto' : 'none',
               }}
@@ -5116,9 +5114,7 @@ function Collections() {
                   opacity: activeSlide === index ? 1 : 0,
                   transform: activeSlide === index 
                     ? 'translateY(0)' 
-                    : activeSlide < index 
-                      ? 'translateY(-100%)' 
-                      : 'translateY(100%)',
+                    : 'translateY(100%)', // Always from bottom, no reverse
                   transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                   pointerEvents: activeSlide === index ? 'auto' : 'none',
                 }}
@@ -5325,7 +5321,7 @@ function Applications() {
   };
 
   return (
-    <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible" style={{ marginBottom: '70px' }}>
+    <section id="applications" className="fullpage-section flex w-full flex-col justify-center overflow-visible" style={{ marginBottom: 'calc(70px * (100vw / 1470px))' }}>
       <div className="section-inner overflow-visible">
         <div 
           className="hidden w-full flex-col lg:flex overflow-visible"
