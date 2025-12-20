@@ -5838,8 +5838,11 @@ function CatalogueCtaAndFooter() {
         <div 
           className="relative overflow-hidden"
           style={{
-            // Banner lớn hơn: base 320px ở màn 1470 và scale theo màn hình
-            height: 'calc(320px * (100vw / 1470px))',
+            // Banner cao 560px ở desktop - ensure fixed height
+            height: '560px',
+            minHeight: '560px',
+            maxHeight: '560px',
+            flexShrink: 0,
           }}
         >
           <Image
@@ -5851,7 +5854,12 @@ function CatalogueCtaAndFooter() {
             priority
           />
           <div className="absolute inset-0 bg-black/45" />
-          <div className="relative z-10 flex w-full h-full items-center justify-center">
+          <div 
+            className="relative z-10 flex w-full h-full items-center justify-center"
+            style={{
+              minHeight: '560px',
+            }}
+          >
             <div 
               className="flex flex-col items-center justify-center text-center"
               style={{
