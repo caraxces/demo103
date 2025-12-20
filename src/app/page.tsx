@@ -4949,7 +4949,11 @@ function Collections() {
                 opacity: activeSlide === 2 ? 1 : 0,
                 transform: activeSlide === 2 
                   ? 'translateX(0)' 
-                  : 'translateX(100%)', // Always from right, no reverse
+                  : activeSlide === 0 
+                    ? 'translateX(-100%)' // When resetting from 2 to 0, slide 2 goes left (already passed)
+                    : activeSlide < 2 
+                      ? 'translateX(100%)' // Waiting on the right
+                      : 'translateX(-100%)', // Already passed, on the left
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 2 ? 'auto' : 'none',
               }}
@@ -4972,7 +4976,9 @@ function Collections() {
                 opacity: activeSlide === 1 ? 1 : 0,
                 transform: activeSlide === 1 
                   ? 'translateX(0)' 
-                  : 'translateX(100%)', // Always from right, no reverse
+                  : activeSlide < 1 
+                    ? 'translateX(100%)' 
+                    : 'translateX(-100%)',
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 1 ? 'auto' : 'none',
               }}
@@ -4995,7 +5001,11 @@ function Collections() {
                 opacity: activeSlide === 0 ? 1 : 0,
                 transform: activeSlide === 0 
                   ? 'translateX(0)' 
-                  : 'translateX(100%)', // Always from right, no reverse
+                  : activeSlide === 2 
+                    ? 'translateX(100%)' // When resetting from 2 to 0, slide 0 comes from right
+                    : activeSlide < 0 
+                      ? 'translateX(100%)' 
+                      : 'translateX(-100%)',
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 0 ? 'auto' : 'none',
               }}
@@ -5031,7 +5041,11 @@ function Collections() {
                 opacity: activeSlide === 2 ? 1 : 0,
                 transform: activeSlide === 2 
                   ? 'translateX(0)' 
-                  : 'translateX(100%)', // Always from right, no reverse
+                  : activeSlide === 0 
+                    ? 'translateX(-100%)' // When resetting from 2 to 0, slide 2 goes left (already passed)
+                    : activeSlide < 2 
+                      ? 'translateX(100%)' // Waiting on the right
+                      : 'translateX(-100%)', // Already passed, on the left
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 2 ? 'auto' : 'none',
               }}
@@ -5054,7 +5068,9 @@ function Collections() {
                 opacity: activeSlide === 1 ? 1 : 0,
                 transform: activeSlide === 1 
                   ? 'translateX(0)' 
-                  : 'translateX(100%)', // Always from right, no reverse
+                  : activeSlide < 1 
+                    ? 'translateX(-100%)' 
+                    : 'translateX(100%)',
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 1 ? 'auto' : 'none',
               }}
@@ -5077,7 +5093,9 @@ function Collections() {
                 opacity: activeSlide === 0 ? 1 : 0,
                 transform: activeSlide === 0 
                   ? 'translateX(0)' 
-                  : 'translateX(100%)', // Always from right, no reverse
+                  : activeSlide < 0 
+                    ? 'translateX(-100%)' 
+                    : 'translateX(100%)',
                 transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                 pointerEvents: activeSlide === 0 ? 'auto' : 'none',
               }}
@@ -5114,7 +5132,13 @@ function Collections() {
                   opacity: activeSlide === index ? 1 : 0,
                   transform: activeSlide === index 
                     ? 'translateY(0)' 
-                    : 'translateY(100%)', // Always from bottom, no reverse
+                    : index === 2 && activeSlide === 0
+                      ? 'translateY(-100%)' // When resetting from 2 to 0, slide 2 goes up (already passed)
+                      : index === 0 && activeSlide === 2
+                        ? 'translateY(100%)' // When resetting from 2 to 0, slide 0 comes from bottom
+                        : activeSlide < index 
+                          ? 'translateY(-100%)' 
+                          : 'translateY(100%)',
                   transition: 'opacity 600ms ease-in, transform 600ms ease-in',
                   pointerEvents: activeSlide === index ? 'auto' : 'none',
                 }}
